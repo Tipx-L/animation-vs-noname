@@ -244,6 +244,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					lib.rank[rank].addArray(RANK[rank]);
 				}
 			}
+			if (!Array.isArray(config.unlocked_characters)) config.unlocked_characters = [];
 			if (config.unlocked_characters.contains("avn_the_second_coming_the_chosen_one_s_return")) lib.extensionMenu.extension_桌面大战.intro.name = lib.extensionMenu.extension_桌面大战.intro.name.replace(`桌面大战<rp>（</rp><rt>Animation vs. Noname</rt><rp>）</rp>`, `<span style="color: red;">桌</span><span style="color: green;">面</span><span style="color: #00f7ff;">大</span><span style="color: yellow;">战</span><rp>（</rp><rt><span style="color: orange;">Animation vs. Noname</span></rt><rp>）</rp>`);
 			for (const character in lib.characterPack.animation_vs_noname) {
 				if (character != "avn_the_second_coming_the_chosen_one_s_return" && lib.characterPack.animation_vs_noname[character][4].contains("unseen")) {
@@ -256,6 +257,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					break;
 				}
 			}
+			if (!Array.isArray(config.confirmed_unlocked_characters)) config.confirmed_unlocked_characters = [];
 			const newUnlockedCharacters = config.unlocked_characters.filter(value => !config.confirmed_unlocked_characters.contains(value));
 			if (newUnlockedCharacters.length) {
 				lib.config.extension_桌面大战_confirmed_unlocked_characters.addArray(newUnlockedCharacters);
@@ -289,9 +291,9 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 			if (pack.changeLog) game.showExtensionChangeLog(pack.changeLog);
 		},
 		precontent: data => {
+			if (!Array.isArray(lib.config.extension_桌面大战_unlocked_characters)) game.saveConfig("extension_桌面大战_unlocked_characters", lib.config.extension_桌面大战_unlocked_characters = []);
+			if (!Array.isArray(lib.config.extension_桌面大战_confirmed_unlocked_characters)) game.saveConfig("extension_桌面大战_confirmed_unlocked_characters", lib.config.extension_桌面大战_confirmed_unlocked_characters = []);
 			if (data.enable) {
-				if (!Array.isArray(lib.config.extension_桌面大战_unlocked_characters)) game.saveConfig("extension_桌面大战_unlocked_characters", lib.config.extension_桌面大战_unlocked_characters = []);
-				if (!Array.isArray(lib.config.extension_桌面大战_confirmed_unlocked_characters)) game.saveConfig("extension_桌面大战_confirmed_unlocked_characters", lib.config.extension_桌面大战_confirmed_unlocked_characters = []);
 				lib.init.css(`${lib.assetURL}extension/桌面大战`, "extension");
 				lib.init.js(`${lib.assetURL}extension/桌面大战/character`, "animation_vs_noname");
 				lib.config.all.characters.push("animation_vs_noname");
