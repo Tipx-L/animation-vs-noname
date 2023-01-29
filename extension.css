@@ -46,10 +46,6 @@ progress.zxgxProgress::-webkit-progress-value {
 	}
 }
 
-body {
-	transform-origin: center;
-}
-
 .avn-pulse {
 	animation: avn-pulse 1s ease-in-out;
 }

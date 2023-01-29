@@ -585,8 +585,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						player.storage[skill] = 1;
 						game.broadcastAll(player => {
 							player.nodying = true;
-							document.body.addEventListener("animationend", ev => {
-								if (ev.animationName == "avn-pulse" || ev.animationName == "avn-strong-pulse") document.body.classList.remove(ev.animationName);
+							ui.window.addEventListener("animationend", ev => {
+								if (ev.animationName == "avn-pulse" || ev.animationName == "avn-strong-pulse") ui.window.classList.remove(ev.animationName);
 							});
 							setTimeout(() => {
 								const preloadLink = document.createElement("link");
@@ -611,16 +611,19 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 								preAnomaly.style.transitionDuration = "1s";
 								preAnomaly.style.boxShadow = "inset 0 0 200px 400px #d8eec2";
 								preAnomaly.style.opacity = "1";
-							}
-							setTimeout(preAnomaly => {
-								_status._aozhan = true;
-								game.playBackgroundMusic();
-								if (ui.background) ui.background.setBackgroundImage(`extension/桌面大战/image/background/avn_the_second_coming_the_chosen_one_s_return_bg.webp`);
-								if (preAnomaly) {
+								setTimeout(preAnomaly => {
+									_status._aozhan = true;
+									game.playBackgroundMusic();
+									ui.background.setBackgroundImage(`extension/桌面大战/image/background/avn_the_second_coming_the_chosen_one_s_return_bg.webp`);
 									preAnomaly.style.boxShadow = "inset 0 0 200px 200px #d8eec2";
 									preAnomaly.style.opacity = "0";
-								}
-							}, 1000, preAnomaly);
+								}, 1000, preAnomaly);
+							}
+							else setTimeout(() => {
+								_status._aozhan = true;
+								game.playBackgroundMusic();
+								ui.background.setBackgroundImage(`extension/桌面大战/image/background/avn_the_second_coming_the_chosen_one_s_return_bg.webp`);
+							}, 1000);
 							if (player.showIdentity) player.showIdentity();
 						}, player);
 						player.storage[event.name] == 2;
@@ -703,12 +706,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					return false;
 				},
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger) => {
-					if (trigger.num < -1) game.broadcastAll(() => {
-						document.body.classList.add("avn-strong-pulse");
-					});
-					else game.broadcastAll(() => {
-						document.body.classList.add("avn-pulse");
-					});
+					if (trigger.num < -1) game.broadcastAll(() => ui.window.classList.add("avn-strong-pulse"));
+					else game.broadcastAll(() => ui.window.classList.add("avn-pulse"));
 				}
 			},
 			// The Second Coming (The Chosen One's Return)
