@@ -1,2 +1,2 @@
-# animation-vs-noname
- A Noname extension based on Animator vs. Animation series.
+# Animation vs. Noname
+A *Noname* extension based on *Animator vs. Animation* series.
