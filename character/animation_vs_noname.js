@@ -387,12 +387,12 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					return type == "basic" || type == "trick";
 				},
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger) => {
-					const card = player.storage.avn_adaptive_previous = Object.assign({}, trigger.card);
-					delete card.isCard;
-					delete card.suit;
-					delete card.number;
-					if (!card.storage) card.storage = {};
-					card.storage.avn_adaptive = true;
+					const previousCard = player.storage.avn_adaptive_previous = Object.assign({}, trigger.card);
+					delete previousCard.isCard;
+					delete previousCard.suit;
+					delete previousCard.number;
+					if (!previousCard.storage) previousCard.storage = {};
+					previousCard.storage.avn_adaptive = true;
 				}
 			},
 			// The Chosen One
