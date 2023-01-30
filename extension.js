@@ -273,7 +273,6 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					else dialog.add([newUnlockedCharacters, "character"], true);
 					dialog.classList.add("forcebutton", "withbg");
 					dialog.addText("查看：选项→武将→桌面大战");
-					game.playAudio("..", "extension", "桌面大战", "audio", "effect", "avn_character_unlocked.mp3");
 					dialog.open();
 					let hidden = false;
 					if (!ui.auto.classList.contains("hidden")) {
