@@ -211,8 +211,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				},
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
-					event.card = cards[0];
-					player.showCards(event.card, `${get.translation(player)}对${(targets => {
+					player.showCards(event.card = cards[0], `${get.translation(player)}对${(targets => {
 						if (get.itemtype(targets) == "player") targets = [targets];
 						if (targets[0] == player) {
 							if (targets.length > 1) return `自己、${get.translation(targets.slice(1))}`;
@@ -424,8 +423,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"step 1"
 					if (result.cards && result.cards.length && result.targets && result.targets.length) {
 						event.cards = result.cards;
-						event.target = result.targets[0];
-						player.logSkill(event.name, event.target);
+						player.logSkill(event.name, event.target = result.targets[0]);
 						player.showHandcards(`${get.translation(player)}对${(targets => {
 							if (get.itemtype(targets) == "player") targets = [targets];
 							if (targets[0] == player) {
@@ -480,8 +478,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					};
 					"step 1"
 					if (result.targets && result.targets.length) {
-						event.target = result.targets[0];
-						player.logSkill(event.name, event.target);
+						player.logSkill(event.name, event.target = result.targets[0]);
 						player.showCards(event.target.getCards("h"), `${get.translation(player)}对${(targets => {
 							if (get.itemtype(targets) == "player") targets = [targets];
 							if (targets[0] == player) {
@@ -825,8 +822,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"step 1"
 					if (event.triggername == "damageEnd") {
 						if (result.targets && result.targets.length) {
-							event.target = result.targets[0];
-							player.logSkill(event.name, event.target);
+							player.logSkill(event.name, event.target = result.targets[0]);
 							player.chooseCardButton(`${get.skillTranslation(event.name, player)}：你可以将武将牌上${trigger.num > 1 ? "至多" : ""}${get.cnNumber(trigger.num)}张牌交给${get.translation(event.target)}`, true, [1, trigger.num], player.getCards("sx")).set("filterButton", (button, player) => lib.filter.canBeGained(button.link, _status.event.getParent().target, player)).ai = button => {
 								const target = _status.event.getParent().target;
 								return get.attitude(_status.event.player, target) * get.value(button.link, target);
