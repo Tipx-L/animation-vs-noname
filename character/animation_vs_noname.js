@@ -387,7 +387,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					const type = get.type(event.card);
 					return type == "basic" || type == "trick";
 				},
-				content: () => {
+				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger) => {
 					const card = player.storage.avn_adaptive_previous = Object.assign({}, trigger.card);
 					delete card.isCard;
 					delete card.suit;
