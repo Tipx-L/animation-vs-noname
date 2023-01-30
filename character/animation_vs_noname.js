@@ -423,7 +423,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"step 1"
 					if (result.cards && result.cards.length && result.targets && result.targets.length) {
 						event.cards = result.cards;
-						player.logSkill(event.name, event.target = result.targets[0]);
+						const target = event.target = result.targets[0];
+						player.logSkill(event.name, target);
 						player.showHandcards(`${get.translation(player)}对${(targets => {
 							if (get.itemtype(targets) == "player") targets = [targets];
 							if (targets[0] == player) {
@@ -431,8 +432,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 								return "自己";
 							}
 							return get.translation(targets);
-						})(event.target)}发动了【${get.skillTranslation(event.name, player)}】`);
-						if (event.target != player) player.addExpose(0.2);
+						})(target)}发动了【${get.skillTranslation(event.name, player)}】`);
+						if (target != player) player.addExpose(0.2);
 					}
 					else event.finish();
 					"step 2"
@@ -478,16 +479,17 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					};
 					"step 1"
 					if (result.targets && result.targets.length) {
-						player.logSkill(event.name, event.target = result.targets[0]);
-						player.showCards(event.target.getCards("h"), `${get.translation(player)}对${(targets => {
+						const target = event.target = result.targets[0];
+						player.logSkill(event.name, target);
+						player.showCards(target.getCards("h"), `${get.translation(player)}对${(targets => {
 							if (get.itemtype(targets) == "player") targets = [targets];
 							if (targets[0] == player) {
 								if (targets.length > 1) return `自己、${get.translation(targets.slice(1))}`;
 								return "自己";
 							}
 							return get.translation(targets);
-						})(event.target)}发动了【${get.skillTranslation(event.name, player)}】`);
-						if (event.target != player) player.addExpose(0.2);
+						})(target)}发动了【${get.skillTranslation(event.name, player)}】`);
+						if (target != player) player.addExpose(0.2);
 					}
 					else event.finish();
 					"step 2"
@@ -822,8 +824,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"step 1"
 					if (event.triggername == "damageEnd") {
 						if (result.targets && result.targets.length) {
-							player.logSkill(event.name, event.target = result.targets[0]);
-							player.chooseCardButton(`${get.skillTranslation(event.name, player)}：你可以将武将牌上${trigger.num > 1 ? "至多" : ""}${get.cnNumber(trigger.num)}张牌交给${get.translation(event.target)}`, true, [1, trigger.num], player.getCards("sx")).set("filterButton", (button, player) => lib.filter.canBeGained(button.link, _status.event.getParent().target, player)).ai = button => {
+							const target = event.target = result.targets[0];
+							player.logSkill(event.name, target);
+							player.chooseCardButton(`${get.skillTranslation(event.name, player)}：你可以将武将牌上${trigger.num > 1 ? "至多" : ""}${get.cnNumber(trigger.num)}张牌交给${get.translation(target)}`, true, [1, trigger.num], player.getCards("sx")).set("filterButton", (button, player) => lib.filter.canBeGained(button.link, _status.event.getParent().target, player)).ai = button => {
 								const target = _status.event.getParent().target;
 								return get.attitude(_status.event.player, target) * get.value(button.link, target);
 							};
