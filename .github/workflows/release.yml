@@ -1,0 +1,17 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@main
+    - run: zip -9 -r -u animation-vs-noname.zip *
+    - uses: softprops/action-gh-release@master
+      with:
+        files: animation-vs-noname.zip
+        name: Animation vs. Noname ${{github.ref_name}}
