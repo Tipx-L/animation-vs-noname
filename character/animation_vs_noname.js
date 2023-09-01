@@ -245,7 +245,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				"联动来源：《大乱桌斗》<br>",
 				"武将作者：mario not mary、Show-K<br>",
 				"插图作者：黯まめ<br>",
-				`——${formatURL("https://twitter.com/kuromame_983/status/601696186274160640")}<br>`,
+				`——${formatURL("https://twitter.com/kuromame_983/status/601696186274160640")}`,
 				"<hr>",
 				`AvN${++ordinal}. 马力欧/Mario/マリオ<br>`,
 				"首次登场：Animation vs. Super Mario Bros",
@@ -254,7 +254,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				"系列：<ruby>马力欧<rp>（</rp><rt>Mario</rt><rp>）</rp></ruby><br>",
 				"首次登场：<ruby>咚奇刚<rp>（</rp><rt>Donkey Kong</rt><rp>）</rp></ruby><br>",
 				"超级标志性的角色！这位游戏巨星常常从酷霸王手中拯救世界。他有惊人的跳跃能力和多种变身道具。在闲暇时刻，他还会参与体育运动，擅长的项目数也数不清。在大乱斗里，他是一个值得信赖的全能型斗士。让我们一起来说：“是我，马力欧！”<br>",
-				"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》<br>",
+				"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
 				"<hr>",
 				"太激昂了，太生生不息了。"
 			].join(""),
@@ -262,7 +262,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				"联动来源：《大乱桌斗》<br>",
 				"武将作者：mario not mary<br>",
 				"插图作者：kotori<br>",
-				`——${formatURL("https://www.pixiv.net/artworks/26818738")}<br>`,
+				`——${formatURL("https://www.pixiv.net/artworks/26818738")}`,
 				"<hr>",
 				`AvN${++ordinal}. 卡比/Kirby/カービィ<br>`,
 				"首次登场：Kirby - An Actual Short",
@@ -271,7 +271,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				"系列：<ruby>星之卡比<rp>（</rp><rt>Kirby</rt><rp>）</rp></ruby><br>",
 				"首次登场：<ruby>星之卡比<rp>（</rp><rt>Kirby\x27s Dream Land</rt><rp>）</rp></ruby><br>",
 				"圆圆滚滚的可爱卡比在波普之星过着平静的生活。它可以吸入物品或者生物，并且将它们吐出来或者复制能力。在大乱斗中，卡比吸入斗士之后可以复制他们的通常必杀技。它虽然很容易被击飞，但回场能力还不错。<br>",
-				"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》<br>",
+				"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
 				"<hr>",
 				"樱井亲儿子，粉红恶魔，灯火之星。"
 			].join(""),
@@ -285,31 +285,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				"又是不平静的一天。"
 			].join("")
 		},
-		characterTitle: {
-			avn_alan_becker: "动画师",
-			avn_victim: "起源",
-			avn_the_chosen_one: "叛逆",
-			avn_the_dark_lord: "宿敌",
-			avn_the_second_coming: "出神入化",
-			avn_the_second_coming_the_chosen_one_return: "归来",
-			avn_red: "蓄势待发",
-			avn_green: "鬼斧神工",
-			avn_blue: "返璞归真",
-			avn_yellow: "足智多谋",
-			avn_virabot: "恶意",
-			avn_agent: "控制",
-			avn_herobrine: "传说",
-			avn_purple: "追求",
-			avn_dark_blue: "遥远",
-			avn_pink: "落花",
-			avn_king_orange: "执念",
-			avn_gold: "稚子",
-			avn_alexcrafter28: "世界奇闻者",
-			ska_warden: "循声守卫",
-			sst_mario: "炎烈意决",
-			sst_kirby: "灯火之星",
-			avn_corn_dog_guy: "适逢其时"
-		},
+		characterTitle: lib.avnCharacterTitle,
 		perfectPair: {
 			avn_victim: ["avn_alan_becker"],
 			avn_the_chosen_one: ["avn_alan_becker", "avn_victim"],
@@ -343,7 +319,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				},
 				filter: (event, player, name) => name == "enterGame" || !game.phaseNumber,
 				content: (event, step, source, player) => {
-					const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters")), getUnlockableAVAIVCharacters = () => [
+					/**
+					 * @type {Set<string>}
+					 */
+					const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
+					const getUnlockableAVAIVCharacters = () => [
 						"avn_red",
 						"avn_green",
 						"avn_blue",

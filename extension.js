@@ -221,20 +221,73 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 		lib.rank.rarity.rare.addArray(characters);
 		if (!Array.isArray(lib.rank.bp)) lib.rank.bp = [];
 		lib.rank.bp.addArray(characters);
-		const newUnlockedCharacters = (config.unlocked_characters || []).filter(value => !new Set(config.confirmed_unlocked_characters || []).has(value));
+		const confirmedUnlockedCharacters = config.confirmed_unlocked_characters || [];
+		const newUnlockedCharacters = (config.unlocked_characters || []).filter(value => !confirmedUnlockedCharacters.includes(value));
 		if (newUnlockedCharacters.length) {
 			game.saveExtensionConfig("桌面大战", "confirmed_unlocked_characters", game.getExtensionConfig("桌面大战", "confirmed_unlocked_characters").addArray(newUnlockedCharacters));
 			lib.arenaReady.push(() => {
-				const hiddenCharacters = new Set([
+				const hiddenCharacters = [
 					"avn_the_second_coming_the_chosen_one_return",
 					"avn_dark_blue",
 					"avn_pink",
 					"avn_gold"
-				]), dialog = ui.create.dialog(`${`<ruby style="font-size: 2em; font-weight: bold;">`}${newUnlockedCharacters.some(value => hiddenCharacters.has(value)) ? `<span style="color: #CC0000;">武</span><span style="color: #66CC00;">将</span><span style="color: #33CCFF;">解</span><span style="color: #FFCC00;">锁</span><rp>（</rp><rt><span style="color: #FF6600;">Character Unlocked</span></rt><rp>）</rp>` : `武将解锁<rp>（</rp><rt>Character Unlocked</rt><rp>）</rp>`}</ruby>`, "hidden");
+				], dialog = ui.create.dialog((() => {
+					const ruby = document.createElement("ruby");
+					ruby.style.fontSize = "2em";
+					ruby.style.fontWeight = "bold";
+					const newUnlockedHiddenCharacters = newUnlockedCharacters.some(value => hiddenCharacters.includes(value));
+					if (newUnlockedHiddenCharacters) {
+						const redSpan = document.createElement("span");
+						ruby.append(redSpan);
+						redSpan.style.color = "#CC0000";
+						redSpan.textContent = "武";
+						const greenSpan = document.createElement("span");
+						ruby.append(greenSpan);
+						greenSpan.style.color = "#66CC00";
+						greenSpan.textContent = "将";
+						const blueSpan = document.createElement("span");
+						ruby.append(blueSpan);
+						blueSpan.style.color = "#33CCFF";
+						blueSpan.textContent = "解";
+						const yellowSpan = document.createElement("span");
+						ruby.append(yellowSpan);
+						yellowSpan.style.color = "#FFCC00";
+						yellowSpan.textContent = "锁";
+					}
+					else ruby.textContent = "武将解锁";
+					const leftParenthesisRP = document.createElement("rp");
+					ruby.append(leftParenthesisRP);
+					leftParenthesisRP.textContent = "（";
+					const rt = document.createElement("rt");
+					ruby.append(rt);
+					if (newUnlockedHiddenCharacters) {
+						const span = document.createElement("span");
+						rt.append(span);
+						span.style.color = "#FF6600";
+						span.textContent = "Character Unlocked";
+					}
+					else rt.textContent = "Character Unlocked";
+					const rightParenthesisRP = document.createElement("rp");
+					ruby.append(rightParenthesisRP);
+					rightParenthesisRP.textContent = "）";
+					return ruby.outerHTML;
+				})(), "hidden");
 				if (newUnlockedCharacters.length == 1) {
 					const newUnlockedCharacter = newUnlockedCharacters[0];
-					dialog.add(`<span style="font-size: 1.5em; font-weight: bold;">${get.translation(newUnlockedCharacter)}</span>`);
-					dialog.addText(`<span style="font-size: 1.17em; font-weight: bold;">${lib.characterTitle[newUnlockedCharacter]}</span>`);
+					dialog.add((() => {
+						const span = document.createElement("span");
+						span.style.fontSize = "1.5em";
+						span.style.fontWeight = "bold";
+						span.textContent = get.translation(newUnlockedCharacter);
+						return span.outerHTML;
+					})());
+					dialog.addText((() => {
+						const span = document.createElement("span");
+						span.style.fontSize = "1.17em";
+						span.style.fontWeight = "bold";
+						span.textContent = lib.characterTitle[newUnlockedCharacter];
+						return span.outerHTML;
+					})());
 				}
 				if (newUnlockedCharacters.length > 3) dialog.addSmall([newUnlockedCharacters, "character"], true);
 				else dialog.add([newUnlockedCharacters, "character"], true);
@@ -292,74 +345,86 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 		lib.config.all.cards.add("animation_vs_noname_internet");
 		lib.translate.animation_vs_noname_card_config = "桌面大战";
 		lib.translate.animation_vs_noname_internet_card_config = "桌战IN";
+		lib.avnCharacterTitle = {
+			avn_alan_becker: "动画师",
+			avn_victim: "起源",
+			avn_the_chosen_one: "叛逆",
+			avn_the_dark_lord: "宿敌",
+			avn_the_second_coming: "出神入化",
+			avn_the_second_coming_the_chosen_one_return: "归来",
+			avn_red: "蓄势待发",
+			avn_green: "鬼斧神工",
+			avn_blue: "返璞归真",
+			avn_yellow: "足智多谋",
+			avn_virabot: "恶意",
+			avn_agent: "控制",
+			avn_herobrine: "传说",
+			avn_purple: "追求",
+			avn_dark_blue: "遥远",
+			avn_pink: "落花",
+			avn_king_orange: "执念",
+			avn_gold: "稚子",
+			avn_alexcrafter28: "世界奇闻者",
+			ska_warden: "循声守卫",
+			sst_mario: "炎烈意决",
+			sst_kirby: "灯火之星",
+			avn_corn_dog_guy: "适逢其时"
+		};
 		lib.init.js(`${lib.assetURL}extension/桌面大战/card`, "animation_vs_noname", () => lib.init.js(`${lib.assetURL}extension/桌面大战/card`, "animation_vs_noname_internet"));
 	},
 	onremove: () => game.saveExtensionConfig("桌面大战", "imported"),
 	help: {
-		桌面大战: (document => {
-			const getStartTag = depth => {
-				if (depth == 1) return `<div style="margin: 10px;">`;
-				if (depth == 4) return "<li>";
-				return "";
-			}, getEndTag = depth => {
-				if (depth == 1) return "</div>";
-				if (depth == 4) return "</li>";
-				return "";
-			}, getNextStartTag = depth => {
-				if (depth == 1) return `<ul style="margin-top: 0;">`;
-				if (depth == 2) return "<li>";
-				if (depth == 3) return `<ul style="padding-left: 20px; padding-top: 5px;">`;
-				return "";
-			}, getNextEndTag = depth => {
-				if (depth == 1 || depth == 3) return "</ul>";
-				if (depth == 2) return "</li>";
-				return "";
-			}, documentToHTML = (document, depth = 1) => {
-				return document.reduce((previousValue, currentValue) => Array.isArray(currentValue) ? `${previousValue}${getNextStartTag(depth)}${documentToHTML(currentValue, depth + 1)}${getNextEndTag(depth)}` : `${previousValue}${getStartTag(depth)}${currentValue}${getEndTag(depth)}`, "");
+		桌面大战: (description => {
+			/**
+			 * @param {string} textContent
+			 */
+			const createDiv = textContent => {
+				const div = document.createElement("div");
+				div.style.margin = "10px";
+				div.textContent = textContent;
+				return div;
 			};
-			return documentToHTML(document);
+			/**
+			 * @param {string[]} textContent
+			 */
+			const createUL = (...textContent) => {
+				const ul = document.createElement("ul");
+				ul.style.marginTop = "0";
+				textContent.forEach((value, index) => {
+					const li = document.createElement("li");
+					ul.append(li);
+					if (index % 2) {
+						const descriptionUL = document.createElement("ul");
+						li.append(descriptionUL);
+						descriptionUL.style.paddingLeft = "20px";
+						descriptionUL.style.paddingTop = "5px";
+						const descriptionLI = document.createElement("li");
+						descriptionUL.append(descriptionLI);
+						descriptionLI.textContent = "value";
+					}
+					else li.textContent = value;
+				});
+				return ul;
+			};
+			return description.reduce((previousValue, currentValue) => `${previousValue}${Array.isArray(currentValue) ? createUL(...currentValue).outerHTML : createDiv(currentValue).outerHTML}`, "");
 		})([
 			"新事件机制",
 			[
-				[
-					"删除",
-					[
-						"将指定牌移出游戏。"
-					]
-				]
+				"删除",
+				"将指定牌移出游戏。"
 			],
 			"新装备机制",
 			[
-				[
-					"延伸",
-					[
-						"当你使用基本牌或普通锦囊牌选择目标后，若你的装备区内有带有「延伸」标签的牌，你可以增加至多最大「延伸」值名与任意目标的座次相邻的角色为目标。"
-					]
-				],
-				[
-					"一次",
-					[
-						"每回合限一次，当你使用有距离限制的牌指定目标后，若你的装备区内有带有「一次」标签的牌，且你与其距离大于1，你可以弃置其区域内的一张牌。"
-					]
-				],
-				[
-					"可抛",
-					[
-						"出牌阶段，你可以弃置装备区内的一张带有「可抛」标签的牌，对一名与你的座次不相邻的其他角色造成1点伤害。"
-					]
-				],
-				[
-					"劈开",
-					[
-						"当你使用基本牌或普通锦囊牌选择目标后，若你的装备区内有带有「劈开」标签的牌，你可以增加一名与你的座次相邻的角色为目标。"
-					]
-				],
-				[
-					"不动",
-					[
-						"你的装备区内的带有「不动」标签的牌不能被弃置或获得。"
-					]
-				]
+				"延伸",
+				"当你使用基本牌或普通锦囊牌选择目标后，若你的装备区内有带有「延伸」标签的牌，你可以增加至多最大「延伸」值名与任意目标的座次相邻的角色为目标。",
+				"一次",
+				"每回合限一次，当你使用有距离限制的牌指定目标后，若你的装备区内有带有「一次」标签的牌，且你与其距离大于1，你可以弃置其区域内的一张牌。",
+				"可抛",
+				"出牌阶段，你可以弃置装备区内的一张带有「可抛」标签的牌，对一名与你的座次不相邻的其他角色造成1点伤害。",
+				"劈开",
+				"当你使用基本牌或普通锦囊牌选择目标后，若你的装备区内有带有「劈开」标签的牌，你可以增加一名与你的座次相邻的角色为目标。",
+				"不动",
+				"你的装备区内的带有「不动」标签的牌不能被弃置或获得。"
 			]
 		])
 	},
@@ -385,67 +450,125 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 			intro: "删除《桌面大战》的所有相关配置（还原到初始状态）。初始状态重启游戏后生效。",
 			onclick: () => {
 				if (!confirm("是否重置此扩展？\n《桌面大战》的所有相关配置都会被删除！\n不会影响游戏正常运行。\n初始状态重启游戏后生效。")) return;
-				for (const config in lib.config) {
-					if (config != "extension_桌面大战_enable" && !config.indexOf("extension_桌面大战_")) game.saveConfig(config);
-				}
+				Object.keys(lib.config).forEach(value => {
+					if (value.indexOf("extension_桌面大战_") == 0 && value != "extension_桌面大战_enable") game.saveConfig(value);
+				});
 				alert("已重置此扩展！\n初始状态重启游戏后生效。");
 			}
 		}
 	},
 	package: {
-		intro: [
-			`<h2>${[
-				`<img style="float: left; height: 1.5em; margin-right: 5px;" src="${lib.assetURL}extension/桌面大战/animation_vs_noname.webp">`,
-				new Set(game.getExtensionConfig("桌面大战", "unlocked_characters") || []).has("avn_the_second_coming_the_chosen_one_return") ? `<ruby><span style="color: #CC0000;">桌</span><span style="color: #66CC00;">面</span><span style="color: #33CCFF;">大</span><span style="color: #FFCC00;">战</span><rp>（</rp><rt><span style="color: #FF6600;">Animation vs. Noname</span></rt><rp>）</rp></ruby>` : "<ruby>桌面大战<rp>（</rp><rt>Animation vs. Noname</rt><rp>）</rp></ruby>"
-			].join("")}</h2>`,
-			"<hr>",
-			(() => {
+		intro: (() => {
+			const hr = document.createElement("hr");
+			const h2 = document.createElement("h2");
+			const img = document.createElement("img");
+			h2.append(img);
+			img.src = `${lib.assetURL}extension/桌面大战/animation_vs_noname.webp`;
+			(({ style }) => {
+				style.float = "left";
+				style.height = "1.5em";
+				style.marginRight = "5px";
+			})(img);
+			const animationVsNonameRuby = document.createElement("ruby");
+			h2.append(animationVsNonameRuby);
+			const unlockedTheSecondComingTheChosenOneReturn = (game.getExtensionConfig("桌面大战", "unlocked_characters") || []).includes("avn_the_second_coming_the_chosen_one_return");
+			if (unlockedTheSecondComingTheChosenOneReturn) {
+				const redSpan = document.createElement("span");
+				animationVsNonameRuby.append(redSpan);
+				redSpan.style.color = "#CC0000";
+				redSpan.textContent = "桌";
+				const greenSpan = document.createElement("span");
+				animationVsNonameRuby.append(greenSpan);
+				greenSpan.style.color = "#66CC00";
+				greenSpan.textContent = "面";
+				const blueSpan = document.createElement("span");
+				animationVsNonameRuby.append(blueSpan);
+				blueSpan.style.color = "#33CCFF";
+				blueSpan.textContent = "大";
+				const yellowSpan = document.createElement("span");
+				animationVsNonameRuby.append(yellowSpan);
+				yellowSpan.style.color = "#FFCC00";
+				yellowSpan.textContent = "战";
+			}
+			else animationVsNonameRuby.textContent = "桌面大战";
+			const leftParenthesisRP = document.createElement("rp");
+			animationVsNonameRuby.append(leftParenthesisRP);
+			leftParenthesisRP.textContent = "（";
+			const animationVsNonameRT = document.createElement("rt");
+			animationVsNonameRuby.append(animationVsNonameRT);
+			if (unlockedTheSecondComingTheChosenOneReturn) {
+				const span = document.createElement("span");
+				animationVsNonameRT.append(span);
+				span.style.color = "#FF6600";
+				span.textContent = "Animation vs. Noname";
+			}
+			else animationVsNonameRT.textContent = "Animation vs. Noname";
+			const rightParenthesisRP = document.createElement("rp");
+			animationVsNonameRuby.append(rightParenthesisRP);
+			rightParenthesisRP.textContent = "）";
+			const citeOuterHTML = (() => {
 				const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters") || []);
-				const getUnlockableAnimatorVsAnimationIVCharacters = () => ["avn_red", "avn_green", "avn_blue", "avn_yellow"].filter(value => !unlockedCharacters.has(value));
-				const getUnlockableAnimationVsMinecraftCharacters = () => {
+				const getUnlockableAVAIVCharacters = () => [
+					"avn_red",
+					"avn_green",
+					"avn_blue",
+					"avn_yellow"
+				].filter(value => !unlockedCharacters.has(value)), getUnlockableAVMCharacters = () => {
 					if (!unlockedCharacters.has("avn_herobrine")) return ["avn_herobrine"];
 					if (!unlockedCharacters.has("avn_purple")) return ["avn_purple"];
-					if (!unlockedCharacters.has("avn_king_orange")) return ["avn_king_orange"];
+					if (unlockedCharacters.has("avn_virabot") && !unlockedCharacters.has("avn_king_orange")) return ["avn_king_orange"];
 					return [];
+				}, getUnlockableAVAVCharacters = () => unlockedCharacters.has("avn_purple") ? ["avn_virabot"].filter(value => !unlockedCharacters.has(value)) : [], getUnlockableAVAVICharacters = () => unlockedCharacters.has("avn_king_orange") ? ["avn_agent"].filter(value => !unlockedCharacters.has(value)) : [], getUnlockableCharacters = () => {
+					const unlockableAVMCharacters = getUnlockableAVMCharacters();
+					if (unlockableAVMCharacters.length) return unlockableAVMCharacters;
+					const unlockableAVAVCharacters = getUnlockableAVAVCharacters();
+					if (unlockableAVAVCharacters.length) return unlockableAVAVCharacters;
+					return getUnlockableAVAVICharacters();
 				};
-				for (const getUnlockableCharacters of [
+				for (const getCharacters of [
 					() => {
 						if (!unlockedCharacters.has("avn_victim")) return ["avn_victim"];
 						if (!unlockedCharacters.has("avn_the_chosen_one")) return ["avn_the_chosen_one"];
 						if (!unlockedCharacters.has("avn_the_dark_lord")) return ["avn_the_dark_lord"];
 						if (!unlockedCharacters.has("avn_the_second_coming")) return ["avn_the_second_coming"];
-						return getUnlockableAnimatorVsAnimationIVCharacters();
+						const unlockableAVAIVCharacters = getUnlockableAVAIVCharacters();
+						if (unlockableAVAIVCharacters.length) return unlockableAVAIVCharacters;
+						return getUnlockableAVAVCharacters();
 					},
-					() => ["avn_the_dark_lord"].filter(value => !unlockedCharacters.has(value)),
 					() => {
-						const unlockableAnimatorVsAnimationIVCharacters = getUnlockableAnimatorVsAnimationIVCharacters();
-						if (unlockableAnimatorVsAnimationIVCharacters.length) return unlockableAnimatorVsAnimationIVCharacters;
-						return getUnlockableAnimationVsMinecraftCharacters();
+						if (!unlockedCharacters.has("avn_the_dark_lord")) return ["avn_the_dark_lord"];
+						const unlockableAVAVCharacters = getUnlockableAVAVCharacters();
+						if (unlockableAVAVCharacters.length) return unlockableAVAVCharacters;
+						return getUnlockableAVAVICharacters();
 					},
-					getUnlockableAnimationVsMinecraftCharacters
+					getUnlockableAVAVCharacters,
+					() => {
+						const unlockableAVAIVCharacters = getUnlockableAVAIVCharacters();
+						if (unlockableAVAIVCharacters.length) return unlockableAVAIVCharacters;
+						return getUnlockableCharacters();
+					},
+					getUnlockableCharacters,
+					getUnlockableAVMCharacters
 				]) {
-					const unlockableCharacters = getUnlockableCharacters();
-					if (unlockableCharacters.length) return `<cite>${unlockableCharacters.reduce((previousValue, currentValue) => `${previousValue}“${new Map([
-						["avn_victim", "起源"],
-						["avn_the_chosen_one", "叛逆"],
-						["avn_the_dark_lord", "天选之子之敌"],
-						["avn_the_second_coming", "全能选手"],
-						["avn_red", "格斗驯师"],
-						["avn_green", "艺术专家"],
-						["avn_blue", "自然卫士"],
-						["avn_yellow", "技术支援"],
-						["avn_herobrine", "故障"],
-						["avn_purple", "追求"],
-						["avn_king_orange", "执念"]
-					]).get(currentValue)}”`, "")}</cite><hr>`;
+					const characters = getCharacters();
+					if (!characters.length) continue;
+					const cite = document.createElement("cite");
+					cite.textContent = characters.reduce((previousValue, currentValue) => `${previousValue}“${lib.avnCharacterTitle[currentValue]}”`, "");
+					return `${cite.outerHTML}${hr.outerHTML}`;
 				}
 				return "";
-			})(),
-			"<cite>当传说中的那5个火柴人，不经意间闯入了你的无名杀……</cite>",
-			"<hr>",
-			"一个基于《<ruby>火柴人VS动画师<rp>（</rp><rt>Animator vs. Animation</rt><rp>）</rp></ruby>》系列的同人《无名杀》扩展，不隶属于Alan Becker等相关创作者。",
-			"<hr>"
-		].join(""),
+			})();
+			const cite = document.createElement("cite");
+			cite.textContent == "当传说中的那5个火柴人，不经意间闯入了你的无名杀……";
+			const animatorVsAnimationRuby = document.createElement("ruby");
+			animatorVsAnimationRuby.textContent = "Animator vs. Animation";
+			animatorVsAnimationRuby.append(leftParenthesisRP.cloneNode());
+			const animatorVsAnimationRT = document.createElement("rt");
+			animatorVsAnimationRT.append(animatorVsAnimationRT);
+			animatorVsAnimationRT.textContent = "火柴人VS动画师";
+			animatorVsAnimationRuby.append(rightParenthesisRP.cloneNode());
+			return `${h2.outerHTML}${hr.outerHTML}${citeOuterHTML}${cite.outerHTML}${hr.outerHTML}一个基于《${animatorVsAnimationRuby.outerHTML}》系列的同人《无名杀》扩展，不隶属于Alan Becker等相关创作者。${hr.outerHTML}`;
+		})(),
 		author: "Show-K",
 		diskURL: "https://github.com/Show-K/animation-vs-noname",
 		forumURL: "https://github.com/Show-K/animation-vs-noname/issues",
