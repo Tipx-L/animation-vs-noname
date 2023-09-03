@@ -1794,6 +1794,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			["diamond", 2, "avn_arcade", null, ["gifts"]]
 		]
 	};
+	if (typeof lib.decade_extCardImage != "object") lib.decade_extCardImage = {};
 	for (const card in ANIMATION_VS_NONAME_INTERNET.card) {
 		ANIMATION_VS_NONAME_INTERNET.card[card].audio = "ext:桌面大战/audio/card";
 		ANIMATION_VS_NONAME_INTERNET.card[card].fullborder = "simple";

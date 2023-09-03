@@ -221,8 +221,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 		lib.rank.rarity.rare.addArray(characters);
 		if (!Array.isArray(lib.rank.bp)) lib.rank.bp = [];
 		lib.rank.bp.addArray(characters);
-		const confirmedUnlockedCharacters = config.confirmed_unlocked_characters || [];
-		const newUnlockedCharacters = (config.unlocked_characters || []).filter(value => !confirmedUnlockedCharacters.includes(value));
+		const confirmedUnlockedCharacters = config.confirmed_unlocked_characters || [], newUnlockedCharacters = (config.unlocked_characters || []).filter(value => !confirmedUnlockedCharacters.includes(value));
 		if (newUnlockedCharacters.length) {
 			game.saveExtensionConfig("桌面大战", "confirmed_unlocked_characters", game.getExtensionConfig("桌面大战", "confirmed_unlocked_characters").addArray(newUnlockedCharacters));
 			lib.arenaReady.push(() => {
@@ -328,23 +327,14 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 			game.saveExtensionConfig("桌面大战", "confirmed_unlocked_characters", game.getExtensionConfig("桌面大战", "confirmed_unlocked_characters").removeArray(["avn_the_second_coming_the_chosen_one_return"]));
 		};
 		lib.init.css(`${lib.assetURL}extension/桌面大战`, "extension");
-		const notImported = !data.imported;
-		if (notImported) game.saveExtensionConfig("桌面大战", "imported", true);
-		if (typeof lib.decade_extCardImage != "object") lib.decade_extCardImage = {};
-		if (notImported) {
+		if (!data.imported) {
+			game.saveExtensionConfig("桌面大战", "imported", true);
 			lib.config.characters.add("animation_vs_noname");
 			game.saveConfigValue("characters");
 			lib.config.cards.add("animation_vs_noname");
 			lib.config.cards.add("animation_vs_noname_internet");
 			game.saveConfigValue("cards");
 		}
-		lib.config.all.characters.add("animation_vs_noname");
-		lib.translate.animation_vs_noname_character_config = "桌面大战";
-		lib.init.js(`${lib.assetURL}extension/桌面大战/character`, "animation_vs_noname");
-		lib.config.all.cards.add("animation_vs_noname");
-		lib.config.all.cards.add("animation_vs_noname_internet");
-		lib.translate.animation_vs_noname_card_config = "桌面大战";
-		lib.translate.animation_vs_noname_internet_card_config = "桌战IN";
 		lib.avnCharacterTitle = {
 			avn_alan_becker: "动画师",
 			avn_victim: "起源",
@@ -370,7 +360,17 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 			sst_kirby: "灯火之星",
 			avn_corn_dog_guy: "适逢其时"
 		};
-		lib.init.js(`${lib.assetURL}extension/桌面大战/card`, "animation_vs_noname", () => lib.init.js(`${lib.assetURL}extension/桌面大战/card`, "animation_vs_noname_internet"));
+		lib.config.all.characters.add("animation_vs_noname");
+		lib.translate.animation_vs_noname_character_config = "桌面大战";
+		lib.init.jsForExtension(`${lib.assetURL}extension/桌面大战/character`, "animation_vs_noname");
+		lib.config.all.cards.add("animation_vs_noname");
+		lib.config.all.cards.add("animation_vs_noname_internet");
+		lib.translate.animation_vs_noname_card_config = "桌面大战";
+		lib.translate.animation_vs_noname_internet_card_config = "桌战IN";
+		lib.init.jsForExtension(`${lib.assetURL}extension/桌面大战/card`, [
+			"animation_vs_noname",
+			"animation_vs_noname_internet"
+		]);
 	},
 	onremove: () => game.saveExtensionConfig("桌面大战", "imported"),
 	help: {
@@ -390,9 +390,11 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 			const createUL = (...textContent) => {
 				const ul = document.createElement("ul");
 				ul.style.marginTop = "0";
+				/**
+				 * @type {HTMLLIElement}
+				 */
+				let li;
 				textContent.forEach((value, index) => {
-					const li = document.createElement("li");
-					ul.append(li);
 					if (index % 2) {
 						const descriptionUL = document.createElement("ul");
 						li.append(descriptionUL);
@@ -400,9 +402,13 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 						descriptionUL.style.paddingTop = "5px";
 						const descriptionLI = document.createElement("li");
 						descriptionUL.append(descriptionLI);
-						descriptionLI.textContent = "value";
+						descriptionLI.textContent = value;
 					}
-					else li.textContent = value;
+					else {
+						li = document.createElement("li");
+						ul.append(li);
+						li.textContent = value;
+					}
 				});
 				return ul;
 			};
@@ -459,9 +465,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 	},
 	package: {
 		intro: (() => {
-			const hr = document.createElement("hr");
-			const h2 = document.createElement("h2");
-			const img = document.createElement("img");
+			const hr = document.createElement("hr"), h2 = document.createElement("h2"), img = document.createElement("img");
 			h2.append(img);
 			img.src = `${lib.assetURL}extension/桌面大战/animation_vs_noname.webp`;
 			(({ style }) => {
@@ -507,8 +511,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 			animationVsNonameRuby.append(rightParenthesisRP);
 			rightParenthesisRP.textContent = "）";
 			const citeOuterHTML = (() => {
-				const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters") || []);
-				const getUnlockableAVAIVCharacters = () => [
+				const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters") || []), getUnlockableAVAIVCharacters = () => [
 					"avn_red",
 					"avn_green",
 					"avn_blue",
@@ -559,12 +562,12 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 				return "";
 			})();
 			const cite = document.createElement("cite");
-			cite.textContent == "当传说中的那5个火柴人，不经意间闯入了你的无名杀……";
+			cite.textContent = "当传说中的那5个火柴人，不经意间闯入了你的无名杀……";
 			const animatorVsAnimationRuby = document.createElement("ruby");
 			animatorVsAnimationRuby.textContent = "Animator vs. Animation";
 			animatorVsAnimationRuby.append(leftParenthesisRP.cloneNode());
 			const animatorVsAnimationRT = document.createElement("rt");
-			animatorVsAnimationRT.append(animatorVsAnimationRT);
+			animatorVsAnimationRuby.append(animatorVsAnimationRT);
 			animatorVsAnimationRT.textContent = "火柴人VS动画师";
 			animatorVsAnimationRuby.append(rightParenthesisRP.cloneNode());
 			return `${h2.outerHTML}${hr.outerHTML}${citeOuterHTML}${cite.outerHTML}${hr.outerHTML}一个基于《${animatorVsAnimationRuby.outerHTML}》系列的同人《无名杀》扩展，不隶属于Alan Becker等相关创作者。${hr.outerHTML}`;

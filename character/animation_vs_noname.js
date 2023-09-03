@@ -7,15 +7,15 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 	const formatURL = url => /* Split the URL into an array to distinguish double slashes from single slashes. */ /* Format the strings on either side of double slashes separately. */ url.split("//").map(str => str.replace(/(?<after>:)/giu, "$1<wbr>").replace(/(?<before>[/~.,\-_?#%])/giu, "<wbr>$1").replace(/(?<beforeAndAfter>[=&])/giu, "<wbr>$1<wbr>")).join("//<wbr>");
 	let ordinal = -1;
 	/**
-	 * @type {importCharacterConfig}
+	 * @type {AnimationVsNonameImportCharacterConfig}
 	 */
 	const ANIMATION_VS_NONAME = {
 		name: "animation_vs_noname",
 		connect: true,
 		character: {
 			avn_alan_becker: ["male", "western", 4, ["avn_animate"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_victim: ["male", "western", 4, ["avn_adaptive"], ["border:western", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_the_chosen_one: ["male", "western", 4, ["avn_overflow"], ["border:western", "doublegroup:wei:shu:wu:qun:jin"]],
+			avn_victim: ["male", "western", 4, ["avn_adaptive"], ["border:wu", "doublegroup:wei:shu:wu:qun:jin"]],
+			avn_the_chosen_one: ["male", "western", 4, ["avn_overflow"], ["border:wei", "doublegroup:wei:shu:wu:qun:jin"]],
 			avn_the_dark_lord: ["male", "western", 4, ["avn_terminal"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
 			avn_the_second_coming: ["male", "western", 4, ["avn_frame_by_frame_drawing"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
 			avn_the_second_coming_the_chosen_one_return: ["male", "western", 4, ["avn_awakening"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
@@ -24,7 +24,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_blue: ["male", "western", 4, ["avn_midas_touch"], ["border:wei", "doublegroup:wei:shu:wu:qun:jin"]],
 			avn_yellow: ["male", "western", 4, ["avn_intelligence"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
 			avn_virabot: ["none", "western", 4, ["avn_infection"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_agent: ["male", "western", 4, ["avn_surpression"], ["border:western", "doublegroup:wei:shu:wu:qun:jin"]],
+			avn_agent: ["male", "western", 4, ["avn_surpression"], ["border:wu", "doublegroup:wei:shu:wu:qun:jin"]],
 			avn_herobrine: ["male", "western", 4, ["avn_out_of_context"], ["border:wei", "doublegroup:wei:shu:wu:qun:jin"]],
 			avn_purple: ["male", "western", 4, ["avn_ascending"], ["border:jin", "doublegroup:wei:shu:wu:qun:jin"]],
 			avn_dark_blue: ["male", "western", 4, ["avn_ascending"], ["border:wei", "doublegroup:wei:shu:wu:qun:jin"]],
@@ -43,7 +43,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				avn_animator_vs_animation: ["avn_alan_becker", "avn_victim", "avn_the_chosen_one", "avn_the_dark_lord", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow", "avn_virabot", "avn_agent"],
 				avn_animation_vs_minecraft: ["avn_herobrine", "avn_purple", "avn_dark_blue", "avn_pink", "avn_king_orange", "avn_gold", "avn_alexcrafter28", "ska_warden"],
 				avn_animation_vs_super_mario_bros: ["sst_mario"],
-				avn_actual_shorts: ["sst_kirby"]
+				avn_actual_shorts: ["sst_kirby", "avn_corn_dog_guy"]
 			}
 		},
 		characterIntro: {
@@ -319,9 +319,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				},
 				filter: (event, player, name) => name == "enterGame" || !game.phaseNumber,
 				content: (event, step, source, player) => {
-					/**
-					 * @type {Set<string>}
-					 */
 					const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
 					const getUnlockableAVAIVCharacters = () => [
 						"avn_red",
@@ -434,18 +431,13 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					}
 				},
 				initList: () => {
-					let characterList;
-					if (_status.connectMode) characterList = get.charactersOL();
-					else characterList = Object.keys(lib.character).filter(value => !lib.filter.characterDisabled(value) && !lib.filter.characterDisabled2(value));
+					const characterList = _status.connectMode ? get.charactersOL() : Object.keys(lib.character).filter(value => !lib.filter.characterDisabled(value) && !lib.filter.characterDisabled2(value));
 					[...game.players, ...game.dead].forEach(value => {
 						characterList.remove(value.name1);
 						characterList.remove(value.name2);
 					});
 					_status.characterlist = characterList;
 				},
-				/**
-				 * @type {ContentFuncByAll}
-				 */
 				changeMain: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					if (!_status.characterlist) lib.skill[skill].initList();
@@ -496,9 +488,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					_status.characterlist.add(name1);
 					game.triggerEnter(player);
 				},
-				/**
-				 * @type {ContentFuncByAll}
-				 */
 				changeVice: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					if (!_status.characterlist) lib.skill[skill].initList();
@@ -549,9 +538,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					_status.characterlist.add(name2);
 					game.triggerEnter(player);
 				},
-				/**
-				 * @type {ContentFuncByAll}
-				 */
 				initVice: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					if (!_status.characterlist) lib.skill[skill].initList();
@@ -622,9 +608,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					player.showCards(event.card = cards[0], `${get.translation(player)}对${(targets => {
 						if (get.itemtype(targets) == 'player') targets = [targets];
 						if (targets[0] != player) return get.translation(targets);
-						const selfTargets = targets.slice();
-						selfTargets[0] = "自己";
-						return get.translation(selfTargets);
+						const targetsIncludingSelf = targets.slice();
+						targetsIncludingSelf[0] = "自己";
+						return get.translation(targetsIncludingSelf);
 					})(target)}发动了【${get.skillTranslation(event.name, player)}】`);
 					"step 1"
 					player.choosePlayerCard(target, "h", [1, Infinity], `${get.skillTranslation(event.name, player)}：令${get.translation(target)}的任意张手牌均视为${get.translation({
@@ -706,41 +692,78 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			},
 			// Victim
 			avn_adaptive: {
-				hiddenCard: (player, name) => !player.getStat("skill").avn_adaptive && player.countCards("hes") && game.getAllGlobalHistory("useCard", evt => ["basic", "trick"].includes(get.type(evt.card, null, false))).pop()?.card.name == name,
+				hiddenCard: (player, name) => player.hasCard(card => ["basic", "trick"].includes(get.type(card)) && get.name(card) == name, "h"),
 				locked: false,
 				enable: "chooseToUse",
-				usable: 1,
-				onChooseToUse: event => {
-					if (!game.online && !Array.isArray(event.lastUsedBasicOrCommonTrickCard)) event.set("lastUsedBasicOrCommonTrickCard", game.getAllGlobalHistory("useCard", evt => ["basic", "trick"].includes(get.type(evt.card, null, false))).pop()?.card);
-				},
-				filter: (event, player) => {
-					if (!player.countCards("hes")) return false;
-					const viewAs = lib.skill.avn_adaptive.viewAs();
-					return viewAs && event.filterCard(viewAs, player, event);
-				},
-				position: "hes",
-				filterCard: true,
-				viewAs: () => {
-					const lastUsedBasicOrCommonTrickCard = _status.event.lastUsedBasicOrCommonTrickCard;
-					return typeof lastUsedBasicOrCommonTrickCard == "object" ? {
-						name: lastUsedBasicOrCommonTrickCard.name,
-						nature: lastUsedBasicOrCommonTrickCard.nature,
-						storage: {
-							avn_adaptive: true
+				filter: (event, player) => !player.hasHistory("useSkill", evt => evt.skill == "avn_adaptive") && player.hasCard(card => ["basic", "trick"].includes(get.type(card)) && event.filterCard({
+					name: get.name(card),
+					nature: get.nature(card)
+				}, player, event), "h"),
+				chooseButton: {
+					dialog: (event, player) => ui.create.dialog(get.skillTranslation("avn_adaptive", player), player.getCards("h")),
+					filter: (button, player) => {
+						const link = button.link;
+						if (!["basic", "trick"].includes(get.type(link))) return false;
+						const parent = _status.event.getParent();
+						return parent.filterCard({
+							name: get.name(link),
+							nature: get.nature(link)
+						}, player, parent);
+					},
+					check: button => {
+						if (_status.event.getParent().type != "phase") return 1;
+						const link = button.link, name = get.name(link);
+						if (["wugu", "zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].includes(name)) return 0;
+						return _status.event.player.getUseValue({
+							name: name,
+							nature: get.nature(link)
+						});
+					},
+					backup: links => {
+						const link = links[0];
+						return {
+							popname: true,
+							filterCard: true,
+							position: "hes",
+							viewAs: {
+								name: get.name(link),
+								nature: get.nature(link),
+								storage: {
+									avn_adaptive: true
+								}
+							},
+							check: card => 8 - get.value(card),
+							shownCard: link,
+							onuse: (result, player) => {
+								const skill = result.skill.slice(0, -7), targets = result.targets;
+								player.logSkill(skill, targets);
+								player.showCards(lib.skill.avn_adaptive_backup.shownCard, `${get.translation(player)}对${(targets => {
+									if (get.itemtype(targets) == 'player') targets = [targets];
+									if (targets[0] != player) return get.translation(targets);
+									const targetsIncludingSelf = targets.slice();
+									targetsIncludingSelf[0] = "自己";
+									return get.translation(targetsIncludingSelf);
+								})(targets)}发动了【${get.skillTranslation(skill, player)}】`);
+								const event = _status.event;
+								event.addCount = false;
+								event.oncard = () => {
+									const event = _status.event;
+									if (!Array.isArray(event.temporaryYingbian)) event.temporaryYingbian = [];
+									const temporaryYingbian = event.temporaryYingbian;
+									temporaryYingbian.addArray(get.yingbianConditions());
+									temporaryYingbian.add('draw');
+									temporaryYingbian.add('gain');
+								};
+							}
 						}
-					} : null;
-				},
-				popname: true,
-				prompt: () => `每回合限一次，你可以将一张牌当做${get.translation(lib.skill.avn_adaptive.viewAs())}使用（无距离和次数限制），若如此做，且你的手牌数为全场最少，你摸一张牌`,
-				check: card => 7 - get.value(card),
-				onuse: () => _status.event.oncard = (card, player) => {
-					const useCardFinish = game.createEvent("useCardFinish");
-					_status.event.next.remove(useCardFinish);
-					_status.event.after.push(useCardFinish);
-					useCardFinish.player = player;
-					useCardFinish.setContent(() => {
-						if (player.isMinHandcard()) player.draw();
-					});
+					},
+					prompt: links => {
+						const link = links[0];
+						return `将一张牌当做${get.translation({
+							name: get.name(link),
+							nature: get.nature(link)
+						})}使用或打出`;
+					}
 				},
 				mod: {
 					targetInRange: card => {
@@ -751,42 +774,12 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					}
 				},
 				ai: {
-					fireAttack: true,
-					respondSha: true,
-					respondShan: true,
-					respondTao: true,
-					save: true,
-					skillTagFilter: (player, tag, arg) => {
-						if (arg != "use") return false;
-						if (player.getStat("skill").avn_adaptive) return false;
-						if (!player.countCards("hes")) return false;
-						const lastUsedBasicOrCommonTrickCard = game.getAllGlobalHistory("useCard", evt => ["basic", "trick"].includes(get.type(evt.card, null, false))).pop()?.card;
-						if (typeof lastUsedBasicOrCommonTrickCard != "object") return false;
-						switch (tag) {
-							case "fireAttack":
-								if (lastUsedBasicOrCommonTrickCard.name != "huogong") return false;
-								break;
-							case "respondSha":
-								if (lastUsedBasicOrCommonTrickCard.name != "sha") return false;
-								break;
-							case "respondShan":
-								if (lastUsedBasicOrCommonTrickCard.name != "shan") return false;
-								break;
-							case "respondTao":
-								if (lastUsedBasicOrCommonTrickCard.name != "tao") return false;
-								break;
-							case "save": if (!get.tag(lastUsedBasicOrCommonTrickCard, "save")) return false;
+					order: 10,
+					result: {
+						player: player => {
+							const dying = _status.event.dying;
+							return dying ? player.attitudeTo(dying) : 1;
 						}
-					},
-					order: () => {
-						const lastUsedBasicOrCommonTrickCard = game.getAllGlobalHistory("useCard", evt => ["basic", "trick"].includes(get.type(evt.card, null, false))).pop()?.card;
-						return typeof lastUsedBasicOrCommonTrickCard == "object" ? get.order({
-							name: lastUsedBasicOrCommonTrickCard.name,
-							nature: lastUsedBasicOrCommonTrickCard.nature,
-							storage: {
-								avn_adaptive: true
-							}
-						}) - 0.1 : 10;
 					}
 				}
 			},
@@ -824,9 +817,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						player.showHandcards(`${get.translation(player)}对${(targets => {
 							if (get.itemtype(targets) == 'player') targets = [targets];
 							if (targets[0] != player) return get.translation(targets);
-							const selfTargets = targets.slice();
-							selfTargets[0] = "自己";
-							return get.translation(selfTargets);
+							const targetsIncludingSelf = targets.slice();
+							targetsIncludingSelf[0] = "自己";
+							return get.translation(targetsIncludingSelf);
 						})(target)}发动了【${get.skillTranslation(event.name, player)}】`);
 					}
 					else event.finish();
@@ -844,12 +837,39 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"step 4"
 					if (!result.control) return;
 					player.line(target, result.control);
-					const delayx = game.createEvent("delayx");
-					event.next.remove(delayx);
-					target.damage(result.control, "nocard").after.push(delayx);
-					delayx.setContent(() => {
-						game.delayx();
-					});
+					target.damage(result.control, "nocard");
+					game.delayex();
+					"step 5"
+					const giftableCards = event.giftableCards = cards.filterInD("d").filter(value => game.hasPlayer(current => current != player && current.countCards("h") <= player.countCards("h") && player.canGift(value, current)));
+					if (giftableCards.length) player.chooseTarget(`${get.skillTranslation(event.name, player)}：你可以将${get.translation(giftableCards)}${giftableCards.length > 1 ? "中的一张" : ""}赠予一名手牌数不大于你的其他角色`,
+						(card, player, target) => target != player && target.countCards("h") <= player.countCards("h")
+							&& _status.event.getParent().cards.filterInD("d").some(value => player.canGift(value, target)),
+						target => {
+							const player = _status.event.player;
+							return Math.max(..._status.event.getParent().cards.filterInD("d").filter(value =>
+								player.canGift(value, target)).map(value => player.getGiftEffect(value, target)));
+						});
+					else event.finish();
+					"step 6"
+					if (result.targets?.length) {
+						const giftingTarget = event.giftingTarget = result.targets[0];
+						player.line(giftingTarget, "green");
+						const giftableCardsToGiftingTarget = event.giftableCards.filter(value => player.canGift(value, giftingTarget));
+						if (giftableCardsToGiftingTarget.length < 2) event._result = {
+							links: giftableCardsToGiftingTarget
+						};
+						else {
+							const chooseCardButton = player.chooseCardButton(`${get.skillTranslation(event.name, player)}：将${get.translation(giftableCardsToGiftingTarget)}${giftableCardsToGiftingTarget.length > 1 ? "中的一张" : ""}赠予${get.translation(giftingTarget)}`,
+								true, giftableCardsToGiftingTarget);
+							chooseCardButton.target = giftingTarget;
+							chooseCardButton.ai = button => _status.event.player.getGiftEffect(button.link, _status.event.target);
+						}
+					}
+					else event.finish();
+					"step 7"
+					if (!result.links?.length) return;
+					player.gift(result.links, event.giftingTarget);
+					player.addExpose(0.2);
 				},
 				ai: {
 					damage: true
@@ -878,9 +898,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						player.showCards(target.getCards("h"), `${get.translation(player)}对${(targets => {
 							if (get.itemtype(targets) == 'player') targets = [targets];
 							if (targets[0] != player) return get.translation(targets);
-							const selfTargets = targets.slice();
-							selfTargets[0] = "自己";
-							return get.translation(selfTargets);
+							const targetsIncludingSelf = targets.slice();
+							targetsIncludingSelf[0] = "自己";
+							return get.translation(targetsIncludingSelf);
 						})(target)}发动了【${get.skillTranslation(event.name, player)}】`);
 						if (target != player) player.addExpose(0.2);
 					}
@@ -915,7 +935,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// The Second Coming
 			avn_frame_by_frame_drawing: {
 				hiddenCard: (player, name) => {
-					if (!player.hasCard(card => !player.hasHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup" && get.suit(card) == evt.event.card.suit) && !(get.number(card) < player.getHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup").pop()?.event.card.number), "hes")) return false;
+					if (!player.hasCard(card => !(get.number(card) < player.getHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup").pop()?.event.card.number), "hes")) return false;
 					if (!["basic", "trick"].includes(get.type(name))) return false;
 					return Array.from(ui.discardPile.childNodes).slice(-5).some(value => {
 						if (!player.hasCard(card => get.type2(value) != get.type2(card), "hes")) return false;
@@ -946,7 +966,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					},
 					check: button => {
 						if (_status.event.getParent().type != "phase") return 1;
-						if (["wugu", "zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].contains(get.name(button.link))) return 0;
+						if (["wugu", "zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].includes(get.name(button.link))) return 0;
 						return _status.event.player.getUseValue({
 							name: get.name(button.link),
 							nature: get.nature(button.link)
@@ -967,11 +987,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						nature: get.nature(links[0])
 					})}使用或打出`
 				},
-				/**
-				 * @param {Player} player Player
-				 * @param {string} name Card name
-				 * @returns {boolean}
-				 */
 				hasNotConvertedThisRound: (player, name) => {
 					for (const actionHistory of player.actionHistory.slice().reverse()) {
 						if (actionHistory.useSkill.some(value => value.skill == "avn_frame_by_frame_drawing_backup" && name == value.event.card.name)) return false;
@@ -1155,9 +1170,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					player.showCards(target.getCards("h"), `${get.translation(player)}对${(targets => {
 						if (get.itemtype(targets) == 'player') targets = [targets];
 						if (targets[0] != player) return get.translation(targets);
-						const selfTargets = targets.slice();
-						selfTargets[0] = "自己";
-						return get.translation(selfTargets);
+						const targetsIncludingSelf = targets.slice();
+						targetsIncludingSelf[0] = "自己";
+						return get.translation(targetsIncludingSelf);
 					})(target)}发动了【${get.skillTranslation(event.name, player)}】`);
 					"step 1"
 					const controls = ["选项二", "cancel2"], numberOfBlackCards = target.countCards("h", {
@@ -1425,9 +1440,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					if (result.links?.length) player.showCards(event.cards = result.links, `${get.translation(player)}对${(targets => {
 						if (get.itemtype(targets) == 'player') targets = [targets];
 						if (targets[0] != player) return get.translation(targets);
-						const selfTargets = targets.slice();
-						selfTargets[0] = "自己";
-						return get.translation(selfTargets);
+						const targetsIncludingSelf = targets.slice();
+						targetsIncludingSelf[0] = "自己";
+						return get.translation(targetsIncludingSelf);
 					})(target)}发动了【${get.skillTranslation(event.name, player)}】`);
 					else event.finish();
 					"step 3"
@@ -1985,7 +2000,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Victim
 			avn_victim: "Victim",
 			avn_adaptive: "应识",
-			avn_adaptive_info: "每回合限一次，你可以将一张牌当做上一张被使用的基本牌或普通锦囊牌使用（无距离和次数限制），若如此做，且你的手牌数为全场最少，你摸一张牌。",
+			avn_adaptive_info: "每回合限一次，你可以展示一张基本牌或普通锦囊牌，将一张牌当做展示的牌使用（无距离和次数限制且不计入使用次数），且以此法使用的牌拥有全部应变条件和「摸一张牌」、「获得响应的牌」的应变效果。",
 			// The Chosen One
 			avn_the_chosen_one: "The Chosen One",
 			avn_the_chosen_one_ab: "Chosen",
@@ -2003,7 +2018,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_frame_by_frame_drawing_backup() {
 				return this.avn_frame_by_frame_drawing;
 			},
-			avn_frame_by_frame_drawing_info: "每回合每种花色限一次，你可以将一张牌当做最后进入弃牌堆的五张牌中的一张与其类别不同，且你本轮未以此法转化过的基本牌或普通锦囊牌使用或打出，且被转化的牌的点数不小于你本回合上一张以此法转化的牌。",
+			avn_frame_by_frame_drawing_info: "你可以将一张牌当做最后进入弃牌堆的五张牌中的一张与其类别和花色均不同，且你本轮未以此法转化过的基本牌或普通锦囊牌使用或打出，且以此法转化的牌的点数不小于你本回合上一张以此法转化的牌。",
 			// The Second Coming (The Chosen One's Return)
 			get avn_the_second_coming_the_chosen_one_return() {
 				return this.avn_the_second_coming;
@@ -2107,6 +2122,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			sst_qushi_info: "你对一名角色造成伤害后，你可以摸一张牌，或获得该角色的一个没有技能标签的技能直到你受到伤害后。",
 			// Corn Dog Guy
 			avn_corn_dog_guy: "Corn Dog Guy",
+			avn_corn_dog_guy_ab: "CDG",
 			avn_rebranding: "品创",
 			avn_rebranding_info: "每名角色的出牌阶段限一次，其可以赠予你一张牌（若其为你，则改为弃置一张牌），若如此做，其摸一张牌。若你受到过伤害，则本技能中的前两个“一张牌”视为“两张牌”，”摸一张牌“视为”获得1点护甲“。"
 		},

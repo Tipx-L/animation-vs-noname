@@ -1196,7 +1196,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_rotate: "旋转",
 			avn_rotate_info: "此牌可被重铸。<br>出牌阶段，对一名角色使用。其横置或重置。",
 			avn_move: "移动",
-			avn_move_info: "当存活角色数小于3时，此牌可被重铸。<br>出牌阶段，对一名角色使用。其移至你指定的另一名角色的上家。",
+			avn_move_info: "当存活角色数小于3时，此牌可被重铸。<br>出牌阶段，对一名角色使用。其将座位移动至你指定的另一名角色的上家之后。",
 			avn_click: "点击",
 			avn_click_info: "出牌阶段，对一名角色使用。你对其造成1点伤害。",
 			avn_drag: "拖拽",
@@ -1365,6 +1365,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			["heart", 2, "avn_sidebar", null, ["avn_throwable"]]
 		]
 	};
+	if (typeof lib.decade_extCardImage != "object") lib.decade_extCardImage = {};
 	for (const card in ANIMATION_VS_NONAME.card) {
 		ANIMATION_VS_NONAME.card[card].audio = "ext:桌面大战/audio/card";
 		ANIMATION_VS_NONAME.card[card].fullskin = true;
