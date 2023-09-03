@@ -774,6 +774,29 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					}
 				},
 				ai: {
+					fireAttack: true,
+					respondSha: true,
+					respondShan: true,
+					respondTao: true,
+					save: true,
+					skillTagFilter: (player, tag) => {
+						if (player.hasHistory("useSkill", evt => evt.skill == "avn_adaptive")) return false;
+						switch (tag) {
+							case "fireAttack":
+								if (!player.hasCard(card => get.name(card) == "huogong")) return false;
+								break;
+							case "respondSha":
+								if (!player.hasCard(card => get.name(card) == "sha")) return false;
+								break;
+							case "respondShan":
+								if (!player.hasCard(card => get.name(card) == "shan")) return false;
+								break;
+							case "respondTao":
+								if (!player.hasCard(card => get.name(card) == "tao")) return false;
+								break;
+							case "save": if (!player.hasCard(card => get.tag(card, "save"))) return false;
+						}
+					},
 					order: 10,
 					result: {
 						player: player => {
@@ -841,13 +864,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					game.delayex();
 					"step 5"
 					const giftableCards = event.giftableCards = cards.filterInD("d").filter(value => game.hasPlayer(current => current != player && current.countCards("h") <= player.countCards("h") && player.canGift(value, current)));
-					if (giftableCards.length) player.chooseTarget(`${get.skillTranslation(event.name, player)}：你可以将${get.translation(giftableCards)}${giftableCards.length > 1 ? "中的一张" : ""}赠予一名手牌数不大于你的其他角色`,
-						(card, player, target) => target != player && target.countCards("h") <= player.countCards("h")
-							&& _status.event.getParent().cards.filterInD("d").some(value => player.canGift(value, target)),
+					if (giftableCards.length) player.chooseTarget(`${get.skillTranslation(event.name, player)}：你可以将${get.translation(giftableCards)}${giftableCards.length > 1 ? "中的一张" : ""}赠予一名手牌数不大于你的其他角色`, (card, player, target) => target != player && target.countCards("h") <= player.countCards("h") && _status.event.getParent().cards.filterInD("d").some(value => player.canGift(value, target)),
 						target => {
 							const player = _status.event.player;
-							return Math.max(..._status.event.getParent().cards.filterInD("d").filter(value =>
-								player.canGift(value, target)).map(value => player.getGiftEffect(value, target)));
+							return Math.max(..._status.event.getParent().cards.filterInD("d").filter(value => player.canGift(value, target)).map(value => player.getGiftEffect(value, target)));
 						});
 					else event.finish();
 					"step 6"
@@ -859,8 +879,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 							links: giftableCardsToGiftingTarget
 						};
 						else {
-							const chooseCardButton = player.chooseCardButton(`${get.skillTranslation(event.name, player)}：将${get.translation(giftableCardsToGiftingTarget)}${giftableCardsToGiftingTarget.length > 1 ? "中的一张" : ""}赠予${get.translation(giftingTarget)}`,
-								true, giftableCardsToGiftingTarget);
+							const chooseCardButton = player.chooseCardButton(`${get.skillTranslation(event.name, player)}：将${get.translation(giftableCardsToGiftingTarget)}${giftableCardsToGiftingTarget.length > 1 ? "中的一张" : ""}赠予${get.translation(giftingTarget)}`, true, giftableCardsToGiftingTarget);
 							chooseCardButton.target = giftingTarget;
 							chooseCardButton.ai = button => _status.event.player.getGiftEffect(button.link, _status.event.target);
 						}
@@ -934,35 +953,32 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			},
 			// The Second Coming
 			avn_frame_by_frame_drawing: {
-				hiddenCard: (player, name) => {
-					if (!player.hasCard(card => !(get.number(card) < player.getHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup").pop()?.event.card.number), "hes")) return false;
-					if (!["basic", "trick"].includes(get.type(name))) return false;
-					return Array.from(ui.discardPile.childNodes).slice(-5).some(value => {
-						if (!player.hasCard(card => get.type2(value) != get.type2(card), "hes")) return false;
-						const discardPileCardName = get.name(value);
-						return lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, discardPileCardName) && discardPileCardName == name;
-					});
-				},
+				hiddenCard: (player, name) => Array.from(ui.discardPile.childNodes).slice(-5).some(value => {
+					if (lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, value)) return false;
+					const discardPileCardName = get.name(value);
+					return discardPileCardName == name && lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, discardPileCardName);
+				}),
 				enable: ["chooseToUse", "chooseToRespond"],
-				filter: (event, player) => player.hasCard(card => !player.hasHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup" && get.suit(card) == evt.event.card.suit) && !(get.number(card) < player.getHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup").pop()?.event.card.number), "hes") && Array.from(ui.discardPile.childNodes).slice(-5).some(value => {
-					if (!player.hasCard(card => !(get.number(card) < player.getHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup").pop()?.event.card.number) && get.type2(value) != get.type2(card), "hes")) return false;
-					const virtualCard = {
+				filter: (event, player) => Array.from(ui.discardPile.childNodes).slice(-5).some(value => {
+					if (lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, value)) return false;
+					const convertedCard = {
 						name: get.name(value),
 						nature: get.nature(value)
 					};
-					return ["basic", "trick"].includes(get.type(virtualCard, null, false)) && lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, virtualCard.name) && event.filterCard(virtualCard, player, event);
+					return lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, convertedCard.name) && event.filterCard(convertedCard, player, event);
 				}),
 				chooseButton: {
 					dialog: (event, player) => ui.create.dialog(get.skillTranslation("avn_frame_by_frame_drawing", player), Array.from(ui.discardPile.childNodes).slice(-5)),
 					filter: (button, player) => {
-						if (!player.hasCard(card => get.type2(button.link) != get.type2(card), "hes")) return false;
-						const virtualCard = {
+						const link = button.link;
+						if (lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, link)) return false;
+						const convertedCard = {
 							name: get.name(button.link),
 							nature: get.nature(button.link)
 						};
-						if (!["basic", "trick"].includes(get.type(virtualCard, null, false)) || !lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, virtualCard.name)) return false;
+						if (!lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, convertedCard.name)) return false;
 						const parent = _status.event.getParent();
-						return parent.filterCard(virtualCard, player, parent);
+						return parent.filterCard(convertedCard, player, parent);
 					},
 					check: button => {
 						if (_status.event.getParent().type != "phase") return 1;
@@ -972,21 +988,32 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 							nature: get.nature(button.link)
 						});
 					},
-					backup: links => ({
-						position: "hes",
-						filterCard: (card, player) => get.type2(lib.skill.avn_frame_by_frame_drawing_backup.viewAs) != get.type2(card) && !player.hasHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup" && get.suit(card) == evt.event.card.suit) && !(get.number(card) < player.getHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup").pop()?.event.card.number),
-						viewAs: {
-							name: get.name(links[0]),
-							nature: get.nature(links[0])
-						},
-						popname: true,
-						check: card => 8 - get.value(card)
-					}),
-					prompt: links => `将一张牌当做${get.translation({
-						name: get.name(links[0]),
-						nature: get.nature(links[0])
-					})}使用或打出`
+					backup: links => {
+						const link = links[0];
+						return {
+							selectedCard: link,
+							popname: true,
+							position: "hes",
+							filterCard: (card, player) => lib.skill.avn_frame_by_frame_drawing.isConvertable(player, card, lib.skill.avn_frame_by_frame_drawing_backup.selectedCard),
+							viewAs: {
+								name: get.name(link),
+								nature: get.nature(link)
+							},
+							check: card => 8 - get.value(card)
+						};
+					},
+					prompt: links => {
+						const link = links[0];
+						return `将一张牌当做${get.translation({
+							name: get.name(link),
+							nature: get.nature(link)
+						})}使用或打出`;
+					}
 				},
+				isSuitOrTypeDifferentFrom: (card, anotherCard) => get.suit(card) != get.suit(anotherCard) || get.type2(card) != get.type2(anotherCard),
+				isNumberNotLessThanPreviousConvertedCard: (player, card) => !(get.number(card) < player.getHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup").pop()?.event.card.number),
+				isConvertable: (player, card, conversionResult) => lib.skill.avn_frame_by_frame_drawing.isSuitOrTypeDifferentFrom(card, conversionResult) && lib.skill.avn_frame_by_frame_drawing.isNumberNotLessThanPreviousConvertedCard(player, card),
+				isNotValidConversionResult: (player, card) => !["basic", "trick"].includes(get.type(card)) || !player.hasCard(cardx => lib.skill.avn_frame_by_frame_drawing.isConvertable(player, cardx, card), "hes"),
 				hasNotConvertedThisRound: (player, name) => {
 					for (const actionHistory of player.actionHistory.slice().reverse()) {
 						if (actionHistory.useSkill.some(value => value.skill == "avn_frame_by_frame_drawing_backup" && name == value.event.card.name)) return false;
@@ -1001,29 +1028,26 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					respondTao: true,
 					save: true,
 					skillTagFilter: (player, tag) => {
-						if (!player.hasCard(card => !player.hasHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup" && get.suit(card) == evt.event.card.suit) && !(get.number(card) < player.getHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup").pop()?.event.card.number), "hes")) return false;
-						if (Array.from(ui.discardPile.childNodes).slice(-5).some(value => {
-							if (!player.hasCard(card => get.type2(value) != get.type2(card), "hes")) return false;
-							const virtualCard = {
-								name: get.name(value),
-								nature: get.nature(value)
-							};
-							if (!["basic", "trick"].includes(get.type(virtualCard, null, false))) return false;
-							const virtualCardName = virtualCard.name;
-							if (!lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, virtualCardName)) return false;
+						if (Array.from(ui.discardPile.childNodes).slice(-5).every(value => {
+							if (lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, value)) return true;
+							const name = get.name(value);
+							if (!lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, name)) return true;
 							switch (tag) {
-								case "fireAttack": return virtualCardName == "huogong";
-								case "respondSha": return virtualCardName == "sha";
-								case "respondShan": return virtualCardName == "shan";
-								case "respondTao": return virtualCardName == "tao";
-								case "save": return get.tag(value, "save");
+								case "fireAttack": return name != "huogong";
+								case "respondSha": return name != "sha";
+								case "respondShan": return name != "shan";
+								case "respondTao": return name != "tao";
+								case "save": return !get.tag(value, "save");
 							}
 							return false;
 						})) return false;
 					},
 					order: 10,
 					result: {
-						player: player => _status.event.dying ? player.attitudeTo(_status.event.dying) : 1
+						player: player => {
+							const dying = _status.event.dying;
+							return dying ? player.attitudeTo(dying) : 1;
+						}
 					}
 				}
 			},
@@ -2018,7 +2042,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_frame_by_frame_drawing_backup() {
 				return this.avn_frame_by_frame_drawing;
 			},
-			avn_frame_by_frame_drawing_info: "你可以将一张牌当做最后进入弃牌堆的五张牌中的一张与其类别和花色均不同，且你本轮未以此法转化过的基本牌或普通锦囊牌使用或打出，且以此法转化的牌的点数不小于你本回合上一张以此法转化的牌。",
+			avn_frame_by_frame_drawing_info: "你可以将一张牌当做最后进入弃牌堆的五张牌中的一张与其花色不同或类别不同，且你本轮未以此法转化过的基本牌或普通锦囊牌使用或打出，且以此法转化的牌的点数不小于你本回合上一张以此法转化的牌。",
 			// The Second Coming (The Chosen One's Return)
 			get avn_the_second_coming_the_chosen_one_return() {
 				return this.avn_the_second_coming;

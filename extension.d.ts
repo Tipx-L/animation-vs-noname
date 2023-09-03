@@ -11,6 +11,7 @@ declare namespace Lib {
 		avn_adaptive: AVNAdaptiveExSkillData;
 		avn_adaptive_backup?: AVNAdaptiveBackupExSkillData;
 		avn_frame_by_frame_drawing: AVNFrameByFrameDrawingExSkillData;
+		avn_frame_by_frame_drawing_backup?: AVNFrameByFrameDrawingBackupExSkillData;
 		avn_overflow: ExEventSkillData<AVNOverflowEvent>;
 	}
 }
@@ -49,8 +50,16 @@ interface AVNDynamicLinkExSkillData extends ExEventSkillData<ExEvent<"_avn_dynam
 	initList: NoneParmFum<void>;
 	initVice: AVNDynamicLinkContentFuncByAll;
 }
+interface AVNFrameByFrameDrawingBackupExSkillData extends ExEventSkillData<ExEvent<"avn_frame_by_frame_drawing_backup">> {
+	selectedCard: Card;
+}
 interface AVNFrameByFrameDrawingExSkillData extends ExEventSkillData<ExEvent<"avn_frame_by_frame_drawing">> {
+	chooseButton: ExChooseButtonConfigData<AVNFrameByFrameDrawingBackupExSkillData>;
 	hasNotConvertedThisRound(player: Player, name: string): boolean;
+	isNotValidConversionResult(player: Player, card: Card): boolean;
+	isNumberNotLessThanPreviousConvertedCard(player: Player, card: Card): boolean;
+	isSuitOrTypeDifferentFrom(card: Card, anotherCard: Card): boolean;
+	isConvertable(player: Player, card: Card, conversionResult: Card): boolean;
 }
 interface AnimationVsNonameImportCharacterConfig extends importCharacterConfig {
 	skill: Lib.Skill;
