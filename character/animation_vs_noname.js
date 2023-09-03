@@ -722,6 +722,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					backup: links => {
 						const link = links[0];
 						return {
+							audio: false,
 							popname: true,
 							filterCard: true,
 							position: "hes",
@@ -991,8 +992,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					backup: links => {
 						const link = links[0];
 						return {
-							selectedCard: link,
+							audio: false,
 							popname: true,
+							selectedCard: link,
 							position: "hes",
 							filterCard: (card, player) => lib.skill.avn_frame_by_frame_drawing.isConvertable(player, card, lib.skill.avn_frame_by_frame_drawing_backup.selectedCard),
 							viewAs: {
@@ -1051,7 +1053,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					}
 				}
 			},
-			avn_frame_by_frame_drawing_backup: {},
 			avn_awaking: {
 				charlotte: true,
 				init: (player, skill) => {
@@ -1074,30 +1075,24 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					const playerNames = [player.name1, player.name2];
 					if (player.storage[event.name] == 1 && trigger.player == player && playerNames.includes("avn_the_second_coming")) {
 						game.broadcastAll(player => {
-							ui.backgroundMusic.removeEventListener("ended", game.playBackgroundMusic);
-							game.playBackgroundMusic = () => {
-								if (lib.config.background_music == "music_off") ui.backgroundMusic.src = "";
-								else ui.backgroundMusic.src = `${lib.assetURL}extension/桌面大战/audio/background/music_arrival.opus`;
+							const preAwaking = document.getElementById("avn-pre-awaking"), awake = () => {
+								_status._aozhan = true;
+								_status.tempAozhan = "ext:桌面大战/audio/background/music_arrival.opus";
+								game.playBackgroundMusic();
+								_status.tempBackground = "ext:桌面大战/image/background/avn_the_second_coming_the_chosen_one_return_bg.webp";
+								game.updateBackground();
 							};
-							ui.backgroundMusic.addEventListener("ended", game.playBackgroundMusic);
-							const preAwaking = document.getElementById("avn-pre-awaking");
 							if (preAwaking) {
 								preAwaking.style.transitionDuration = "1s";
 								preAwaking.style.boxShadow = "inset 0 0 200px 400px #d8eec2";
 								preAwaking.style.opacity = "1";
-								setTimeout(preAwaking => {
-									_status._aozhan = true;
-									game.playBackgroundMusic();
-									ui.background.setBackgroundImage(`extension/桌面大战/image/background/avn_the_second_coming_the_chosen_one_return_bg.webp`);
+								setTimeout(() => {
+									awake();
 									preAwaking.style.boxShadow = "inset 0 0 200px 200px #d8eec2";
 									preAwaking.style.opacity = "0";
-								}, 1000, preAwaking);
+								}, 1000);
 							}
-							else setTimeout(() => {
-								_status._aozhan = true;
-								game.playBackgroundMusic();
-								ui.background.setBackgroundImage(`extension/桌面大战/image/background/avn_the_second_coming_the_chosen_one_return_bg.webp`);
-							}, 1000);
+							else setTimeout(awake, 1000);
 							if (player.showIdentity) player.showIdentity();
 						}, player);
 						player.storage[event.name] = 2;
@@ -1984,12 +1979,54 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Corn Dog Guy
 			avn_rebranding: {
 				global: "avn_rebranding_global",
+				intro: {
+					content: (storage, player) => get.skillInfoTranslation("avn_rebranding", player)
+				},
+				locked: false,
+				forced: true,
+				trigger: {
+					player: "damageEnd"
+				},
+				filter: (event, player) => !player.storage.avn_rebranding,
+				content: (event, step, source, player) => {
+					const name = event.name;
+					player.storage[name] = true;
+					player.markSkill(name);
+					game.log(player, "修改了技能", `#g【${get.skillTranslation(name, player)}】`);
+				},
 				subSkill: {
 					global: {
+						audio: false,
+						delay: false,
 						enable: "phaseUse",
 						usable: 1,
 						position: "he",
-						filterCard: (card, player) => game.hasPlayer(current => current.hasSkill("avn_rebranding") && (current == player ? lib.filter.cardDiscardable(card, player) : game.checkMod)),
+						filter: (event, player) => player.hasCard(card => lib.skill.avn_rebranding_global.filterCard(card, player), lib.skill.avn_rebranding_global.position),
+						filterCard: (card, player) => game.hasPlayer(current => current.hasSkill("avn_rebranding") && (current == player ? lib.filter.cardDiscardable(card, player) : player.canGift(card, current))),
+						selectCard: () => _status.event.player.storage.avn_rebranding ? 2 : 1,
+						filterTarget: (card, player, target) => target.hasSkill("avn_rebranding") && (target == player || ui.selected.cards.every(value => player.canGift(value, target))),
+						discard: false,
+						lose: false,
+						check: card => {
+							const player = _status.event.player;
+							return Math.max(...game.filterPlayer(current => current.hasSkill("avn_rebranding") && (current == player ? lib.filter.cardDiscardable(card, player) : player.canGift(card, current))).map(value => value == player ? 6 - get.value(card) : player.getGiftEffect(card, value)));
+						},
+						content: (event, step, source, player, target, targets, card, cards) => {
+							if (target == player) player.discard(cards);
+							else player.gift(target, cards);
+							if (target.storage[event.name.slice(0, -7)]) player.changeHujia(1, null, true);
+							else player.draw();
+						},
+						ai: {
+							order: 2,
+							result: {
+								target: (player, target) => {
+									if (target == player) return 1;
+									const cards = ui.selected.cards;
+									return cards.reduce((previousValue, currentValue) => previousValue + player.getGiftAIResultTarget(currentValue, target), 0) / cards.length;
+								}
+							}
+						}
 					}
 				}
 			}
@@ -2000,7 +2037,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				return currentIndex == player.countMark("avn_surpression") % 4 ? `${previousValue}<span class="bluetext">${translation}</span>` : `${previousValue}${translation}`;
 			}, "")}${lib.translate.avn_surpression_info_tail}`,
 			avn_ascending: player => player.storage.avn_ascending ? lib.translate.avn_ascending_rewrite_info : lib.translate.avn_ascending_info,
-			avn_resistant: player => player.storage.avn_resistant ? lib.translate.avn_resistant_rewrite_info : lib.translate.avn_resistant_info
+			avn_resistant: player => player.storage.avn_resistant ? lib.translate.avn_resistant_rewrite_info : lib.translate.avn_resistant_info,
+			avn_rebranding: player => player.storage.avn_rebranding ? lib.translate.avn_rebranding_rewrite_info : lib.translate.avn_rebranding_info
 		},
 		characterReplace: {
 			avn_the_second_coming: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return"],
@@ -2042,7 +2080,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_frame_by_frame_drawing_backup() {
 				return this.avn_frame_by_frame_drawing;
 			},
-			avn_frame_by_frame_drawing_info: "你可以将一张牌当做最后进入弃牌堆的五张牌中的一张与其花色不同或类别不同，且你本轮未以此法转化过的基本牌或普通锦囊牌使用或打出，且以此法转化的牌的点数不小于你本回合上一张以此法转化的牌。",
+			avn_frame_by_frame_drawing_info: "你可以将一张牌当做最后进入弃牌堆的五张牌中的一张与其花色或类别不同，且你本轮未以此法转化过的基本牌或普通锦囊牌使用或打出，且以此法转化的牌的点数不小于你本回合上一张以此法转化的牌。",
 			// The Second Coming (The Chosen One's Return)
 			get avn_the_second_coming_the_chosen_one_return() {
 				return this.avn_the_second_coming;
@@ -2148,7 +2186,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_corn_dog_guy: "Corn Dog Guy",
 			avn_corn_dog_guy_ab: "CDG",
 			avn_rebranding: "品创",
-			avn_rebranding_info: "每名角色的出牌阶段限一次，其可以赠予你一张牌（若其为你，则改为弃置一张牌），若如此做，其摸一张牌。若你受到过伤害，则本技能中的前两个“一张牌”视为“两张牌”，”摸一张牌“视为”获得1点护甲“。"
+			avn_rebranding_info: "每名角色的出牌阶段限一次，其可以赠予你一张牌（若其为你，则改为弃置一张牌）并摸一张牌。当你受到伤害后，你将本技能中的前两个“一张牌”改为“两张牌”，第一个“摸一张牌”改为“获得1点护甲”。",
+			get avn_rebranding_rewrite() {
+				return `${this.avn_rebranding}·改`;
+			},
+			avn_rebranding_rewrite_info: "每名角色的出牌阶段限一次，其可以赠予你两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。"
 		},
 		help: {}
 	};
