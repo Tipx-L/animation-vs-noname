@@ -877,6 +877,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						player.line(giftingTarget, "green");
 						const giftableCardsToGiftingTarget = event.giftableCards.filter(value => player.canGift(value, giftingTarget));
 						if (giftableCardsToGiftingTarget.length < 2) event._result = {
+							bool: true,
 							links: giftableCardsToGiftingTarget
 						};
 						else {
@@ -1326,7 +1327,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						event.finish();
 					}
 					"step 4"
-					if (result.links?.length) event.chooseUseTarget = player.chooseUseTarget(event.chosenCards.addArray(result.links)[0]);
+					if (result.links?.length) event.chooseUseTarget = player.chooseUseTarget(event.chosenCards.addArray(result.links)[0], false);
 					else event.finish();
 					"step 5"
 					if (!player.hasHistory("useCard", evt => evt.getParent() == event.chooseUseTarget)) event.goto(3);
@@ -2001,10 +2002,15 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						enable: "phaseUse",
 						usable: 1,
 						position: "he",
-						filter: (event, player) => player.hasCard(card => lib.skill.avn_rebranding_global.filterCard(card, player), lib.skill.avn_rebranding_global.position),
+						filter: (event, player) => {
+							return game.hasPlayer(current => current.hasSkill("avn_rebranding") && player.countCards(lib.skill.avn_rebranding_global.position, card => current == player ? lib.filter.cardDiscardable(card, player) : player.canGift(card, current)) > (current.storage.avn_rebranding ? 1 : 0));
+						},
 						filterCard: (card, player) => game.hasPlayer(current => current.hasSkill("avn_rebranding") && (current == player ? lib.filter.cardDiscardable(card, player) : player.canGift(card, current))),
-						selectCard: () => _status.event.player.storage.avn_rebranding ? 2 : 1,
-						filterTarget: (card, player, target) => target.hasSkill("avn_rebranding") && (target == player || ui.selected.cards.every(value => player.canGift(value, target))),
+						selectCard: () => {
+							const players = game.filterPlayer(current => current.hasSkill("avn_rebranding"));
+							return [players.filter(value => !value.storage.avn_rebranding).length ? 1 : 2, players.filter(value => value.storage.avn_rebranding).length ? 2 : 1];
+						},
+						filterTarget: (card, player, target) => target.hasSkill("avn_rebranding") && (ui.selected.cards.length > 1 ? target.storage.avn_rebranding : !target.storage.avn_rebranding) && (target == player || ui.selected.cards.every(value => player.canGift(value, target))),
 						discard: false,
 						lose: false,
 						check: card => {
@@ -2013,8 +2019,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						},
 						content: (event, step, source, player, target, targets, card, cards) => {
 							if (target == player) player.discard(cards);
-							else player.gift(target, cards);
-							if (target.storage[event.name.slice(0, -7)]) player.changeHujia(1, null, true);
+							else player.gift(cards, target);
+							if (target.storage[event.name.slice(0, -7)]) {
+								player.changeHujia(1, null, true);
+								game.delayex();
+							}
 							else player.draw();
 						},
 						ai: {
@@ -2190,7 +2199,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_rebranding_rewrite() {
 				return `${this.avn_rebranding}·改`;
 			},
-			avn_rebranding_rewrite_info: "每名角色的出牌阶段限一次，其可以赠予你两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。"
+			avn_rebranding_rewrite_info: "每名角色的出牌阶段限一次，其可以赠予你两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。",
+			get avn_rebranding_global_info() {
+				return `出牌阶段限一次，你可以赠予一名拥有〖${this.avn_rebranding}〗的角色一张牌（若其为你，则改为弃置一张牌）并摸一张牌，或赠予一名拥有〖${this.avn_rebranding_rewrite}〗的角色两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。`;
+			}
 		},
 		help: {}
 	};
