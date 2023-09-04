@@ -1779,7 +1779,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					player: "damageEnd",
 					global: "washCard"
 				},
-				filter: (event, player, name) => name == "washCard" || !player.hasHistory("useSkill", evt => evt.skill == "avn_resistant" && evt.event.triggername != "washCard"),
+				filter: (event, player, name) => name == "washCard" || !lib.skill.avn_resistant.isNotAvailable(player),
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					const name = event.name;
@@ -1800,14 +1800,13 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					if (!player.storage[name]) {
 						player.logSkill(event.name);
 						const bottomCards = game.cardsGotoOrdering(get.bottomCards(Math.max(player.getDamagedHp(), 1))).cards;
-						const numberOfKCards = bottomCards.filter(value => get.number(value) == 13).length;
 						player.showCards(bottomCards);
 						player.gain(bottomCards, "gain2");
-						if (numberOfKCards) player.gain(get.bottomCards(numberOfKCards), "gain2");
+						if (bottomCards.some(value => get.number(value) == 13)) player.gain(get.bottomCards(), "gain2");
 						event.finish();
 						return;
 					}
-					player.chooseTarget(`${get.skillTranslation(name, player)}：令一名角色亮出并获得牌堆底的${get.cnNumber(Math.max(player.getDamagedHp(), 1))}张牌，然后这些牌中每有一张点数为K的牌，其获得牌堆底的一张牌`, true).ai = target => {
+					player.chooseTarget(`${get.skillTranslation(name, player)}：令一名角色亮出并获得牌堆底的${get.cnNumber(Math.max(player.getDamagedHp(), 1))}张牌，然后若这些牌中有点数为K的牌，则其获得牌堆底的一张牌`, true).ai = target => {
 						const player = _status.event.player, sgnAttitude = get.sgnAttitude(player, target);
 						if (!sgnAttitude) return 0;
 						let effect = sgnAttitude * Math.max(player.getDamagedHp(), 1);
@@ -1819,20 +1818,30 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					player.logSkill(event.name, event.target = result.targets[0]);
 					if (event.target != player) player.addExpose(0.2);
 					const bottomCards = game.cardsGotoOrdering(get.bottomCards(Math.max(player.getDamagedHp(), 1))).cards;
-					const numberOfKCards = bottomCards.filter(value => get.number(value) == 13).length;
 					event.target.showCards(bottomCards);
 					event.target.gain(bottomCards, "gain2");
-					if (numberOfKCards) event.target.gain(get.bottomCards(numberOfKCards), "gain2");
+					if (bottomCards.some(value => get.number(value) == 13)) event.target.gain(get.bottomCards(), "gain2");
+				},
+				isNotAvailable: (player) => {
+					/**
+					 * @param {GameEvent} evt
+					 * @returns {boolean}
+					 */
+					const filter = evt => {
+						const parent = evt.getParent();
+						return parent.name == "avn_resistant" && parent.player == player;
+					};
+					return player.storage.avn_resistant ? game.hasPlayer2(current => current.hasHistory("gain", filter)) : player.hasHistory("gain", filter);
 				},
 				ai: {
 					maixie: true,
 					maixie_hp: true,
 					skillTagFilter: player => {
-						if (player.hasHistory("useSkill", evt => evt.skill == "avn_resistant" && evt.event.triggername != "washCard")) return false;
+						if (lib.skill.avn_resistant.isNotAvailable(player)) return false;
 					},
 					effect: {
 						target: (card, player, target) => {
-							if (target.hasHistory("useSkill", evt => evt.skill == "avn_resistant" && evt.event.triggername != "washCard") || !get.tag(card, "damage")) return;
+							if (lib.skill.avn_resistant.isNotAvailable(target) || !get.tag(card, "damage")) return;
 							if (player.hasSkillTag("jueqing", false, target)) return [1, -2];
 							if (!target.hasFriend()) return;
 							const result = player.attitudeTo(target) > 0 ? player.needsToDiscard() ? 0.7 : 0.5 : 1;
@@ -2159,14 +2168,14 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_king_orange: "King Orange",
 			avn_king_orange_ab: "King",
 			avn_resistant: "抵倾",
-			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法获得过牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后其中每有一张点数为K的牌，你获得牌堆底的一张牌。",
+			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法获得过牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则你获得牌堆底的一张牌。",
 			get avn_resistant_info() {
 				return game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_gold") ? `${this._avn_resistant_info}牌堆洗牌后，你修改本技能。` : this._avn_resistant_info;
 			},
 			get avn_resistant_rewrite() {
 				return `${this.avn_resistant}·改`;
 			},
-			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法令一名角色获得过牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后这些牌中每有一张点数为K的牌，其获得牌堆底的一张牌。",
+			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法令一名角色获得过牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则其获得牌堆底的一张牌。",
 			// Gold
 			avn_gold: "Gold",
 			// Alexcrafter28

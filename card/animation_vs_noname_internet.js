@@ -11,11 +11,11 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_protect: {
 				type: "basic",
 				global: "avn_protect_skill",
-				filterTargetx: lib.filter.notMe,
 				filterTarget: (card, player, target) => {
-					const event = _status.event;
 					if (target == player) return false;
-					if (["damageBegin4", "avn_protect_skill"].includes(event.name)) return true;
+					const event = _status.event;
+					console.log(event);
+					if (["arrangeTrigger", "trigger"].includes(event.name)) return true;
 					const damage = event.getParent(4);
 					return damage?.name == "damage" && target == damage.player;
 				},
@@ -829,7 +829,10 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				trigger: {
 					player: "damageBegin4"
 				},
-				filter: event => game.hasPlayer(current => current.canUse("avn_protect", event.player) && current.hasUsableCard("avn_protect")),
+				filter: event => game.hasPlayer(current => current.hasUsableCard("avn_protect") && lib.filter.filterTarget({
+					name: "avn_protect",
+					isCard: true
+				}, current, event.player)),
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					event.target = trigger.player;
@@ -857,7 +860,10 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 					}
 					"step 1"
 					const cardName = event.cardName;
-					event.list = game.filterPlayer(current => current.canUse(cardName, target) && current.hasUsableCard(cardName)).sortBySeat(_status.currentPhase || target);
+					event.list = game.filterPlayer(current => current.hasUsableCard(cardName) && lib.filter.filterTarget({
+						name: cardName,
+						isCard: true
+					}, current, target)).sortBySeat(_status.currentPhase || target);
 					event.id = get.id();
 					"step 2"
 					if (!event.list.length) event.finish();

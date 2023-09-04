@@ -5,6 +5,9 @@ declare interface Game {
 declare interface Lib {
 	avnCharacterTitle: SMap<string>;
 }
+declare interface PlayerStorage {
+	avn_resistant: boolean;
+}
 declare namespace Lib {
 	interface Skill {
 		_avn_dynamic_link: AVNDynamicLinkExSkillData;
@@ -13,6 +16,7 @@ declare namespace Lib {
 		avn_frame_by_frame_drawing: AVNFrameByFrameDrawingExSkillData;
 		avn_frame_by_frame_drawing_backup?: AVNFrameByFrameDrawingBackupExSkillData;
 		avn_overflow: ExEventSkillData<AVNOverflowEvent>;
+		avn_resistant: AVNResistantExSkillData;
 	}
 }
 interface AnimationVsNonameConfig {
@@ -60,6 +64,9 @@ interface AVNFrameByFrameDrawingExSkillData extends ExEventSkillData<ExEvent<"av
 	isNumberNotLessThanPreviousConvertedCard(player: Player, card: Card): boolean;
 	isSuitOrTypeDifferentFrom(card: Card, anotherCard: Card): boolean;
 	isConvertable(player: Player, card: Card, conversionResult: Card): boolean;
+}
+interface AVNResistantExSkillData extends ExEventSkillData<ExEvent<"avn_resistant">> {
+	isNotAvailable(player: Player): boolean;
 }
 interface AnimationVsNonameImportCharacterConfig extends importCharacterConfig {
 	skill: Lib.Skill;

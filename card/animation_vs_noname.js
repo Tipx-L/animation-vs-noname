@@ -12,25 +12,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				type: "basic",
 				enable: true,
 				filterTarget: true,
-				yingbian_prompt: card => {
-					let str = "";
-					if (get.cardtag(card, "yingbian_draw")) str += "当你声明使用此牌时，你摸一张牌";
-					if (!str.length || get.cardtag(card, "yingbian_add")) {
-						if (str.length) str += "；";
-						str += "当你使用此牌选择目标后，你可为此牌增加一个目标";
-					}
-					return str;
-				},
-				yingbian_tags: ["draw", "add"],
-				yingbian: event => {
-					const card = event.card;
-					let bool = false;
-					if (get.cardtag(card, "yingbian_draw")) {
-						bool = true;
-						event.player.draw();
-					}
-					if (!bool || get.cardtag(card, "yingbian_add")) event.yingbian_addTarget = true;
-				},
+				defaultYingbianEffect: "add",
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
 					target.link();
 				},
@@ -64,25 +46,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				targetprompt: ["被移动", "目标位置"],
 				filterTarget: true,
 				filterAddedTarget: () => true,
-				yingbian_prompt: card => {
-					let str = "";
-					if (get.cardtag(card, "yingbian_draw")) str += "当你声明使用此牌时，你摸一张牌";
-					if (!str.length || get.cardtag(card, "yingbian_add")) {
-						if (str.length) str += "；";
-						str += "当你使用此牌选择目标后，你可为此牌增加一个目标";
-					}
-					return str;
-				},
-				yingbian_tags: ["draw", "add"],
-				yingbian: event => {
-					const card = event.card;
-					let bool = false;
-					if (get.cardtag(card, "yingbian_draw")) {
-						bool = true;
-						event.player.draw();
-					}
-					if (!bool || get.cardtag(card, "yingbian_add")) event.yingbian_addTarget = true;
-				},
+				defaultYingbianEffect: "add",
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
 					if (event.addedTarget) game.broadcastAll((player1, player2) => game.swapSeat(player1, player2, true, true), target, event.addedTarget);
 				},
@@ -119,35 +83,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 					return `${get.translation(nature)}属性`;
 				})(card.nature)}伤害。`,
 				filterTarget: true,
-				yingbian_prompt: card => {
-					let str = "";
-					if (get.cardtag(card, "yingbian_damage")) str += "此牌的伤害值基数+1";
-					if (get.cardtag(card, "yingbian_draw")) {
-						if (str.length) str += "；";
-						str += "当你声明使用此牌时，你摸一张牌";
-					}
-					if (!str.length || get.cardtag(card, "yingbian_add")) {
-						if (str.length) str += "；";
-						str += "当你使用此牌选择目标后，你可为此牌增加一个目标";
-					}
-					return str;
-				},
-				yingbian_tags: ["damage", "draw", "add"],
-				yingbian: event => {
-					const card = event.card;
-					let bool = false;
-					if (get.cardtag(card, "yingbian_damage")) {
-						bool = true;
-						if (typeof event.baseDamage == "number") event.baseDamage++;
-						else event.baseDamage = 2;
-						game.log(card, "的伤害值基数+1");
-					}
-					if (get.cardtag(card, "yingbian_draw")) {
-						bool = true;
-						event.player.draw();
-					}
-					if (!bool || get.cardtag(card, "yingbian_add")) event.yingbian_addTarget = true;
-				},
+				defaultYingbianEffect: "add",
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
 					if (typeof event.baseDamage != "number") event.baseDamage = 1;
 					if (typeof event.extraDamage != "number") event.extraDamage = 0;
@@ -189,25 +125,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				multicheck: () => game.hasPlayer(current => current.hasCard(card => get.position(card) == "e" ? game.hasPlayer(current2 => current2 != current && current2.canEquip(card)) : game.hasPlayer(current2 => current2 != current && current2.canAddJudge(card)), "ej")),
 				filterTarget: (card, player, target) => target.hasCard(card => get.position(card) == "e" ? game.hasPlayer(current => current != target && current.canEquip(card)) : game.hasPlayer(current => current != target && current.canAddJudge(card)), "ej"),
 				filterAddedTarget: (card, player, target, preTarget) => preTarget.hasCard(card => get.position(card) == "e" ? target.canEquip(card) : target.canAddJudge(card), "ej"),
-				yingbian_prompt: card => {
-					let str = "";
-					if (get.cardtag(card, "yingbian_draw")) str += "当你声明使用此牌时，你摸一张牌";
-					if (!str.length || get.cardtag(card, "yingbian_add")) {
-						if (str.length) str += "；";
-						str += "当你使用此牌选择目标后，你可为此牌增加一个目标";
-					}
-					return str;
-				},
-				yingbian_tags: ["draw", "add"],
-				yingbian: event => {
-					const card = event.card;
-					let bool = false;
-					if (get.cardtag(card, "yingbian_draw")) {
-						bool = true;
-						event.player.draw();
-					}
-					if (!bool || get.cardtag(card, "yingbian_add")) event.yingbian_addTarget = true;
-				},
+				defaultYingbianEffect: "add",
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					if (event.addedTarget) player.choosePlayerCard(target, "ej", `${get.translation(event.name)}：将${get.translation(target)}的场上的一张牌移动至${get.translation(event.addedTarget)}的场上`, true, button => get.effect(_status.event.getParent().addedTarget, button.link), button => {
@@ -299,36 +217,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				savable: true,
 				filterTarget: (card, player, target) => target.hp < target.maxHp,
 				selectTarget: [1, Infinity],
-				yingbian_prompt: card => {
-					let str = "";
-					if (get.cardtag(card, "yingbian_damage")) str += "此牌的伤害值基数+1";
-					if (get.cardtag(card, "yingbian_hit")) {
-						if (str.length) str += "；";
-						str += "此牌不可被响应";
-					}
-					if (!str.length || get.cardtag(card, "yingbian_draw")) {
-						if (str.length) str += "；";
-						str += "当你声明使用此牌时，你摸一张牌";
-					}
-					return str;
-				},
-				yingbian_tags: ["damage", "hit", "draw"],
-				yingbian: event => {
-					const card = event.card;
-					let bool = false;
-					if (get.cardtag(card, "yingbian_damage")) {
-						bool = true;
-						if (typeof event.baseDamage == "number") event.baseDamage++;
-						else event.baseDamage = 2;
-						game.log(card, "的伤害值基数+1");
-					}
-					if (get.cardtag(card, "yingbian_hit")) {
-						bool = true;
-						event.directHit.addArray(game.players);
-						game.log(card, "不可被响应");
-					}
-					if (!bool || get.cardtag(card, "yingbian_draw")) event.player.draw();
-				},
+				defaultYingbianEffect: "draw",
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
 					if (typeof event.baseDamage != "number") event.baseDamage = 1;
 					if (typeof event.extraDamage != "number") event.extraDamage = 0;
@@ -363,53 +252,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 					return `${get.translation(nature)}属性`;
 				})(card.nature)}伤害。`,
 				filterTarget: true,
-				yingbian_prompt: card => {
-					let str = "";
-					if (get.cardtag(card, "yingbian_damage")) str += "此牌的伤害值基数+1";
-					if (get.cardtag(card, "yingbian_hit")) {
-						if (str.length) str += "；";
-						str += "此牌不可被响应";
-					}
-					if (get.cardtag(card, "yingbian_all")) {
-						if (str.length) str += "；";
-						str += "此牌的效果改为依次执行所有选项";
-					}
-					if (get.cardtag(card, "yingbian_draw")) {
-						if (str.length) str += "；";
-						str += "当你声明使用此牌时，你摸一张牌";
-					}
-					if (!str.length || get.cardtag(card, "yingbian_add")) {
-						if (str.length) str += "；";
-						str += "当你使用此牌选择目标后，你可为此牌增加一个目标";
-					}
-					return str;
-				},
-				yingbian_tags: ["damage", "hit", "all", "draw", "add"],
-				yingbian: event => {
-					const card = event.card;
-					let bool = false;
-					if (get.cardtag(card, "yingbian_damage")) {
-						bool = true;
-						if (typeof event.baseDamage == "number") event.baseDamage++;
-						else event.baseDamage = 2;
-						game.log(card, "的伤害值基数+1");
-					}
-					if (get.cardtag(card, "yingbian_hit")) {
-						bool = true;
-						event.directHit.addArray(game.players);
-						game.log(card, "不可被响应");
-					}
-					if (get.cardtag(card, "yingbian_all")) {
-						bool = true;
-						card.yingbian_all = true;
-						game.log(card, "执行所有选项");
-					}
-					if (get.cardtag(card, "yingbian_draw")) {
-						bool = true;
-						event.player.draw();
-					}
-					if (!bool || get.cardtag(card, "yingbian_add")) event.yingbian_addTarget = true;
-				},
+				defaultYingbianEffect: "add",
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
 					const cardsInTargetField = target.getCards("ej");
 					if (cardsInTargetField.length || card.yingbian_all) target.loseToDiscardpile(cardsInTargetField);
@@ -458,26 +301,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				toself: true,
 				filterTarget: lib.filter.isMe,
 				modTarget: true,
-				yingbian_prompt: card => {
-					let str = "";
-					if (get.cardtag(card, "yingbian_hit")) str += "此牌不可被响应";
-					if (!str.length || get.cardtag(card, "yingbian_draw")) {
-						if (str.length) str += "；";
-						str += "当你声明使用此牌时，你摸一张牌";
-					}
-					return str;
-				},
-				yingbian_tags: ["hit", "draw"],
-				yingbian: event => {
-					const card = event.card;
-					let bool = false;
-					if (get.cardtag(card, "yingbian_hit")) {
-						bool = true;
-						event.directHit.addArray(game.players);
-						game.log(card, "不可被响应");
-					}
-					if (!bool || get.cardtag(card, "yingbian_draw")) event.player.draw();
-				},
+				defaultYingbianEffect: "draw",
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
 					const name = `${event.name}_skill`;
 					target.addTempSkill(name);
@@ -502,34 +326,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				enable: true,
 				postAi: targets => targets.length == 1 && targets[0].countCards("j"),
 				filterTarget: (card, player, target) => target.countDiscardableCards(player, "ej"),
-				yingbian_prompt: card => {
-					let str = "";
-					if (get.cardtag(card, "yingbian_hit")) str += "此牌不可被响应";
-					if (get.cardtag(card, "yingbian_draw")) {
-						if (str.length) str += "；";
-						str += "当你声明使用此牌时，你摸一张牌";
-					}
-					if (!str.length || get.cardtag(card, "yingbian_add")) {
-						if (str.length) str += "；";
-						str += "当你使用此牌选择目标后，你可为此牌增加一个目标";
-					}
-					return str;
-				},
-				yingbian_tags: ["hit", "draw", "add"],
-				yingbian: event => {
-					const card = event.card;
-					let bool = false;
-					if (get.cardtag(card, "yingbian_hit")) {
-						bool = true;
-						event.directHit.addArray(game.players);
-						game.log(card, "不可被响应");
-					}
-					if (get.cardtag(card, "yingbian_draw")) {
-						bool = true;
-						event.player.draw();
-					}
-					if (!bool || get.cardtag(card, "yingbian_add")) event.yingbian_addTarget = true;
-				},
+				defaultYingbianEffect: "add",
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					player.choosePlayerCard(`${get.translation(event.name)}：删除${get.translation(target)}的场上的一张牌`, target, "ej", true);
@@ -588,34 +385,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				toself: true,
 				filterTarget: lib.filter.isMe,
 				modTarget: true,
-				yingbian_prompt: card => {
-					let str = "";
-					if (get.cardtag(card, "yingbian_hit")) str += "此牌不可被响应";
-					if (get.cardtag(card, "yingbian_draw")) {
-						if (str.length) str += "；";
-						str += "当你声明使用此牌时，你摸一张牌";
-					}
-					if (!str.length || get.cardtag(card, "yingbian_add")) {
-						if (str.length) str += "；";
-						str += "当你使用此牌选择目标后，你可为此牌增加一个目标";
-					}
-					return str;
-				},
-				yingbian_tags: ["hit", "draw", "add"],
-				yingbian: event => {
-					const card = event.card;
-					let bool = false;
-					if (get.cardtag(card, "yingbian_hit")) {
-						bool = true;
-						event.directHit.addArray(game.players);
-						game.log(card, "不可被响应");
-					}
-					if (get.cardtag(card, "yingbian_draw")) {
-						bool = true;
-						event.player.draw();
-					}
-					if (!bool || get.cardtag(card, "yingbian_add")) event.yingbian_addTarget = true;
-				},
+				defaultYingbianEffect: "add",
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
 					target.insertPhase();
 				},
@@ -739,9 +509,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				type: "equip",
 				subtype: "equip1",
 				chongzhu: () => game.countPlayer() < 3,
-				yingbian_prompt: "当你声明使用此牌时，你摸一张牌",
-				yingbian_tags: ["draw"],
-				yingbian: event => event.player.draw(),
+				defaultYingbianEffect: "draw",
 				ai: {
 					equipValue: () => Math.min(game.countPlayer() / 2, 4),
 					basic: {
@@ -755,9 +523,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_card: {
 				type: "equip",
 				subtype: "equip5",
-				yingbian_prompt: "当你声明使用此牌时，你摸一张牌",
-				yingbian_tags: ["draw"],
-				yingbian: event => event.player.draw(),
+				defaultYingbianEffect: "draw",
 				ai: {
 					basic: {
 						equipValue: 3
@@ -771,9 +537,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_energy_ball: {
 				type: "equip",
 				subtype: "equip5",
-				yingbian_prompt: "当你声明使用此牌时，你摸一张牌",
-				yingbian_tags: ["draw"],
-				yingbian: event => event.player.draw(),
+				defaultYingbianEffect: "draw",
 				ai: {
 					basic: {
 						equipValue: 5
@@ -792,9 +556,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				distance: {
 					attackFrom: -1
 				},
-				yingbian_prompt: "当你声明使用此牌时，你摸一张牌",
-				yingbian_tags: ["draw"],
-				yingbian: event => event.player.draw(),
+				defaultYingbianEffect: "draw",
 				ai: {
 					basic: {
 						equipValue: 2.5
@@ -811,9 +573,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				distance: {
 					attackFrom: -3
 				},
-				yingbian_prompt: "当你声明使用此牌时，你摸一张牌",
-				yingbian_tags: ["draw"],
-				yingbian: event => event.player.draw(),
+				defaultYingbianEffect: "draw",
 				ai: {
 					basic: {
 						equipValue: 4
@@ -827,9 +587,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				distance: {
 					attackFrom: -4
 				},
-				yingbian_prompt: "当你声明使用此牌时，你摸一张牌",
-				yingbian_tags: ["draw"],
-				yingbian: event => event.player.draw(),
+				defaultYingbianEffect: "draw",
 				ai: {
 					basic: {
 						equipValue: 3
@@ -843,9 +601,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_magnifying_glass: {
 				type: "equip",
 				subtype: "equip5",
-				yingbian_prompt: "当你声明使用此牌时，你摸一张牌",
-				yingbian_tags: ["draw"],
-				yingbian: event => event.player.draw(),
+				defaultYingbianEffect: "draw",
 				ai: {
 					basic: {
 						equipValue: 2.5
@@ -860,9 +616,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				type: "equip",
 				subtype: "equip1",
 				chongzhu: () => game.countPlayer() < 3,
-				yingbian_prompt: "当你声明使用此牌时，你摸一张牌",
-				yingbian_tags: ["draw"],
-				yingbian: event => event.player.draw(),
+				defaultYingbianEffect: "draw",
 				ai: {
 					equipValue: () => Math.min(game.countPlayer() / 2, 4),
 					basic: {
@@ -879,9 +633,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				distance: {
 					attackFrom: -2
 				},
-				yingbian_prompt: "当你声明使用此牌时，你摸一张牌",
-				yingbian_tags: ["draw"],
-				yingbian: event => event.player.draw(),
+				defaultYingbianEffect: "draw",
 				ai: {
 					basic: {
 						equipValue: 2.5
