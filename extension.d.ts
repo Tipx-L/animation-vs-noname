@@ -6,11 +6,13 @@ declare interface Lib {
 	avnCharacterTitle: SMap<string>;
 }
 declare interface PlayerStorage {
+	avn_ascending: boolean;
 	avn_resistant: boolean;
 }
 declare namespace Lib {
 	interface Skill {
 		_avn_dynamic_link: AVNDynamicLinkExSkillData;
+		avn_ascending: AVNAscendingExSkillData;
 		avn_adaptive: AVNAdaptiveExSkillData;
 		avn_adaptive_backup?: AVNAdaptiveBackupExSkillData;
 		avn_frame_by_frame_drawing: AVNFrameByFrameDrawingExSkillData;
@@ -47,6 +49,9 @@ interface AVNAdaptiveExModData extends ExModData {
 interface AVNAdaptiveExSkillData extends ExEventSkillData<ExEvent<"avn_adaptive">> {
 	chooseButton: ExChooseButtonConfigData<AVNAdaptiveBackupExSkillData>;
 	mod: AVNAdaptiveExModData;
+}
+interface AVNAscendingExSkillData extends ExEventSkillData<ExEvent<"avn_ascending">> {
+	isNotAvailable(player: Player): boolean;
 }
 interface AVNDynamicLinkExSkillData extends ExEventSkillData<ExEvent<"_avn_dynamic_link">> {
 	changeMain: AVNDynamicLinkContentFuncByAll;

@@ -665,7 +665,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				selectTarget: () => [1, Infinity],
 				yingbian_tags: "defaultYingbianEffect",
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
-					if (!target.storage.renku) target.storage.renku = true;
+					if (!player.storage.renku) player.storage.renku = true;
 					game.updateRenku();
 					const atMost = Math.max(Math.floor(_status.renku.length / 2), 1);
 					if (target.countDiscardableCards(player, "hej")) player.discardPlayerCard(target, "hej", [1, atMost], `${get.translation(event.name)}：弃置${get.translation(target)}的区域内的至多${get.cnNumber(atMost)}张牌`);

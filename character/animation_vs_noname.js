@@ -1678,6 +1678,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				},
 				mod: {
 					aiOrder: (player, card, num) => {
+						if (lib.skill.avn_ascending.isNotAvailable(player)) return;
 						const lastUsed = player.getLastUsed();
 						if (!lastUsed) return num + 10 / card.number;
 						if (card.number > lastUsed.card.number) return Math.max(21 - (card.number - lastUsed.card.number) ** 2, 0.25);
@@ -1691,12 +1692,12 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				},
 				filter: (event, player, name) => {
 					if (name == "washCard") return !player.storage.avn_ascending;
-					return !player.hasHistory("useSkill", evt => evt.skill == "avn_ascending" && evt.event[player.storage.avn_ascending ? "discardedAnyPlayerCards" : "discardedCards"]) && player.getHistory("useCard").length > 1;
+					return !lib.skill.avn_ascending.isNotAvailable(player) && player.getHistory("useCard").length > 1;
 				},
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
+					const name = event.name;
 					if (event.triggername == "washCard") {
-						const name = event.name;
 						player.logSkill(name);
 						player.trySkillAnimate(`${name}_rewrite`, name, player.checkShow(name));
 						const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
@@ -1712,35 +1713,42 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						return;
 					}
 					event.isStrictlyIncreasing = player.getHistory("useCard").map(value => value.card.number).every((value, index, array) => !index || value > array[index - 1]);
-					if (!player.storage[event.name]) {
+					if (!player.storage[name]) {
 						if (event.isStrictlyIncreasing) {
-							player.logSkill(event.name);
+							player.logSkill(name);
 							player.draw("nodelay");
 						}
 						else if ((event.num = player.getHp()) && player.hasCard(card => lib.filter.cardDiscardable(card, player), "he")) {
-							player.logSkill(event.name);
-							player.chooseToDiscard(`${get.skillTranslation(event.name, player)}：弃置${get.cnNumber(event.num)}张牌`, "he", event.num, true).delay = false;
-							event.discardedCards = true;
+							player.logSkill(name);
+							player.chooseToDiscard(`${get.skillTranslation(name, player)}：弃置${get.cnNumber(event.num)}张牌`, "he", event.num, true).delay = false;
 						}
 						event.finish();
 						return;
 					}
-					if (event.isStrictlyIncreasing) player.chooseTarget(`${get.skillTranslation(event.name, player)}：令一名角色摸一张牌`, true).set("targetprompt", "摸一张牌").ai = target => {
+					if (event.isStrictlyIncreasing) player.chooseTarget(`${get.skillTranslation(name, player)}：令一名角色摸一张牌`, true).set("targetprompt", "摸一张牌").ai = target => {
 						const effect = _status.event.player.attitudeTo(target);
 						if (target.hasSkillTag("nogain")) return effect / 10;
 						return effect;
 					};
-					else if ((event.num = player.getHp()) && game.hasPlayer(current => current.countDiscardableCards(player, "he"))) player.chooseTarget(`${get.skillTranslation(event.name, player)}：弃置一名角色的至多${get.cnNumber(event.num)}张牌`, true, (card, player, target) => target.countDiscardableCards(player, "he")).set("targetprompt", "被弃置牌").ai = target => get.effect(target, "guohe_copy2", _status.event.player, _status.event.player);
+					else if ((event.num = player.getHp()) && game.hasPlayer(current => current.countDiscardableCards(player, "he"))) player.chooseTarget(`${get.skillTranslation(name, player)}：弃置一名角色的至多${get.cnNumber(event.num)}张牌`, true, (card, player, target) => target.countDiscardableCards(player, "he")).set("targetprompt", "被弃置牌").ai = target => get.effect(target, "guohe_copy2", _status.event.player, _status.event.player);
 					else event.finish();
 					"step 1"
 					if (!result.targets?.length) return;
 					player.logSkill(event.name, event.target = result.targets[0]);
 					if (event.target != player) player.addExpose(0.2);
 					if (event.isStrictlyIncreasing) event.target.draw("nodelay");
-					else {
-						player.discardPlayerCard(event.target, "he", [1, event.num], `${get.skillTranslation(event.name, player)}：弃置${get.translation(event.target)}的至多${get.cnNumber(event.num)}张牌`, true);
-						event.discardedAnyPlayerCards = true;
-					}
+					else player.discardPlayerCard(event.target, "he", [1, event.num], `${get.skillTranslation(event.name, player)}：弃置${get.translation(event.target)}的至多${get.cnNumber(event.num)}张牌`, true);
+				},
+				isNotAvailable: player => {
+					/**
+					 * @param {GameEvent} evt
+					 * @returns {boolean}
+					 */
+					const filter = evt => {
+						const parent = evt.getParent(3);
+						return parent.name == "avn_ascending" && parent.player == player;
+					};
+					return player.storage.avn_ascending ? game.hasPlayer2(current => current.hasHistory("lose", filter)) : player.hasHistory("lose", filter);
 				},
 				ai: {
 					effect: {
@@ -2168,14 +2176,14 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_king_orange: "King Orange",
 			avn_king_orange_ab: "King",
 			avn_resistant: "抵倾",
-			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法获得过牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则你获得牌堆底的一张牌。",
+			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未因本技能获得牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则你获得牌堆底的一张牌。",
 			get avn_resistant_info() {
 				return game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_gold") ? `${this._avn_resistant_info}牌堆洗牌后，你修改本技能。` : this._avn_resistant_info;
 			},
 			get avn_resistant_rewrite() {
 				return `${this.avn_resistant}·改`;
 			},
-			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法令一名角色获得过牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则其获得牌堆底的一张牌。",
+			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未因本技能令一名角色获得牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则其获得牌堆底的一张牌。",
 			// Gold
 			avn_gold: "Gold",
 			// Alexcrafter28
