@@ -326,7 +326,8 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 			game.saveExtensionConfig("桌面大战", "unlocked_characters", game.getExtensionConfig("桌面大战", "unlocked_characters").removeArray(["avn_the_second_coming_the_chosen_one_return"]));
 			game.saveExtensionConfig("桌面大战", "confirmed_unlocked_characters", game.getExtensionConfig("桌面大战", "confirmed_unlocked_characters").removeArray(["avn_the_second_coming_the_chosen_one_return"]));
 		};
-		lib.init.css(`${lib.assetURL}extension/桌面大战`, "extension");
+		const animationVsNonameDirectory = `${lib.assetURL}extension/桌面大战`;
+		lib.init.css(animationVsNonameDirectory, "extension");
 		if (!data.imported) {
 			game.saveExtensionConfig("桌面大战", "imported", true);
 			lib.config.characters.add("animation_vs_noname");
@@ -362,15 +363,14 @@ game.import("extension", (lib, game, ui, get, ai, _status) => ({
 		};
 		lib.config.all.characters.add("animation_vs_noname");
 		lib.translate.animation_vs_noname_character_config = "桌面大战";
-		lib.init.jsForExtension(`${lib.assetURL}extension/桌面大战/character`, "animation_vs_noname");
+		lib.init.jsForExtension(`${animationVsNonameDirectory}/character`, "animation_vs_noname");
 		lib.config.all.cards.add("animation_vs_noname");
 		lib.config.all.cards.add("animation_vs_noname_internet");
 		lib.translate.animation_vs_noname_card_config = "桌面大战";
 		lib.translate.animation_vs_noname_internet_card_config = "桌战IN";
-		lib.init.jsForExtension(`${lib.assetURL}extension/桌面大战/card`, [
-			"animation_vs_noname",
-			"animation_vs_noname_internet"
-		]);
+		const cardDirectory = `${animationVsNonameDirectory}/card`;
+		lib.init.jsForExtension(cardDirectory, "animation_vs_noname");
+		lib.init.jsForExtension(cardDirectory, "animation_vs_noname_internet");
 	},
 	onremove: () => game.saveExtensionConfig("桌面大战", "imported"),
 	help: {

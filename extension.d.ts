@@ -64,10 +64,9 @@ interface AVNFrameByFrameDrawingBackupExSkillData extends ExEventSkillData<ExEve
 }
 interface AVNFrameByFrameDrawingExSkillData extends ExEventSkillData<ExEvent<"avn_frame_by_frame_drawing">> {
 	chooseButton: ExChooseButtonConfigData<AVNFrameByFrameDrawingBackupExSkillData>;
-	hasNotConvertedThisRound(player: Player, name: string): boolean;
 	isNotValidConversionResult(player: Player, card: Card): boolean;
 	isNumberNotLessThanPreviousConvertedCard(player: Player, card: Card): boolean;
-	isSuitOrTypeDifferentFrom(card: Card, anotherCard: Card): boolean;
+	isSuitAndTypeAndLengthDifferentFrom(card: Card, anotherCard: Card): boolean;
 	isConvertable(player: Player, card: Card, conversionResult: Card): boolean;
 }
 interface AVNResistantExSkillData extends ExEventSkillData<ExEvent<"avn_resistant">> {

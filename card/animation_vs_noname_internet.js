@@ -13,9 +13,8 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				global: "avn_protect_skill",
 				filterTarget: (card, player, target) => {
 					if (target == player) return false;
-					const event = _status.event;
-					console.log(event);
-					if (["arrangeTrigger", "trigger"].includes(event.name)) return true;
+					const event = _status.event, name = event.name;
+					if (["arrangeTrigger", "avn_protect_skill"].includes(name) || name == "trigger" && event.skill == "avn_protect_skill") return true;
 					const damage = event.getParent(4);
 					return damage?.name == "damage" && target == damage.player;
 				},
@@ -663,7 +662,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				range: (card, player, target) => player.inRange(target),
 				filterTarget: (card, player, target) => target.countDiscardableCards(player, "hej"),
 				selectTarget: () => [1, Infinity],
-				yingbian_tags: "defaultYingbianEffect",
+				defaultYingbianEffect: "hit",
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
 					if (!player.storage.renku) player.storage.renku = true;
 					game.updateRenku();
@@ -936,7 +935,6 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				cardSkill: true,
 				charlotte: true,
 				onremove: true,
-				mark: true,
 				intro: {
 					name: "下载中……",
 					mark: dialog => {
@@ -951,20 +949,19 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				filter: () => _status.renku.length,
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
-					player.removeMark(event.name, 2, false);
-					if (_status.renku.length) player.chooseCardButton(`${get.translation(event.name)}：你可以获得仁库中的至多两张牌`, [1, 2], _status.renku).ai = button => get.value(button.link);
+					const name = event.name, countMark = player.countMark(name);
+					player.removeMark(name, countMark, false);
+					if (_status.renku.length) player.chooseCardButton(`${get.translation(name)}：你可以获得仁库中的至多${get.cnNumber(countMark)}张牌`, [1, countMark], _status.renku).ai = button => get.value(button.link);
 					else event.finish();
 					"step 1"
-					if (result.links?.length) {
-						player.logSkill(event.name);
-						if (!player.storage.renku) player.storage.renku = true;
-						_status.renku.removeArray(result.links);
-						game.updateRenku();
-						player.gain(result.links, "gain2", "fromRenku");
-					}
-					else event.finish();
-					"step 2"
-					if (player.hasMark(event.name)) event.goto(0);
+					const links = result.links;
+					if (!links?.length) return;
+					player.logSkill(event.name);
+					const storage = player.storage;
+					if (!storage.renku) storage.renku = true;
+					_status.renku.removeArray(links);
+					game.updateRenku();
+					player.gain(links, "gain2", "fromRenku");
 				}
 			},
 			// Delay

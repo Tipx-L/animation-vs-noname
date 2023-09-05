@@ -457,8 +457,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					}
 					if (!event.num) event.num = 3;
 					_status.characterlist.randomSort();
-					const animationVsNonameCharacters = Object.keys(lib.characterPack.animation_vs_noname), toChanges = _status.characterlist.filter(value => {
-						if (!animationVsNonameCharacters.includes(value)) return false;
+					const animationVsNonameCharacters = new Set(Object.keys(lib.characterPack.animation_vs_noname)), toChanges = _status.characterlist.filter(value => {
+						if (!animationVsNonameCharacters.has(value)) return false;
+						const sourceCharacter = get.sourceCharacter(value);
+						if (sourceCharacter != value && sourceCharacter != name2) return false;
 						if (!lib.perfectPair[name2]?.includes(value) && !lib.perfectPair[value]?.includes(name2)) return false;
 						const toChangeSkills = lib.character[value]?.[3];
 						if (!toChangeSkills) return false;
@@ -509,8 +511,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					}
 					if (!event.num) event.num = 3;
 					_status.characterlist.randomSort();
-					const animationVsNonameCharacters = Object.keys(lib.characterPack.animation_vs_noname), toChanges = _status.characterlist.filter(value => {
-						if (!animationVsNonameCharacters.includes(value)) return false;
+					const animationVsNonameCharacters = new Set(Object.keys(lib.characterPack.animation_vs_noname)), toChanges = _status.characterlist.filter(value => {
+						if (!animationVsNonameCharacters.has(value)) return false;
+						const sourceCharacter = get.sourceCharacter(value);
+						if (sourceCharacter != value && sourceCharacter != name1) return false;
 						if (!lib.perfectPair[name1]?.includes(value) && !lib.perfectPair[value]?.includes(name1)) return false;
 						const toChangeSkills = lib.character[value]?.[3];
 						if (!toChangeSkills) return false;
@@ -559,8 +563,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					}
 					if (!event.num) event.num = 3;
 					_status.characterlist.randomSort();
-					const animationVsNonameCharacters = Object.keys(lib.characterPack.animation_vs_noname), toChanges = _status.characterlist.filter(value => {
-						if (!animationVsNonameCharacters.includes(value)) return false;
+					const animationVsNonameCharacters = new Set(Object.keys(lib.characterPack.animation_vs_noname)), toChanges = _status.characterlist.filter(value => {
+						if (!animationVsNonameCharacters.has(value)) return false;
+						const sourceCharacter = get.sourceCharacter(value);
+						if (sourceCharacter != value && sourceCharacter != name1) return false;
 						if (!lib.perfectPair[name1]?.includes(value) && !lib.perfectPair[value]?.includes(name1)) return false;
 						const toChangeSkills = lib.character[value]?.[3];
 						if (!toChangeSkills) return false;
@@ -957,37 +963,30 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_frame_by_frame_drawing: {
 				hiddenCard: (player, name) => Array.from(ui.discardPile.childNodes).slice(-5).some(value => {
 					if (lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, value)) return false;
-					const discardPileCardName = get.name(value);
-					return discardPileCardName == name && lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, discardPileCardName);
+					return get.name(value) == name;
 				}),
 				enable: ["chooseToUse", "chooseToRespond"],
-				filter: (event, player) => Array.from(ui.discardPile.childNodes).slice(-5).some(value => {
-					if (lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, value)) return false;
-					const convertedCard = {
-						name: get.name(value),
-						nature: get.nature(value)
-					};
-					return lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, convertedCard.name) && event.filterCard(convertedCard, player, event);
-				}),
+				filter: (event, player) => Array.from(ui.discardPile.childNodes).slice(-5).some(value => !lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, value) && event.filterCard({
+					name: get.name(value),
+					nature: get.nature(value)
+				}, player, event)),
 				chooseButton: {
 					dialog: (event, player) => ui.create.dialog(get.skillTranslation("avn_frame_by_frame_drawing", player), Array.from(ui.discardPile.childNodes).slice(-5)),
 					filter: (button, player) => {
-						const link = button.link;
-						if (lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, link)) return false;
-						const convertedCard = {
+						if (lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, button.link)) return false;
+						const parent = _status.event.getParent();
+						return parent.filterCard({
 							name: get.name(button.link),
 							nature: get.nature(button.link)
-						};
-						if (!lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, convertedCard.name)) return false;
-						const parent = _status.event.getParent();
-						return parent.filterCard(convertedCard, player, parent);
+						}, player, parent);
 					},
 					check: button => {
 						if (_status.event.getParent().type != "phase") return 1;
-						if (["wugu", "zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].includes(get.name(button.link))) return 0;
+						const link = button.link;
+						if (["wugu", "zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].includes(get.name(link))) return 0;
 						return _status.event.player.getUseValue({
-							name: get.name(button.link),
-							nature: get.nature(button.link)
+							name: get.name(link),
+							nature: get.nature(link)
 						});
 					},
 					backup: links => {
@@ -1013,17 +1012,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						})}使用或打出`;
 					}
 				},
-				isSuitOrTypeDifferentFrom: (card, anotherCard) => get.suit(card) != get.suit(anotherCard) || get.type2(card) != get.type2(anotherCard),
+				isSuitAndTypeAndLengthDifferentFrom: (card, anotherCard) => get.suit(card) != get.suit(anotherCard) && get.type2(card) != get.type2(anotherCard) && get.cardNameLength(card) != get.cardNameLength(anotherCard),
 				isNumberNotLessThanPreviousConvertedCard: (player, card) => !(get.number(card) < player.getHistory("useSkill", evt => evt.skill == "avn_frame_by_frame_drawing_backup").pop()?.event.card.number),
-				isConvertable: (player, card, conversionResult) => lib.skill.avn_frame_by_frame_drawing.isSuitOrTypeDifferentFrom(card, conversionResult) && lib.skill.avn_frame_by_frame_drawing.isNumberNotLessThanPreviousConvertedCard(player, card),
+				isConvertable: (player, card, conversionResult) => lib.skill.avn_frame_by_frame_drawing.isSuitAndTypeAndLengthDifferentFrom(card, conversionResult) && lib.skill.avn_frame_by_frame_drawing.isNumberNotLessThanPreviousConvertedCard(player, card),
 				isNotValidConversionResult: (player, card) => !["basic", "trick"].includes(get.type(card)) || !player.hasCard(cardx => lib.skill.avn_frame_by_frame_drawing.isConvertable(player, cardx, card), "hes"),
-				hasNotConvertedThisRound: (player, name) => {
-					for (const actionHistory of player.actionHistory.slice().reverse()) {
-						if (actionHistory.useSkill.some(value => value.skill == "avn_frame_by_frame_drawing_backup" && name == value.event.card.name)) return false;
-						if (actionHistory.isRound) break;
-					}
-					return true;
-				},
 				ai: {
 					fireAttack: true,
 					respondSha: true,
@@ -1033,13 +1025,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					skillTagFilter: (player, tag) => {
 						if (Array.from(ui.discardPile.childNodes).slice(-5).every(value => {
 							if (lib.skill.avn_frame_by_frame_drawing.isNotValidConversionResult(player, value)) return true;
-							const name = get.name(value);
-							if (!lib.skill.avn_frame_by_frame_drawing.hasNotConvertedThisRound(player, name)) return true;
 							switch (tag) {
-								case "fireAttack": return name != "huogong";
-								case "respondSha": return name != "sha";
-								case "respondShan": return name != "shan";
-								case "respondTao": return name != "tao";
+								case "fireAttack": return get.name(value) != "huogong";
+								case "respondSha": return get.name(value) != "sha";
+								case "respondShan": return get.name(value) != "shan";
+								case "respondTao": return get.name(value) != "tao";
 								case "save": return !get.tag(value, "save");
 							}
 							return false;
@@ -1588,8 +1578,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						const cards = result.cards;
 						player.logSkill(event.name);
 						const uiClear = game.createEvent("uiClear"), loseFinish = game.createEvent("loseFinish");
-						event.next.remove(uiClear);
-						event.next.remove(loseFinish);
+						event.next.removeArray([uiClear, loseFinish]);
 						player.$throw(cards);
 						player.lose(cards, ui.special, "toRenku").after.push(uiClear, loseFinish);
 						game.log(player, "将", cards, "置入了仁库");
@@ -1601,20 +1590,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						loseFinish.num = cards.length;
 						loseFinish.setContent(() => {
 							const name = `${skill}_effect`;
+							player.addMark(name, num, false);
 							player.addTempSkill(name, {
 								player: `${name}Begin`
 							});
-							player.storage[name].push(num);
-						});
-						const phase = event.getParent("phase");
-						if (!phase) return;
-						const avnOutOfContextFinish = game.createEvent("avnOutOfContextFinish");
-						event.next.remove(avnOutOfContextFinish);
-						phase.after.push(avnOutOfContextFinish);
-						avnOutOfContextFinish.player = player;
-						loseFinish.skill = event.name;
-						avnOutOfContextFinish.setContent(() => {
-							delete player.storage[`${skill}_effect`];
 						});
 					}
 					else if (result.targets?.length) {
@@ -1628,43 +1607,63 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			},
 			avn_out_of_context_effect: {
 				charlotte: true,
-				init: (player, skill) => {
+				init: player => {
 					if (!player.storage.renku) player.storage.renku = true;
-					if (!Array.isArray(player.storage[skill])) player.storage[skill] = [];
+				},
+				intro: {
+					content: (storage, player) => `本回合结束后，你将仁库中的${get.cnNumber(Math.min(_status.renku.filter(value => game.hasPlayer(current => lib.filter.canBeGained(value, current, player))).length, player.countMark("avn_out_of_context_effect")))}张牌交给一名角色`,
 				},
 				direct: true,
 				trigger: {
 					global: "phaseAfter"
 				},
-				filter: (event, player) => player.storage.avn_out_of_context_effect.length && _status.renku.filter(value => game.hasPlayer(current => lib.filter.canBeGained(value, current, player))).length,
+				filter: (event, player) => player.hasMark("avn_out_of_context_effect") && _status.renku.filter(value => game.hasPlayer(current => lib.filter.canBeGained(value, current, player))).length,
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					const numberOfRenkuCardsGivable = _status.renku.filter(value => game.hasPlayer(current => lib.filter.canBeGained(value, current, player))).length;
-					if (numberOfRenkuCardsGivable && player.storage[event.name].length) {
-						const numberOfRenkuCardsToGive = Math.min(numberOfRenkuCardsGivable, event.num = player.storage[event.name].shift());
-						player.chooseTarget(`${get.skillTranslation(event.name, player)}：将仁库中的${get.cnNumber(numberOfRenkuCardsToGive)}张牌交给一名角色`, true, (card, player, target) => _status.renku.filter(value => lib.filter.canBeGained(value, target, player)).length >= _status.event.numberOfRenkuCardsToGive, target => Math.max(..._status.renku.filter(value => game.hasPlayer(current => lib.filter.canBeGained(value, current, player))).map(value => get.sgnAttitude(_status.event.player, target) * get.value(value, target)))).numberOfRenkuCardsToGive = numberOfRenkuCardsToGive;
+					if (!numberOfRenkuCardsGivable) {
+						event.finish();
+						return;
 					}
-					else event.finish();
+					const name = event.name, countMark = event.num = player.countMark(name), numberOfRenkuCardsToGive = Math.min(numberOfRenkuCardsGivable, countMark);
+					player.removeMark(name, countMark, false);
+					player.chooseTarget(
+						`${get.skillTranslation(name, player)}：将仁库中的${get.cnNumber(numberOfRenkuCardsToGive)}张牌交给一名角色`,
+						true,
+						(card, player, target) => _status.renku.filter(value => lib.filter.canBeGained(value, target, player)).length >= _status.event.numberOfRenkuCardsToGive,
+						target => Math.max(..._status.renku.filter(value => game.hasPlayer(current => lib.filter.canBeGained(value, current, player))).map(value => get.sgnAttitude(_status.event.player, target) * get.value(value, target)))
+					).numberOfRenkuCardsToGive = numberOfRenkuCardsToGive;
 					"step 1"
 					if (result.targets?.length) {
-						const target = event.target = result.targets[0];
-						player.logSkill(event.name, target);
-						const numberOfCardsNeedToGive = Math.min(_status.renku.filter(value => game.hasPlayer(current => lib.filter.canBeGained(value, current, player))).length, num);
-						player.chooseCardButton(`${get.skillTranslation(event.name, player)}：将仁库中的${get.cnNumber(numberOfCardsNeedToGive)}张牌交给${get.translation(target)}`, true, [1, numberOfCardsNeedToGive], _status.renku).set("filterButton", (button, player) => lib.filter.canBeGained(button.link, _status.event.getParent().target, player)).ai = button => {
-							const target = _status.event.getParent().target;
-							return _status.event.player.attitudeTo(target) * get.value(button.link, target);
+						const name = event.name, target = event.target = result.targets[0];
+						player.logSkill(name, target);
+						const renkuCardsGivable = _status.renku.filter(value => lib.filter.canBeGained(value, target, player)), numberOfRenkuCardsGivable = renkuCardsGivable.length;
+						if (numberOfRenkuCardsGivable > num) {
+							const numberOfCardsNeedToGive = Math.min(numberOfRenkuCardsGivable, num);
+							player.chooseCardButton(
+								`${get.skillTranslation(name, player)}：将仁库中的${get.cnNumber(numberOfCardsNeedToGive)}张牌交给${get.translation(target)}`,
+								true,
+								[1, numberOfCardsNeedToGive],
+								_status.renku
+							).set("filterButton", (button, player) => lib.filter.canBeGained(button.link, _status.event.getParent().target, player)).ai = button => {
+								const target = _status.event.getParent().target;
+								return _status.event.player.attitudeTo(target) * get.value(button.link, target);
+							};
+						}
+						else event._result = {
+							bool: true,
+							links: renkuCardsGivable
 						};
 					}
 					else event.finish();
 					"step 2"
-					if (result.links?.length) {
-						_status.renku.removeArray(result.links);
-						game.updateRenku();
-						player.$give(result.links, target);
-						player.give(result.links, target, true).set("fromStorage", true).fromRenku = true;
-						if (target != player) player.addExpose(0.2);
-					}
-					event.goto(0);
+					const links = result.links;
+					if (!links?.length) return;
+					_status.renku.removeArray(links);
+					game.updateRenku();
+					player.$give(links, target);
+					player.give(links, target, true).set("fromStorage", true).fromRenku = true;
+					if (target != player) player.addExpose(0.2);
 				}
 			},
 			// Purple, Dark Blue, Pink
@@ -1810,7 +1809,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						const bottomCards = game.cardsGotoOrdering(get.bottomCards(Math.max(player.getDamagedHp(), 1))).cards;
 						player.showCards(bottomCards);
 						player.gain(bottomCards, "gain2");
-						if (bottomCards.some(value => get.number(value) == 13)) player.gain(get.bottomCards(), "gain2");
+						if (bottomCards.some(value => get.number(value) == 13)) {
+							player.gain(get.bottomCards(), "draw");
+							game.log(player, "获得了牌堆底的一张牌");
+						}
 						event.finish();
 						return;
 					}
@@ -1823,12 +1825,15 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					}
 					"step 1"
 					if (!result.targets?.length) return;
-					player.logSkill(event.name, event.target = result.targets[0]);
-					if (event.target != player) player.addExpose(0.2);
+					const chosenTarget = result.targets[0];
+					player.logSkill(event.name, chosenTarget);
+					if (chosenTarget != player) player.addExpose(0.2);
 					const bottomCards = game.cardsGotoOrdering(get.bottomCards(Math.max(player.getDamagedHp(), 1))).cards;
-					event.target.showCards(bottomCards);
-					event.target.gain(bottomCards, "gain2");
-					if (bottomCards.some(value => get.number(value) == 13)) event.target.gain(get.bottomCards(), "gain2");
+					chosenTarget.showCards(bottomCards);
+					chosenTarget.gain(bottomCards, "gain2");
+					if (bottomCards.every(value => get.number(value) != 13)) return;
+					chosenTarget.gain(get.bottomCards(), "draw");
+					game.log(chosenTarget, "获得了牌堆底的一张牌");
 				},
 				isNotAvailable: (player) => {
 					/**
@@ -2106,7 +2111,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_frame_by_frame_drawing_backup() {
 				return this.avn_frame_by_frame_drawing;
 			},
-			avn_frame_by_frame_drawing_info: "你可以将一张牌当做最后进入弃牌堆的五张牌中的一张与其花色或类别不同，且你本轮未以此法转化过的基本牌或普通锦囊牌使用或打出，且以此法转化的牌的点数不小于你本回合上一张以此法转化的牌。",
+			avn_frame_by_frame_drawing_info: "你可以将一张点数不小于你本回合上一张以此法转化的牌的牌当做最后进入弃牌堆的五张牌中的一张与其花色、类别和字数均不同的基本牌或普通锦囊牌使用或打出。",
 			// The Second Coming (The Chosen One's Return)
 			get avn_the_second_coming_the_chosen_one_return() {
 				return this.avn_the_second_coming;
