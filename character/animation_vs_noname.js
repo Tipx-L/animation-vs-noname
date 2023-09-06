@@ -1,11 +1,18 @@
 "use strict";
 game.import("character", (lib, game, ui, get, ai, _status) => {
 	/**
-	 * Insert line break opportunities into a URL.
-	 * @param {String} url URL
+	 * @param {string} character
+	 * @returns {number}
 	 */
-	const formatURL = url => /* Split the URL into an array to distinguish double slashes from single slashes. */ /* Format the strings on either side of double slashes separately. */ url.split("//").map(str => str.replace(/(?<after>:)/giu, "$1<wbr>").replace(/(?<before>[/~.,\-_?#%])/giu, "<wbr>$1").replace(/(?<beforeAndAfter>[=&])/giu, "<wbr>$1<wbr>")).join("//<wbr>");
-	let ordinal = -1;
+	const getCharacterIndex = character => {
+		const hiddenCharacters = lib.avnHiddenCharacters;
+		return Object.keys(lib.characterPack.animation_vs_noname).filter(value => !hiddenCharacters.has(value)).indexOf(character);
+	};
+	/**
+	 * Insert line break opportunities into a URL.
+	 * @param {String} url The URL.
+	 */
+	const formatURL = url => url.split("//").map(str => str.replace(/(?<after>:)/giu, "$1<wbr>").replace(/(?<before>[/~.,\-_?#%])/giu, "<wbr>$1").replace(/(?<beforeAndAfter>[=&])/giu, "<wbr>$1<wbr>")).join("//<wbr>");
 	/**
 	 * @type {AnimationVsNonameImportCharacterConfig}
 	 */
@@ -40,250 +47,324 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 		characterFilter: {},
 		characterSort: {
 			animation_vs_noname: {
-				avn_animator_vs_animation: ["avn_alan_becker", "avn_victim", "avn_the_chosen_one", "avn_the_dark_lord", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow", "avn_virabot", "avn_agent"],
-				avn_animation_vs_minecraft: ["avn_herobrine", "avn_purple", "avn_dark_blue", "avn_pink", "avn_king_orange", "avn_gold", "avn_alexcrafter28", "ska_warden"],
-				avn_animation_vs_super_mario_bros: ["sst_mario"],
-				avn_actual_shorts: ["sst_kirby", "avn_corn_dog_guy"]
+				avn_animator_vs_animation: [
+					"avn_alan_becker",
+					"avn_victim",
+					"avn_the_chosen_one",
+					"avn_the_dark_lord",
+					"avn_the_second_coming",
+					"avn_the_second_coming_the_chosen_one_return",
+					"avn_red",
+					"avn_green",
+					"avn_blue",
+					"avn_yellow",
+					"avn_virabot",
+					"avn_agent"
+				],
+				avn_animation_vs_minecraft: [
+					"avn_herobrine",
+					"avn_purple",
+					"avn_dark_blue",
+					"avn_pink",
+					"avn_king_orange",
+					"avn_gold",
+					"avn_alexcrafter28",
+					"ska_warden"
+				],
+				avn_animation_vs_super_mario_bros: [
+					"sst_mario"
+				],
+				avn_actual_shorts: [
+					"sst_kirby",
+					"avn_corn_dog_guy"
+				]
 			}
 		},
 		characterIntro: {
-			avn_alan_becker: [
-				"武将作者：Show-K<br>",
-				"插图作者：Alan Becker、Bradley G. Munkowitz",
-				"<hr>",
-				`AvN${++ordinal}. Alan Becker<br>`,
-				"首次登场：Animator vs. Animation",
-				"<hr>",
-				"伴随火柴人们一起成长。"
-			].join(""),
-			avn_victim: [
-				"武将作者：Show-K<br>",
-				"插图作者：救赎",
-				"<hr>",
-				`AvN${++ordinal}. Victim<br>`,
-				"首次登场：Animator vs. Animation",
-				"<hr>",
-				"万物起源。"
-			].join(""),
-			avn_the_chosen_one: [
-				"武将作者：Show-K<br>",
-				"插图作者：救赎",
-				"<hr>",
-				`AvN${++ordinal}. The Chosen One<br>`,
-				"首次登场：Animator vs. Animation II",
-				"<hr>",
-				"奋起反抗。"
-			].join(""),
-			avn_the_dark_lord: [
-				"武将作者：Show-K<br>",
-				"插图作者：Alan Becker",
-				"<hr>",
-				`AvN${++ordinal}. The Dark Lord<br>`,
-				"首次登场：Animator vs. Animation III",
-				"<hr>",
-				"“mission.The_Dark_Lord = destroy(The_Chosen_One);”"
-			].join(""),
-			avn_the_second_coming: [
-				"武将作者：Show-K<br>",
-				"插图作者：厉眠",
-				"<hr>",
-				`AvN${++ordinal}. The Second Coming<br>`,
-				"首次登场：Animator vs. Animation IV",
-				"<hr>",
-				"嘿！需要帮忙？"
-			].join(""),
-			avn_the_second_coming_the_chosen_one_return: [
-				"武将作者：Show-K<br>",
-				"插图作者：Alan Becker",
-				"<hr>",
-				`AvN${ordinal}+. The Second Coming<br>`,
-				"首次登场：The Showdown - AVA Shorts Episode 4",
-				"<hr>",
-				`<span style="font-size: 30px; font-weight: bold;">你终结了我的朋友。<br>现在我要终结你。</span>`
-			].join(""),
-			avn_red: [
-				"武将作者：Show-K<br>",
-				"插图作者：厉眠",
-				"<hr>",
-				`AvN${++ordinal}. Red<br>`,
-				"首次登场：Animator vs. Animation IV",
-				"<hr>",
-				"身先士卒。"
-			].join(""),
-			avn_green: [
-				"武将作者：Show-K<br>",
-				"插图作者：厉眠",
-				"<hr>",
-				`AvN${++ordinal}. Green<br>`,
-				"首次登场：Animator vs. Animation IV",
-				"<hr>",
-				"锦上添花。"
-			].join(""),
-			avn_blue: [
-				"武将作者：Show-K<br>",
-				"插图作者：厉眠",
-				"<hr>",
-				`AvN${++ordinal}. Blue<br>`,
-				"首次登场：Animator vs. Animation IV",
-				"<hr>",
-				"雪中送炭。"
-			].join(""),
-			avn_yellow: [
-				"武将作者：Show-K<br>",
-				"插图作者：Alan Becker",
-				"<hr>",
-				`AvN${++ordinal}. Yellow<br>`,
-				"首次登场：Animator vs. Animation IV",
-				"<hr>",
-				"精益求精。"
-			].join(""),
-			avn_virabot: [
-				"武将作者：Show-K<br>",
-				"插图作者：Alan Becker",
-				"<hr>",
-				`AvN${++ordinal}. [Agent]<br>`,
-				"首次登场：Wanted - Animator vs. Animation VI - Ep 1",
-				"<hr>",
-				"突如其来。"
-			].join(""),
-			avn_agent: [
-				"武将作者：Show-K<br>",
-				"插图作者：帆",
-				"<hr>",
-				`AvN${++ordinal}. [Agent]<br>`,
-				"首次登场：Wanted - Animator vs. Animation VI - Ep 1",
-				"<hr>",
-				"一发入魂。"
-			].join(""),
-			avn_herobrine: [
-				"武将作者：Show-K<br>",
-				"插图作者：Alan Becker",
-				"<hr>",
-				`AvN${++ordinal}. Herobrine<br>`,
-				"首次登场：Animation vs. Minecraft",
-				"<hr>",
-				"<del>未</del>已解之谜。"
-			].join(""),
-			avn_purple: [
-				"武将作者：Show-K<br>",
-				"插图作者：Alan Becker",
-				"<hr>",
-				`AvN${++ordinal}. Purple<br>`,
-				"首次登场：The Nether - AVM Shorts Episode 8",
-				"<hr>",
-				["avn_dark_blue", "avn_pink"].some(Set.prototype.has, new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"))) ? "终于得到了认可。" : "努力得到认可。"
-			].join(""),
-			avn_dark_blue: [
-				"武将作者：Show-K<br>",
-				"插图作者：林、阿陌",
-				"<hr>",
-				`AvN${ordinal}-1. Dark Blue<br>`,
-				"首次登场：Note Block Universe - AVM Shorts Episode 29",
-				"<hr>",
-				"再也无法挽留。"
-			].join(""),
-			avn_pink: [
-				"武将作者：Show-K<br>",
-				"插图作者：林、阿陌",
-				"<hr>",
-				`AvN${ordinal}-2. Pink<br>`,
-				"首次登场：Note Block Universe - AVM Shorts Episode 29",
-				"<hr>",
-				"再也无法触及。"
-			].join(""),
-			avn_king_orange: [
-				"武将作者：Show-K<br>",
-				"插图作者：救赎",
-				"<hr>",
-				`AvN${++ordinal}. King Orange<br>`,
-				"首次登场：Parkour - AVM Shorts Episode 22",
-				"<hr>",
-				new Set(game.getExtensionConfig("桌面大战", "unlocked_characters")).has("avn_gold") ? "不想失去任何人了。不能失去任何人了。" : "不想输给任何人了。不能输给任何人了。"
-			].join(""),
-			avn_gold: [
-				"武将作者：Show-K<br>",
-				"插图作者：Alan Becker",
-				"<hr>",
-				`AvN${ordinal}-1. Gold<br>`,
-				"首次登场：The King - AVM Shorts Episode 30",
-				"<hr>",
-				"再也无法陪伴。"
-			].join(""),
-			avn_alexcrafter28: [
-				"联动来源：《大乱桌斗》<br>",
-				"武将作者：Show-K、mario not mary<br>",
-				"插图作者：Alan Becker",
-				"<hr>",
-				`AvN${++ordinal}. Alexcrafter28<br>`,
-				"首次登场：Lush Caves - AVM Shorts Episode 24",
-				"<hr>",
-				"1428. 史蒂夫/Steve/スティーブ<br>",
-				"系列：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
-				"首次登场：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
-				"来自一个由立方体构成的世界的神秘人物，身为一名探险家（同时还是一名矿工），他将（和他心爱的镐子）探索这个世界，并与各位斗士们进行一次武艺切磋。<br>",
-				"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
-				"<hr>",
-				"这个世界上未曾发生过有人玩Minecraft时突然有两个火柴人从游戏窗口内钻出来到桌面，然后找到邮件程序并把火柴人自己发送出去的事情。"
-			].join(""),
-			ska_warden: [
-				"联动来源：《大乱桌斗》<br>",
-				"武将作者：Show-K<br>",
-				"插图作者：《我的世界》",
-				"<hr>",
-				`AvN${++ordinal}. 监守者/Warden/ウォーデン<br>`,
-				"首次登场：The Warden - AVM Shorts Episode 26",
-				"<hr>",
-				"S010. 监守者/Warden/ウォーデン<br>",
-				"系列：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
-				"首次登场：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
-				"监守者（Warden）是一种高大而危险的敌对生物，会根据振动和气息判断生物的位置。<br>",
-				"——《Minecraft Wiki》",
-				"<hr>",
-				"没有人知道历史。"
-			].join(""),
-			sst_mario: [
-				"联动来源：《大乱桌斗》<br>",
-				"武将作者：mario not mary、Show-K<br>",
-				"插图作者：黯まめ<br>",
-				`——${formatURL("https://twitter.com/kuromame_983/status/601696186274160640")}`,
-				"<hr>",
-				`AvN${++ordinal}. 马力欧/Mario/マリオ<br>`,
-				"首次登场：Animation vs. Super Mario Bros",
-				"<hr>",
-				"0001. 马力欧/Mario/マリオ<br>",
-				"系列：<ruby>马力欧<rp>（</rp><rt>Mario</rt><rp>）</rp></ruby><br>",
-				"首次登场：<ruby>咚奇刚<rp>（</rp><rt>Donkey Kong</rt><rp>）</rp></ruby><br>",
-				"超级标志性的角色！这位游戏巨星常常从酷霸王手中拯救世界。他有惊人的跳跃能力和多种变身道具。在闲暇时刻，他还会参与体育运动，擅长的项目数也数不清。在大乱斗里，他是一个值得信赖的全能型斗士。让我们一起来说：“是我，马力欧！”<br>",
-				"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
-				"<hr>",
-				"太激昂了，太生生不息了。"
-			].join(""),
-			sst_kirby: [
-				"联动来源：《大乱桌斗》<br>",
-				"武将作者：mario not mary<br>",
-				"插图作者：kotori<br>",
-				`——${formatURL("https://www.pixiv.net/artworks/26818738")}`,
-				"<hr>",
-				`AvN${++ordinal}. 卡比/Kirby/カービィ<br>`,
-				"首次登场：Kirby - An Actual Short",
-				"<hr>",
-				"0323. 卡比/Kirby/カービィ<br>",
-				"系列：<ruby>星之卡比<rp>（</rp><rt>Kirby</rt><rp>）</rp></ruby><br>",
-				"首次登场：<ruby>星之卡比<rp>（</rp><rt>Kirby\x27s Dream Land</rt><rp>）</rp></ruby><br>",
-				"圆圆滚滚的可爱卡比在波普之星过着平静的生活。它可以吸入物品或者生物，并且将它们吐出来或者复制能力。在大乱斗中，卡比吸入斗士之后可以复制他们的通常必杀技。它虽然很容易被击飞，但回场能力还不错。<br>",
-				"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
-				"<hr>",
-				"樱井亲儿子，粉红恶魔，灯火之星。"
-			].join(""),
-			avn_corn_dog_guy: [
-				"武将作者：Show-K<br>",
-				"插图作者：Alan Becker",
-				"<hr>",
-				`AvN${++ordinal}. Corn Dog Guy<br>`,
-				"首次登场：Corn Dog Guy - An Actual Short",
-				"<hr>",
-				"又是不平静的一天。"
-			].join("")
+			get avn_alan_becker() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker、Bradley G. Munkowitz",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_alan_becker")}. Alan Becker<br>`,
+					"首次登场：Animator vs. Animation",
+					"<hr>",
+					"伴随火柴人们一起成长。"
+				].join("");
+			},
+			get avn_victim() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：救赎",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_victim")}. Victim<br>`,
+					"首次登场：Animator vs. Animation",
+					"<hr>",
+					"万物起源。"
+				].join("");
+			},
+			get avn_the_chosen_one() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：救赎",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_the_chosen_one")}. The Chosen One<br>`,
+					"首次登场：Animator vs. Animation II",
+					"<hr>",
+					"奋起反抗。"
+				].join("");
+			},
+			get avn_the_dark_lord() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_the_dark_lord")}. The Dark Lord<br>`,
+					"首次登场：Animator vs. Animation III",
+					"<hr>",
+					"“mission.The_Dark_Lord = destroy(The_Chosen_One);”"
+				].join("");
+			},
+			get avn_the_second_coming() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：厉眠",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_the_second_coming")}. The Second Coming<br>`,
+					"首次登场：Animator vs. Animation IV",
+					"<hr>",
+					"嘿！需要帮忙？"
+				].join("");
+			},
+			get avn_the_second_coming_the_chosen_one_return() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_the_second_coming")}+. The Second Coming<br>`,
+					"首次登场：The Showdown - AVA Shorts Episode 4",
+					"<hr>",
+					`<span style="font-size: 30px; font-weight: bold;">你终结了我的朋友。<br>现在我要终结你。</span>`
+				].join("");
+			},
+			get avn_red() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：厉眠",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_red")}. Red<br>`,
+					"首次登场：Animator vs. Animation IV",
+					"<hr>",
+					"身先士卒。"
+				].join("");
+			},
+			get avn_green() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：厉眠",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_green")}. Green<br>`,
+					"首次登场：Animator vs. Animation IV",
+					"<hr>",
+					"锦上添花。"
+				].join("");
+			},
+			get avn_blue() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：厉眠",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_blue")}. Blue<br>`,
+					"首次登场：Animator vs. Animation IV",
+					"<hr>",
+					"雪中送炭。"
+				].join("");
+			},
+			get avn_yellow() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_yellow")}. Yellow<br>`,
+					"首次登场：Animator vs. Animation IV",
+					"<hr>",
+					"精益求精。"
+				].join("");
+			},
+			get avn_virabot() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_virabot")}. [Agent]<br>`,
+					"首次登场：Wanted - Animator vs. Animation VI - Ep 1",
+					"<hr>",
+					"突如其来。"
+				].join("");
+			},
+			get avn_agent() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：帆",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_agent")}. [Agent]<br>`,
+					"首次登场：Wanted - Animator vs. Animation VI - Ep 1",
+					"<hr>",
+					"一发入魂。"
+				].join("");
+			},
+			get avn_herobrine() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_herobrine")}. Herobrine<br>`,
+					"首次登场：Animation vs. Minecraft",
+					"<hr>",
+					"<del>未</del>已解之谜。"
+				].join("");
+			},
+			get avn_purple() {
+				const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters");
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_purple")}. Purple<br>`,
+					"首次登场：The Nether - AVM Shorts Episode 8",
+					"<hr>",
+					["avn_dark_blue", "avn_pink"].some(value => unlockedCharacters.includes(value)) ? "终于得到了认可。" : "努力得到认可。"
+				].join("");
+			},
+			get avn_dark_blue() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：林、阿陌",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_purple")}-1. Dark Blue<br>`,
+					"首次登场：Note Block Universe - AVM Shorts Episode 29",
+					"<hr>",
+					"再也无法挽留。"
+				].join("");
+			},
+			get avn_pink() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：林、阿陌",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_purple")}-2. Pink<br>`,
+					"首次登场：Note Block Universe - AVM Shorts Episode 29",
+					"<hr>",
+					"再也无法触及。"
+				].join("");
+			},
+			get avn_king_orange() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：救赎",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_king_orange")}. King Orange<br>`,
+					"首次登场：Parkour - AVM Shorts Episode 22",
+					"<hr>",
+					game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_gold") ? "不想失去任何人了。不能失去任何人了。" : "不想输给任何人了。不能输给任何人了。"
+				].join("");
+			},
+			get avn_gold() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_king_orange")}-1. Gold<br>`,
+					"首次登场：The King - AVM Shorts Episode 30",
+					"<hr>",
+					"再也无法陪伴。"
+				].join("");
+			},
+			get avn_alexcrafter28() {
+				return [
+					"联动来源：《大乱桌斗》<br>",
+					"武将作者：Show-K、mario not mary<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_alexcrafter28")}. Alexcrafter28<br>`,
+					"首次登场：Lush Caves - AVM Shorts Episode 24",
+					"<hr>",
+					"1428. 史蒂夫/Steve/スティーブ<br>",
+					"系列：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
+					"首次登场：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
+					"来自一个由立方体构成的世界的神秘人物，身为一名探险家（同时还是一名矿工），他将（和他心爱的镐子）探索这个世界，并与各位斗士们进行一次武艺切磋。<br>",
+					"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
+					"<hr>",
+					"这个世界上未曾发生过有人玩Minecraft时突然有两个火柴人从游戏窗口内钻出来到桌面，然后找到邮件程序并把火柴人自己发送出去的事情。"
+				].join("");
+			},
+			get ska_warden() {
+				return [
+					"联动来源：《大乱桌斗》<br>",
+					"武将作者：Show-K<br>",
+					"插图作者：《我的世界》",
+					"<hr>",
+					`AvN${getCharacterIndex("ska_warden")}. 监守者/Warden/ウォーデン<br>`,
+					"首次登场：The Warden - AVM Shorts Episode 26",
+					"<hr>",
+					"S010. 监守者/Warden/ウォーデン<br>",
+					"系列：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
+					"首次登场：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
+					"监守者（Warden）是一种高大而危险的敌对生物，会根据振动和气息判断生物的位置。<br>",
+					"——《Minecraft Wiki》",
+					"<hr>",
+					"没有人知道历史。"
+				].join("");
+			},
+			get sst_mario() {
+				return [
+					"联动来源：《大乱桌斗》<br>",
+					"武将作者：mario not mary、Show-K<br>",
+					"插图作者：黯まめ<br>",
+					`——${formatURL("https://twitter.com/kuromame_983/status/601696186274160640")}`,
+					"<hr>",
+					`AvN${getCharacterIndex("sst_mario")}. 马力欧/Mario/マリオ<br>`,
+					"首次登场：Animation vs. Super Mario Bros",
+					"<hr>",
+					"0001. 马力欧/Mario/マリオ<br>",
+					"系列：<ruby>马力欧<rp>（</rp><rt>Mario</rt><rp>）</rp></ruby><br>",
+					"首次登场：<ruby>咚奇刚<rp>（</rp><rt>Donkey Kong</rt><rp>）</rp></ruby><br>",
+					"超级标志性的角色！这位游戏巨星常常从酷霸王手中拯救世界。他有惊人的跳跃能力和多种变身道具。在闲暇时刻，他还会参与体育运动，擅长的项目数也数不清。在大乱斗里，他是一个值得信赖的全能型斗士。让我们一起来说：“是我，马力欧！”<br>",
+					"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
+					"<hr>",
+					"太激昂了，太生生不息了。"
+				].join("");
+			},
+			get sst_kirby() {
+				return [
+					"联动来源：《大乱桌斗》<br>",
+					"武将作者：mario not mary<br>",
+					"插图作者：kotori<br>",
+					`——${formatURL("https://www.pixiv.net/artworks/26818738")}`,
+					"<hr>",
+					`AvN${getCharacterIndex("sst_kirby")}. 卡比/Kirby/カービィ<br>`,
+					"首次登场：Kirby - An Actual Short",
+					"<hr>",
+					"0323. 卡比/Kirby/カービィ<br>",
+					"系列：<ruby>星之卡比<rp>（</rp><rt>Kirby</rt><rp>）</rp></ruby><br>",
+					"首次登场：<ruby>星之卡比<rp>（</rp><rt>Kirby\x27s Dream Land</rt><rp>）</rp></ruby><br>",
+					"圆圆滚滚的可爱卡比在波普之星过着平静的生活。它可以吸入物品或者生物，并且将它们吐出来或者复制能力。在大乱斗中，卡比吸入斗士之后可以复制他们的通常必杀技。它虽然很容易被击飞，但回场能力还不错。<br>",
+					"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
+					"<hr>",
+					"樱井亲儿子，粉红恶魔，灯火之星。"
+				].join("");
+			},
+			get avn_corn_dog_guy() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_corn_dog_guy")}. Corn Dog Guy<br>`,
+					"首次登场：Corn Dog Guy - An Actual Short",
+					"<hr>",
+					"又是不平静的一天。"
+				].join("");
+			}
 		},
 		characterTitle: lib.avnCharacterTitle,
 		perfectPair: {
@@ -2065,7 +2146,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 		dynamicTranslate: {
 			avn_surpression: player => `${lib.translate.avn_surpression_info_head}${lib.skill.avn_surpression.convertableCards.reduce((previousValue, currentValue, currentIndex) => {
 				const translation = `${String.fromCharCode(9312 + currentIndex)}【${get.translation(currentValue)}】`;
-				return currentIndex == player.countMark("avn_surpression") % 4 ? `${previousValue}<span class="bluetext">${translation}</span>` : `${previousValue}${translation}`;
+				if (currentIndex != player.countMark("avn_surpression") % 4) return `${previousValue}${translation}`;
+				const span = document.createElement("span");
+				span.classList.add("bluetext");
+				span.textContent = translation;
+				return `${previousValue}${span.outerHTML}`;
 			}, "")}${lib.translate.avn_surpression_info_tail}`,
 			avn_ascending: player => player.storage.avn_ascending ? lib.translate.avn_ascending_rewrite_info : lib.translate.avn_ascending_info,
 			avn_resistant: player => player.storage.avn_resistant ? lib.translate.avn_resistant_rewrite_info : lib.translate.avn_resistant_info,
@@ -2087,7 +2172,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_alan_becker_ab: "Alan",
 			avn_animate: "赋名",
 			get avn_animate_effect() {
-				return this.avn_animate;
+				return lib.translate.avn_animate;
 			},
 			avn_animate_info: "出牌阶段限一次，你可以展示一张基本牌或普通锦囊牌，令一名角色的任意张手牌均视为此牌，直到其使用这些牌中的一张结算后或其回合结束后。",
 			// Victim
@@ -2109,15 +2194,15 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_the_second_coming_ab: "Second",
 			avn_frame_by_frame_drawing: "逐绘",
 			get avn_frame_by_frame_drawing_backup() {
-				return this.avn_frame_by_frame_drawing;
+				return lib.translate.avn_frame_by_frame_drawing;
 			},
 			avn_frame_by_frame_drawing_info: "你可以将一张点数不小于你本回合上一张以此法转化的牌的牌当做最后进入弃牌堆的五张牌中的一张与其花色、类别和字数均不同的基本牌或普通锦囊牌使用或打出。",
 			// The Second Coming (The Chosen One's Return)
 			get avn_the_second_coming_the_chosen_one_return() {
-				return this.avn_the_second_coming;
+				return lib.translate.avn_the_second_coming;
 			},
 			get avn_the_second_coming_the_chosen_one_return_ab() {
-				return this.avn_the_second_coming_ab;
+				return lib.translate.avn_the_second_coming_ab;
 			},
 			avn_awakening: "决唤",
 			avn_awakening_info: "出牌阶段限一次，你可以展示一名角色的所有手牌，然后你可以选择一项：1. 令其弃置其所有红色手牌，然后回复1点体力；2. 令其摸其黑色手牌数张牌，然后失去1点体力。",
@@ -2145,10 +2230,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_agent: "[Agent]",
 			avn_surpression: "戡定",
 			get avn_surpression_effect() {
-				return this.avn_surpression;
+				return lib.translate.avn_surpression;
 			},
 			get avn_surpression_info() {
-				return `${this.avn_surpression_info_head}①【旋转】②【移动】③【点击】④【拖拽】${this.avn_surpression_info_tail}`;
+				return `${lib.translate.avn_surpression_info_head}①【旋转】②【移动】③【点击】④【拖拽】${lib.translate.avn_surpression_info_tail}`;
 			},
 			avn_surpression_info_head: "转换技，每回合限一次，你可以视为使用一张",
 			avn_surpression_info_tail: "，若如此做，且本技能的状态被变更过至少4次，你可以令一名角色本回合不能使用或打出牌。",
@@ -2158,7 +2243,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_herobrine: "Herobrine",
 			avn_out_of_context: "异造",
 			get avn_out_of_context_effect() {
-				return this.avn_out_of_context;
+				return lib.translate.avn_out_of_context;
 			},
 			avn_out_of_context_info: "当你扣减体力时，你可以将区域内的至多六张牌置入仁库，若如此做，本回合结束后，你将仁库中的等量牌交给一名角色。当有牌移出游戏后，你可以令一名手牌数不大于体力上限的角色获得牌堆底的一张牌。",
 			// Purple
@@ -2166,11 +2251,16 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_ascending: "攀铭",
 			_avn_ascending_info: "锁定技，若你本回合未因本技能弃置牌，则当你于此回合内使用第二张及以后牌时，若你本回合使用的牌的点数为严格递增，则你摸一张牌，否则你弃置你的体力值张牌。",
 			get avn_ascending_info() {
-				const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters");
-				return unlockedCharacters.includes("avn_dark_blue") || unlockedCharacters.includes("avn_pink") ? `${this._avn_ascending_info}牌堆洗牌后，你修改本技能。` : this._avn_ascending_info;
+				const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters"), alteringCondition = "牌堆洗牌后，你修改本技能。";
+				if (unlockedCharacters.includes("avn_dark_blue") || unlockedCharacters.includes("avn_pink")) return `${lib.translate._avn_ascending_info}${alteringCondition}`;
+				const span = document.createElement("span"), style = span.style;
+				style.backgroundColor = "currentcolor";
+				style.textShadow = "none";
+				span.textContent = alteringCondition;
+				return `${lib.translate._avn_ascending_info}${span.outerHTML}`;
 			},
 			get avn_ascending_rewrite() {
-				return `${this.avn_ascending}·改`;
+				return `${lib.translate.avn_ascending}·改`;
 			},
 			avn_ascending_rewrite_info: "锁定技，若你本回合未因本技能弃置任意角色的牌，则当你于此回合内使用第二张及以后牌时，若你本回合使用的牌的点数为严格递增，则你令一名角色摸一张牌，否则你弃置一名角色的至多你的体力值张牌。",
 			// Dark Blue
@@ -2183,10 +2273,16 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_resistant: "抵倾",
 			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未因本技能获得牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则你获得牌堆底的一张牌。",
 			get avn_resistant_info() {
-				return game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_gold") ? `${this._avn_resistant_info}牌堆洗牌后，你修改本技能。` : this._avn_resistant_info;
+				const alteringCondition = "牌堆洗牌后，你修改本技能。";
+				if (game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_gold")) return `${lib.translate._avn_resistant_info}${alteringCondition}`;
+				const span = document.createElement("span"), style = span.style;
+				style.backgroundColor = "currentcolor";
+				style.textShadow = "none";
+				span.textContent = alteringCondition;
+				return `${lib.translate._avn_resistant_info}${span.outerHTML}`;
 			},
 			get avn_resistant_rewrite() {
-				return `${this.avn_resistant}·改`;
+				return `${lib.translate.avn_resistant}·改`;
 			},
 			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未因本技能令一名角色获得牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则其获得牌堆底的一张牌。",
 			// Gold
@@ -2219,11 +2315,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_rebranding: "品创",
 			avn_rebranding_info: "每名角色的出牌阶段限一次，其可以赠予你一张牌（若其为你，则改为弃置一张牌）并摸一张牌。当你受到伤害后，你将本技能中的前两个“一张牌”改为“两张牌”，第一个“摸一张牌”改为“获得1点护甲”。",
 			get avn_rebranding_rewrite() {
-				return `${this.avn_rebranding}·改`;
+				return `${lib.translate.avn_rebranding}·改`;
 			},
 			avn_rebranding_rewrite_info: "每名角色的出牌阶段限一次，其可以赠予你两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。",
 			get avn_rebranding_global_info() {
-				return `出牌阶段限一次，你可以赠予一名拥有〖${this.avn_rebranding}〗的角色一张牌（若其为你，则改为弃置一张牌）并摸一张牌，或赠予一名拥有〖${this.avn_rebranding_rewrite}〗的角色两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。`;
+				return `出牌阶段限一次，你可以赠予一名拥有〖${lib.translate.avn_rebranding}〗的角色一张牌（若其为你，则改为弃置一张牌）并摸一张牌，或赠予一名拥有〖${lib.translate.avn_rebranding_rewrite}〗的角色两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。`;
 			}
 		},
 		help: {}

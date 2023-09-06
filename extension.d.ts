@@ -1,9 +1,13 @@
 declare interface Game {
 	getExtensionConfig(extension: "桌面大战", key: "confirmed_unlocked_characters" | "unlocked_characters"): string[];
 	import(type: "extension", content: (lib: Lib, game: Game, ui: UI, get: Get, ai: AI, _status: Status) => AnimationVsNonameExtensionInfoConfigData): void;
+	lockTheSecondComingTheChosenOneReturn(): void;
+	unlockAllAnimationVsNonameCharacters(): void;
+	unlockAllAnimationVsNonameCharactersExceptHidden(): void;
 }
 declare interface Lib {
 	avnCharacterTitle: SMap<string>;
+	avnHiddenCharacters: Set<string>;
 }
 declare interface PlayerStorage {
 	avn_ascending: boolean;
@@ -19,6 +23,7 @@ declare namespace Lib {
 		avn_frame_by_frame_drawing_backup?: AVNFrameByFrameDrawingBackupExSkillData;
 		avn_overflow: ExEventSkillData<AVNOverflowEvent>;
 		avn_resistant: AVNResistantExSkillData;
+		avn_surpression: AVNSurpressionExSkillData;
 	}
 }
 interface AnimationVsNonameConfig {
@@ -71,6 +76,9 @@ interface AVNFrameByFrameDrawingExSkillData extends ExEventSkillData<ExEvent<"av
 }
 interface AVNResistantExSkillData extends ExEventSkillData<ExEvent<"avn_resistant">> {
 	isNotAvailable(player: Player): boolean;
+}
+interface AVNSurpressionExSkillData extends ExEventSkillData<ExEvent<"avn_resistant">> {
+	convertableCards: string[];
 }
 interface AnimationVsNonameImportCharacterConfig extends importCharacterConfig {
 	skill: Lib.Skill;

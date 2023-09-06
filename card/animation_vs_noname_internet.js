@@ -1262,7 +1262,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_send_info: "出牌阶段，对你攻击范围内的一名角色使用。你获得仁库中的一张牌，然后你可以交给其任意张牌。",
 			avn_download: "下载",
 			get avn_download_skill() {
-				return this.avn_download;
+				return lib.translate.avn_download;
 			},
 			avn_download_info: "出牌阶段，对包含你在内的一名角色使用。其将牌堆顶的两张牌置入仁库，然后本回合结束时，其可以获得仁库中的至多两张牌。",
 			avn_delete: "删除",
@@ -1289,72 +1289,72 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			// Equip
 			avn_tablet: "平板",
 			get avn_tablet_info() {
-				return this.avn_tablet_skill_info;
+				return lib.translate.avn_tablet_skill_info;
 			},
 			get avn_tablet_skill() {
-				return this.avn_tablet;
+				return lib.translate.avn_tablet;
 			},
 			avn_tablet_skill_info: "你可以将两张颜色不同的牌当做【绘制】使用或打出。",
 			avn_couch: "长椅",
 			get avn_couch_info() {
-				return `其他角色至你的距离+1。<br>${this.avn_couch_skill_info}`;
+				return `其他角色至你的距离+1。<br>${lib.translate.avn_couch_skill_info}`;
 			},
 			get avn_couch_skill() {
-				return this.avn_couch;
+				return lib.translate.avn_couch;
 			},
 			avn_couch_skill_info: "锁定技，结束阶段，若你的体力值为全场唯一最少，则你回复1点体力。",
 			avn_plug_in: "插件",
 			get avn_plug_in_info() {
-				return this.avn_plug_in_skill_info;
+				return lib.translate.avn_plug_in_skill_info;
 			},
 			get avn_plug_in_skill() {
-				return this.avn_plug_in;
+				return lib.translate.avn_plug_in;
 			},
 			avn_plug_in_skill_info: "锁定技，当此牌进入你的装备区时，你摸三张牌。当此牌离开你的装备区后，你弃置三张牌。",
 			avn_cable: "线缆",
 			get avn_cable_info() {
-				return this.avn_cable_skill_info;
+				return lib.translate.avn_cable_skill_info;
 			},
 			get avn_cable_skill() {
-				return this.avn_cable;
+				return lib.translate.avn_cable;
 			},
 			avn_cable_skill_info: "出牌阶段限一次，你可以令两名角色依次横置或重置。",
 			avn_hammer: "锤子",
 			get avn_hammer_info() {
-				return `${this.avn_hammer_skill_info}<br>${lib.translate.avn_reach}：${lib.translate.avn_reach_info}`;
+				return `${lib.translate.avn_hammer_skill_info}<br>${lib.translate.avn_reach}：${lib.translate.avn_reach_info}`;
 			},
 			get avn_hammer_skill() {
-				return this.avn_hammer;
+				return lib.translate.avn_hammer;
 			},
 			avn_hammer_skill_info: "每名角色的弃牌阶段开始时，你可以打出一张牌，若如此做，你可以对一名本回合不因摸牌阶段的额定摸牌而获得牌的角色造成1点伤害。",
 			avn_program: "程序",
 			get avn_program_info() {
-				return `你至其他角色的距离-1。<br>${this.avn_program_skill_info}`;
+				return `你至其他角色的距离-1。<br>${lib.translate.avn_program_skill_info}`;
 			},
 			get avn_program_skill() {
-				return this.avn_program;
+				return lib.translate.avn_program;
 			},
 			get avn_program_skill_effect() {
-				return this.avn_program;
+				return lib.translate.avn_program;
 			},
 			avn_program_skill_info: "每轮限一次，一名其他角色的摸牌阶段开始时，你可以〖赠予〗其一张牌。若如此做，当其于本回合使用基本牌或普通锦囊牌结算后，你可以将一张手牌当做此基本牌或普通锦囊牌使用。",
 			avn_virablade: "病刃",
 			get avn_virablade_info() {
-				return `${this.avn_virablade_skill_info}<br>${lib.translate.avn_cleave}：${lib.translate.avn_cleave_info}`;
+				return `${lib.translate.avn_virablade_skill_info}<br>${lib.translate.avn_cleave}：${lib.translate.avn_cleave_info}`;
 			},
 			get avn_virablade_skill() {
-				return this.avn_virablade;
+				return lib.translate.avn_virablade;
 			},
 			avn_virablade_skill_info: "每回合每名角色限一次，当你对其造成伤害后，你可以删除其一张牌。",
 			avn_arcade: "街机",
 			get avn_arcade_info() {
-				return this.avn_arcade_skill_info;
+				return lib.translate.avn_arcade_skill_info;
 			},
 			get avn_arcade_append() {
 				return `<span class="text" style="font-family: yuanli;">${lib.translate.chongxu_faq}：${lib.translate.chongxu_faq_info}</span>`;
 			},
 			get avn_arcade_skill() {
-				return this.avn_arcade;
+				return lib.translate.avn_arcade;
 			},
 			avn_arcade_skill_info: "出牌阶段限一次，你可以弃置一张牌，若如此做，其他角色依次可以弃置一张牌直到有角色如此做，若此角色存在，则随机选择一首音乐且你与其依次演奏之，完成度比对方高的角色摸两张牌，否则你随机演奏一首音乐，并根据完成度来摸牌（至多三张）。",
 			get avn_arcade_skill_append() {
