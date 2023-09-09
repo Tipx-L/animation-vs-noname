@@ -3,7 +3,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 	/**
 	 * @type {importCardConfig}
 	 */
-	const ANIMATION_VS_NONAME = {
+	const animationVsNoname = {
 		name: "animation_vs_noname",
 		connect: true,
 		card: {
@@ -913,23 +913,23 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 		translate: {
 			// Rule
 			get _avn_reach() {
-				return lib.translate.avn_reach;
+				return this.avn_reach;
 			},
 			_avn_reach_info: "当你使用基本牌或普通锦囊牌选择目标后，若你的装备区内有带有「延伸」标签的牌，你可以增加至多最大「延伸」值名与任意目标的座次相邻的角色为目标。",
 			get _avn_once() {
-				return lib.translate.avn_once;
+				return this.avn_once;
 			},
 			_avn_once_info: "每回合限一次，当你使用有距离限制的牌指定目标后，若你的装备区内有带有「一次」标签的牌，且你与其距离大于1，你可以弃置其区域内的一张牌。",
 			get _avn_throwable() {
-				return lib.translate.avn_throwable;
+				return this.avn_throwable;
 			},
 			_avn_throwable_info: "出牌阶段，你可以弃置装备区内的一张带有「可抛」标签的牌，对一名与你的座次不相邻的其他角色造成1点伤害。",
 			get _avn_cleave() {
-				return lib.translate.avn_cleave;
+				return this.avn_cleave;
 			},
 			_avn_cleave_info: "当你使用基本牌或普通锦囊牌选择目标后，若你的装备区内有带有「劈开」标签的牌，你可以增加一名与你的座次相邻的角色为目标。",
 			get _avn_undraggable() {
-				return lib.translate.avn_undraggable;
+				return this.avn_undraggable;
 			},
 			_avn_undraggable_info: "你的装备区内的带有「不动」标签的牌不能被弃置或获得。",
 			avn_reach: "延伸",
@@ -968,94 +968,94 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			// Delay
 			avn_lasso: "套索",
 			get avn_lasso_skill() {
-				return lib.translate.avn_lasso;
+				return this.avn_lasso;
 			},
 			avn_lasso_info: "出牌阶段，对一名角色使用。若判定结果不为♠，直到其下回合开始，其使用牌时不能指定其他角色为目标。",
 			avn_selection_box: "选框",
 			get avn_selection_box_skill() {
-				return lib.translate.avn_selection_box;
+				return this.avn_selection_box;
 			},
 			avn_selection_box_info: "出牌阶段，对一名角色使用。若判定结果不为♦，直到其下回合开始，其手牌上限-1，且除其以外的角色至其距离+1。",
 			avn_wings: "翅膀",
 			get avn_wings_skill() {
-				return lib.translate.avn_wings;
+				return this.avn_wings;
 			},
 			avn_wings_info: "出牌阶段，对一名角色使用。若判定结果不为♥，直到其下回合开始，当其受到伤害时，防止此伤害。",
 			avn_dropper: "吸管",
 			get avn_dropper_skill() {
-				return lib.translate.avn_dropper;
+				return this.avn_dropper;
 			},
 			avn_dropper_info: "出牌阶段，对一名角色使用。若判定结果不为♣，直到其下回合开始，当其造成伤害时，防止此伤害。",
 			// Equip
 			avn_brush: "画笔",
 			get avn_brush_info() {
-				return `当存活角色数小于3时，此牌可被重铸。<br>${lib.translate.avn_reach_2}：${lib.translate.avn_reach_2_info}`;
+				return `当存活角色数小于3时，此牌可被重铸。<br>${this.avn_reach_2}：${this.avn_reach_2_info}`;
 			},
 			avn_card: "纸牌",
 			get avn_card_info() {
-				return `${lib.translate.avn_once}：${lib.translate.avn_once_info}<br>${lib.translate.avn_throwable}：${lib.translate.avn_throwable_info}`;
+				return `${this.avn_once}：${this.avn_once_info}<br>${this.avn_throwable}：${this.avn_throwable_info}`;
 			},
 			avn_energy_ball: "能量球",
 			get avn_energy_ball_info() {
-				return `${lib.translate.avn_reach}：${lib.translate.avn_reach_info}<br>${lib.translate.avn_once}：${lib.translate.avn_once_info}<br>${lib.translate.avn_throwable}：${lib.translate.avn_throwable_info}<br>${lib.translate.avn_cleave}：${lib.translate.avn_cleave_info}`;
+				return `${this.avn_reach}：${this.avn_reach_info}<br>${this.avn_once}：${this.avn_once_info}<br>${this.avn_throwable}：${this.avn_throwable_info}<br>${this.avn_cleave}：${this.avn_cleave_info}`;
 			},
 			avn_fire_breath: "火焰气息",
 			get avn_fire_breath_info() {
-				return `${lib.translate.avn_fire_breath_skill_info}<br>${lib.translate.avn_undraggable}：${lib.translate.avn_undraggable_info}`;
+				return `${this.avn_fire_breath_skill_info}<br>${this.avn_undraggable}：${this.avn_undraggable_info}`;
 			},
 			get avn_fire_breath_skill() {
-				return lib.translate.avn_fire_breath;
+				return this.avn_fire_breath;
 			},
 			avn_fire_breath_skill_info: "锁定技，你的区域内的牌和判定牌的属性均视为火焰。",
 			avn_gun: "枪",
 			get avn_gun_info() {
-				return lib.translate.avn_gun_skill_info;
+				return this.avn_gun_skill_info;
 			},
 			get avn_gun_skill() {
-				return lib.translate.avn_gun;
+				return this.avn_gun;
 			},
 			get avn_gun_skill_effect() {
-				return lib.translate.avn_gun;
+				return this.avn_gun;
 			},
 			avn_gun_skill_info: "每回合限一次，当你对一名角色造成伤害后，你可以令其不能使用或打出手牌直到其体力值变化时或其下回合开始。",
 			avn_laser: "激光",
 			get avn_laser_info() {
-				return `${lib.translate.avn_once}：${lib.translate.avn_once_info}<br>${lib.translate.avn_undraggable}：${lib.translate.avn_undraggable_info}`;
+				return `${this.avn_once}：${this.avn_once_info}<br>${this.avn_undraggable}：${this.avn_undraggable_info}`;
 			},
 			avn_magnifying_glass: "放大镜",
 			get avn_magnifying_glass_info() {
-				return `${lib.translate.avn_magnifying_glass_skill_info}<br>${lib.translate.avn_once}：${lib.translate.avn_once_info}`;
+				return `${this.avn_magnifying_glass_skill_info}<br>${this.avn_once}：${this.avn_once_info}`;
 			},
 			get avn_magnifying_glass_skill() {
-				return lib.translate.avn_magnifying_glass;
+				return this.avn_magnifying_glass;
 			},
 			avn_magnifying_glass_skill_info: "出牌阶段限一次，你可以观看一名角色的一张手牌。",
 			avn_pencil: "铅笔",
 			get avn_pencil_info() {
-				return `当存活角色数小于3时，此牌可被重铸。<br>${lib.translate.avn_cleave}：${lib.translate.avn_cleave_info}`;
+				return `当存活角色数小于3时，此牌可被重铸。<br>${this.avn_cleave}：${this.avn_cleave_info}`;
 			},
 			avn_sidebar: "侧边栏",
 			get avn_sidebar_info() {
-				return `${lib.translate.avn_throwable}：${lib.translate.avn_throwable_info}`;
+				return `${this.avn_throwable}：${this.avn_throwable_info}`;
 			},
 			// Tag
 			get avn_reach_tag() {
-				return lib.translate.avn_reach;
+				return this.avn_reach;
 			},
 			get avn_reach_2_tag() {
-				return lib.translate.avn_reach_2;
+				return this.avn_reach_2;
 			},
 			get avn_once_tag() {
-				return lib.translate.avn_once;
+				return this.avn_once;
 			},
 			get avn_throwable_tag() {
-				return lib.translate.avn_throwable;
+				return this.avn_throwable;
 			},
 			get avn_cleave_tag() {
-				return lib.translate.avn_cleave;
+				return this.avn_cleave;
 			},
 			get avn_undraggable_tag() {
-				return lib.translate.avn_undraggable;
+				return this.avn_undraggable;
 			},
 		},
 		list: [
@@ -1117,16 +1117,15 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			["heart", 2, "avn_sidebar", null, ["avn_throwable"]]
 		]
 	};
-	if (typeof lib.decade_extCardImage != "object") lib.decade_extCardImage = {};
-	for (const card in ANIMATION_VS_NONAME.card) {
-		ANIMATION_VS_NONAME.card[card].audio = "ext:桌面大战/audio/card";
-		ANIMATION_VS_NONAME.card[card].fullskin = true;
-		ANIMATION_VS_NONAME.card[card].image = `ext:桌面大战/image/card/${card}.webp`;
-		lib.decade_extCardImage[card] = `${lib.assetURL}extension/桌面大战/image/decade_extCardImage/${card}.webp`;
-		if (ANIMATION_VS_NONAME.card[card].nature) ANIMATION_VS_NONAME.card[card].nature.forEach(value => lib.decade_extCardImage[`${card}_${value}`] = `${lib.assetURL}extension/桌面大战/image/decade_extCardImage/${card}_${value}.webp`);
-	}
-	for (const skill in ANIMATION_VS_NONAME.skill) {
-		ANIMATION_VS_NONAME.skill[skill].audio = false;
-	}
-	return ANIMATION_VS_NONAME;
+	if (!lib.decade_extCardImage) lib.decade_extCardImage = {};
+	Object.entries(animationVsNoname.card).forEach(([key, value]) => {
+		value.audio = "ext:桌面大战/audio/card";
+		value.fullskin = true;
+		value.image = `ext:桌面大战/image/card/${key}.webp`;
+		lib.decade_extCardImage[key] = `${lib.assetURL}extension/桌面大战/image/decade_extCardImage/${key}.webp`;
+		const nature = value.nature;
+		if (nature) nature.forEach(element => lib.decade_extCardImage[`${key}_${element}`] = `${lib.assetURL}extension/桌面大战/image/decade_extCardImage/${key}_${element}.webp`);
+	});
+	Object.values(animationVsNoname.skill).forEach(value => value.audio = false);
+	return animationVsNoname;
 });

@@ -22,6 +22,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 		avn_alexcrafter28: "世界奇闻者",
 		ska_warden: "循声守卫",
 		sst_mario: "炎烈意决",
+		avn_euler_identity: "真理",
 		sst_kirby: "灯火之星",
 		avn_corn_dog_guy: "适逢其时"
 	};
@@ -392,8 +393,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 			translate.animation_vs_noname_card_config = "桌面大战";
 			translate.animation_vs_noname_internet_card_config = "桌战IN";
 			const cardDirectory = `${animationVsNonameDirectory}/card`;
-			jsForExtension(cardDirectory, "animation_vs_noname");
-			jsForExtension(cardDirectory, "animation_vs_noname_internet");
+			jsForExtension(cardDirectory, ["animation_vs_noname", "animation_vs_noname_internet"]);
 		},
 		onremove: () => game.saveExtensionConfig("桌面大战", "imported"),
 		help: {

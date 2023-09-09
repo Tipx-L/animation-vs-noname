@@ -19,9 +19,13 @@ declare namespace Lib {
 		avn_ascending: AVNAscendingExSkillData;
 		avn_adaptive: AVNAdaptiveExSkillData;
 		avn_adaptive_backup?: AVNAdaptiveBackupExSkillData;
+		avn_encounter: AVNEncounterExSkillData;
+		avn_encounter_backup: AVNEncounterBackupExSkillData;
 		avn_frame_by_frame_drawing: AVNFrameByFrameDrawingExSkillData;
 		avn_frame_by_frame_drawing_backup?: AVNFrameByFrameDrawingBackupExSkillData;
-		avn_overflow: ExEventSkillData<AVNOverflowEvent>;
+		avn_mathematics: AVNMathematicsExSkillData;
+		avn_mathematics_backup: AVNMathematicsBackupExSkillData;
+		avn_overflow: ExEventSkillData<AVNOverflowExEvent>;
 		avn_resistant: AVNResistantExSkillData;
 		avn_surpression: AVNSurpressionExSkillData;
 	}
@@ -44,15 +48,15 @@ interface AVNAdaptiveBackupExSkillData extends ExEventSkillData<ExEvent<"avn_ada
 }
 interface AVNAdaptiveCard extends Card {
 	storage?: {
-		avn_adaptive?: true
-	}
+		avn_adaptive?: true;
+	};
 }
 interface AVNAdaptiveExModData extends ExModData {
 	targetInRange(card: AVNAdaptiveCard): true | void;
 	cardUsable(card: AVNAdaptiveCard): number | void;
 }
 interface AVNAdaptiveExSkillData extends ExEventSkillData<ExEvent<"avn_adaptive">> {
-	chooseButton: ExChooseButtonConfigData<AVNAdaptiveBackupExSkillData>;
+	chooseButton: ExChooseButtonConfigData<Card, AVNAdaptiveBackupExSkillData>;
 	mod: AVNAdaptiveExModData;
 }
 interface AVNAscendingExSkillData extends ExEventSkillData<ExEvent<"avn_ascending">> {
@@ -64,15 +68,33 @@ interface AVNDynamicLinkExSkillData extends ExEventSkillData<ExEvent<"_avn_dynam
 	initList: NoneParmFum<void>;
 	initVice: AVNDynamicLinkContentFuncByAll;
 }
+interface AVNEncounterBackupExSkillData extends ExEventSkillData<AVNEncounterExEvent> {
+	control: string;
+}
+interface AVNEncounterExEvent extends ExEvent<"avn_encounter_backup"> {
+	controlTranslation: string;
+}
+interface AVNEncounterExSkillData extends ExEventSkillData<ExEvent<"avn_encounter">> {
+	chooseButton: ExChooseControlButtonConfigData<AVNEncounterBackupExSkillData>;
+}
 interface AVNFrameByFrameDrawingBackupExSkillData extends ExEventSkillData<ExEvent<"avn_frame_by_frame_drawing_backup">> {
 	selectedCard: Card;
 }
 interface AVNFrameByFrameDrawingExSkillData extends ExEventSkillData<ExEvent<"avn_frame_by_frame_drawing">> {
-	chooseButton: ExChooseButtonConfigData<AVNFrameByFrameDrawingBackupExSkillData>;
+	chooseButton: ExChooseButtonConfigData<Card, AVNFrameByFrameDrawingBackupExSkillData>;
 	isNotValidConversionResult(player: Player, card: Card): boolean;
 	isNumberNotLessThanPreviousConvertedCard(player: Player, card: Card): boolean;
 	isSuitAndTypeAndLengthDifferentFrom(card: Card, anotherCard: Card): boolean;
 	isConvertable(player: Player, card: Card, conversionResult: Card): boolean;
+}
+interface AVNMathematicsBackupExSkillData extends ExEventSkillData<ExEvent<"avn_mathematics_backup">> {
+	bestCombination: Card[];
+}
+interface AVNMathematicsExSkillData extends ExEventSkillData<ExEvent<"avn_mathematics">> {
+	chooseButton: ExChooseButtonConfigData<string[], AVNMathematicsBackupExSkillData>;
+	getAvailableCombinationsPrompt(player: Player): string;
+	getCombinations<T>(array: T[], k: number, prefix?: T[]): T[][];
+	hasValidCombination(player: Player, numbers: number[]): boolean;
 }
 interface AVNResistantExSkillData extends ExEventSkillData<ExEvent<"avn_resistant">> {
 	isNotAvailable(player: Player): boolean;
@@ -86,13 +108,18 @@ interface AnimationVsNonameImportCharacterConfig extends importCharacterConfig {
 interface AnimationVsNonamePackageData extends PackageData {
 	changeLog?: string;
 }
-interface AVNOverflowEvent extends ExEvent<"avn_overflow"> {
+interface AVNOverflowExEvent extends ExEvent<"avn_overflow"> {
 	giftableCards: Card[];
 	giftingTarget: Target;
 };
-interface ExChooseButtonConfigData<T extends ExEventSkillData<ExEvent<string>>> extends ChooseButtonConfigData {
-	backup(links: Card[], player: Player): T;
-	prompt(links: Card[], player: Player): string;
+interface ExChooseButtonConfigData<T, E extends ExEventSkillData<ExEvent<string>>> extends ChooseButtonConfigData {
+	backup?(links?: T[], player?: Player): E;
+	prompt?(links?: T[], player?: Player): string;
+}
+interface ExChooseControlButtonConfigData<T extends ExEventSkillData<ExEvent<string>>> extends ChooseButtonConfigData {
+	backup?(result?: BaseCommonResultData, player?: Player): T;
+	check?(event?: GameEvent, player?: Player): number | string;
+	prompt?(result?: BaseCommonResultData, player?: Player): string;
 }
 interface ExEvent<T extends string> extends GameEvent {
 	name: T;

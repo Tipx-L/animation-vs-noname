@@ -16,7 +16,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 	/**
 	 * @type {AnimationVsNonameImportCharacterConfig}
 	 */
-	const ANIMATION_VS_NONAME = {
+	const animationVsNoname = {
 		name: "animation_vs_noname",
 		connect: true,
 		character: {
@@ -41,6 +41,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_alexcrafter28: ["male", "western", 4, ["avn_encounter"], ["border:wu", "doublegroup:wei:shu:wu:qun:jin"]],
 			ska_warden: ["none", "western", "4/10", ["ska_zhenhan"], ["border:wu", "doublegroup:wei:shu:wu:qun:jin"]],
 			sst_mario: ["male", "western", 4, ["sst_jueyi"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
+			avn_euler_identity: ["none", "western", 4, ["avn_mathematics"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
 			sst_kirby: ["male", "western", 4, ["sst_qushi"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
 			avn_corn_dog_guy: ["male", "western", 4, ["avn_rebranding"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]]
 		},
@@ -73,6 +74,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				],
 				avn_animation_vs_super_mario_bros: [
 					"sst_mario"
+				],
+				avn_animation_vs_math: [
+					"avn_euler_identity"
 				],
 				avn_actual_shorts: [
 					"sst_kirby",
@@ -335,6 +339,17 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"太激昂了，太生生不息了。"
 				].join("");
 			},
+			get avn_euler_identity() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_euler_identity")}. Euler's identity<br>`,
+					"首次登场：Animation vs. Math",
+					"<hr>",
+					"-1。"
+				].join("");
+			},
 			get sst_kirby() {
 				return [
 					"联动来源：《大乱桌斗》<br>",
@@ -386,6 +401,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_gold: ["avn_king_orange"],
 			ska_warden: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow", "avn_herobrine", "avn_purple", "avn_king_orange"],
 			sst_mario: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow"],
+			avn_euler_identity: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return"],
 			sst_kirby: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_yellow"]
 		},
 		skill: {
@@ -566,8 +582,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					game.log(player, "将主将从", `#g${name1}`, "变更为", `#g${toChange}`);
 					_status.characterlist.remove(toChange);
 					player.reinit(name1, toChange, false);
-					const group = lib.character[toChange]?.[1];
-					if (group && player.group != group) player.changeGroup(group, false);
 					_status.characterlist.add(name1);
 					game.triggerEnter(player);
 				},
@@ -582,8 +596,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						if (sourceCharacterSkills?.length == playerSkills?.length && sourceCharacterSkills?.every(value => playerSkills?.includes(value))) {
 							_status.characterlist.remove(sourceCharacter);
 							player.reinit(name1, sourceCharacter, false);
-							const group = lib.character[sourceCharacter]?.[1];
-							if (group && player.group != group) player.changeGroup(group, false);
 							_status.characterlist.add(name1);
 							game.triggerEnter(player);
 							game.log(player, "将主将从", `#g${name1}`, "变更为", `#g${sourceCharacter}`);
@@ -634,8 +646,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						if (sourceCharacterSkills?.length == playerSkills?.length && sourceCharacterSkills?.every(value => playerSkills?.includes(value))) {
 							_status.characterlist.remove(sourceCharacter);
 							player.reinit(name1, sourceCharacter, false);
-							const group = lib.character[sourceCharacter]?.[1];
-							if (group && player.group != group) player.changeGroup(group, false);
 							_status.characterlist.add(name1);
 							game.triggerEnter(player);
 							game.log(player, "将主将从", `#g${name1}`, "变更为", `#g${sourceCharacter}`);
@@ -666,10 +676,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						const toChange = result.links[0];
 						game.log(player, "将", `#g${toChange}`, "作为了副将");
 						_status.characterlist.remove(toChange);
-						const hp = player.hp, maxHp = 4 + player.maxHp - get.infoMaxHp(lib.character[player.name1]?.[2]);
+						const group = player.group, hp = player.hp, maxHp = 4 + player.maxHp - get.infoMaxHp(lib.character[player.name1]?.[2]);
 						player.init(player.name1, toChange);
-						player.maxHp = maxHp;
+						player.changeGroup(group, false);
 						player.hp = hp;
+						player.maxHp = maxHp;
 						player.update();
 						game.triggerEnter(player);
 					}
@@ -820,7 +831,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 									avn_adaptive: true
 								}
 							},
-							check: card => 8 - get.value(card),
+							ai1: card => 8 - get.value(card),
 							shownCard: link,
 							onuse: (result, player) => {
 								const skill = result.skill.slice(0, -7), targets = result.targets;
@@ -1082,7 +1093,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 								name: get.name(link),
 								nature: get.nature(link)
 							},
-							check: card => 8 - get.value(card)
+							ai1: card => (8 - get.value(card)) / get.number(card)
 						};
 					},
 					prompt: links => {
@@ -1363,7 +1374,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						const target = event.target = result.targets[0];
 						if (event.triggername == "damageSource") {
 							player.logSkill(event.name, target);
-							player.chooseCardButton(`${get.skillTranslation(event.name, player)}：将任意张牌交给${get.translation(target)}`, true, [1, Infinity], player.getCards("x", card => lib.filter.canBeGained(card, target, player))).set("filterButton", (button, player) => lib.filter.canBeGained(button.link, _status.event.getParent().target, player)).ai = button => {
+							const chooseCardButton = player.chooseCardButton(`${get.skillTranslation(event.name, player)}：将任意张牌交给${get.translation(target)}`, true, [1, Infinity], player.getCards("x", card => lib.filter.canBeGained(card, target, player)));
+							chooseCardButton.filterButton = (button, player) => lib.filter.canBeGained(button.link, _status.event.getParent().target, player);
+							chooseCardButton.ai = button => {
 								const target = _status.event.getParent().target;
 								return _status.event.player.attitudeTo(target) * get.value(button.link, target);
 							};
@@ -1955,23 +1968,54 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_encounter: {
 				enable: "phaseUse",
 				usable: 1,
-				filter: (event, player) => player.hasCard(card => lib.filter.cardDiscardable(card, player), "he"),
-				position: "he",
-				filterCard: true,
-				check: card => 6 - get.useful(card),
-				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
-					"step 0"
-					const topCardsOfCardPile = event.cards = get.cards(10);
-					topCardsOfCardPile.forEach(value => ui.cardPile.insertBefore(value, ui.cardPile.firstChild));
-					game.updateRoundNumber();
-					player.showCards(topCardsOfCardPile, `${get.translation(player)}发动了【${get.skillTranslation(event.name, player)}】`);
-					"step 1"
-					player.chooseCardButton(`${get.skillTranslation(event.name, player)}：你可以获得${get.translation(cards)}${cards.length > 1 ? "中的一张牌" : ""}`, cards).ai = button => _status.event.player.getUseValue(button.link, true, true);
-					"step 2"
-					if (result.links?.length) player.gain(result.links, "gain2");
+				chooseButton: {
+					dialog: (event, player) => ui.create.dialog(`###${get.skillTranslation("avn_encounter", player)}###${get.skillInfoTranslation("avn_encounter", player)}`),
+					chooseControl: () => lib.suit.concat(lib.inpile.reduce((previousValue, currentValue) => {
+						const type = get.type2(currentValue);
+						if (!previousValue.includes(type)) previousValue.push(type);
+						return previousValue;
+					}, [])),
+					check: event => {
+						const cardPile = Array.from(ui.cardPile.childNodes), suit = lib.suit, results = event.controls.reduce((previousValue, currentValue) => {
+							previousValue.push(cardPile.filter(value => suit.includes(currentValue) && get.suit(value) == currentValue || get.type2(value) == currentValue).length);
+							return previousValue;
+						}, []);
+						const max = Math.max(...results);
+						return results.reduce((previousValue, currentValue, currentIndex) => {
+							if (currentValue == max) previousValue.push(currentIndex);
+							return previousValue;
+						}, []).randomGet();
+					},
+					backup: result => ({
+						delay: false,
+						control: result.control,
+						content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
+							"step 0"
+							const controlTranslation = event.controlTranslation = get.translation(lib.skill.avn_encounter_backup.control);
+							game.log(player, "声明了", `#y${controlTranslation}`);
+							const topCardsOfCardPile = event.cards = get.cards(10);
+							topCardsOfCardPile.forEach(value => ui.cardPile.insertBefore(value, ui.cardPile.firstChild));
+							game.updateRoundNumber();
+							player.showCards(topCardsOfCardPile, `${get.translation(player)}发动了【${get.skillTranslation(event.name, player)}】（声明了${controlTranslation}）`);
+							"step 1"
+							const chooseCardButton = player.chooseCardButton(`${get.skillTranslation(event.name, player)}：你可以获得一张展示的${event.controlTranslation}牌`, cards);
+							chooseCardButton.filterButton = button => {
+								const link = button.link, control = lib.skill.avn_encounter_backup.control;
+								return get.suit(link) == control || get.type2(link) == control;
+							};
+							chooseCardButton.ai = button => _status.event.player.getUseValue(button.link, true, true);
+							"step 2"
+							const links = result.links;
+							if (links?.length) player.gain(links, "gain2");
+						}
+					}),
+					prompt: result => {
+						const controlTranslation = get.translation(result.control);
+						return `声明${controlTranslation}并展示牌堆顶的十张牌，若如此做，你可以获得一张展示的${controlTranslation}牌`;
+					}
 				},
 				ai: {
-					order: 6,
+					order: 10,
 					result: {
 						player: 1
 					}
@@ -2047,6 +2091,178 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				ai: {
 					directHit_ai: true,
 					skillTagFilter: (player, tag, arg) => arg.target.countCards("h") > player.countCards("h")
+				}
+			},
+			// Euler's identity
+			avn_mathematics: {
+				hiddenCard: (player, name) => {
+					const cards = player.getCards("hes");
+					return cards.length && lib.inpile.includes(name) && ["basic", "trick"].includes(get.type(name)) && lib.skill.avn_mathematics.hasValidCombination(player, cards.map(value => get.number(value)));
+				},
+				enable: ["chooseToUse", "chooseToRespond"],
+				filter: (event, player) => {
+					const cards = player.getCards("hes");
+					if (!cards.length || !lib.skill.avn_mathematics.hasValidCombination(player, cards.map(value => get.number(value)))) return false;
+					const types = ["basic", "trick"], filterCard = event.filterCard;
+					return lib.inpile.some(value => types.includes(get.type(value)) && filterCard({
+						name: value
+					}, player, event));
+				},
+				prompt: () => {
+					const player = _status.event.player;
+					return [get.skillInfoTranslation("avn_mathematics", player), lib.skill.avn_mathematics.getAvailableCombinationsPrompt(player)].join(document.createElement("br").outerHTML);
+				},
+				chooseButton: {
+					dialog: (event, player) => ui.create.dialog(get.skillTranslation("avn_mathematics", player), [lib.inpile.reduce((previousValue, currentValue) => {
+						const type = get.type(currentValue);
+						if (!["basic", "trick"].includes(type)) return previousValue;
+						const filterCard = event.filterCard;
+						if (filterCard({
+							name: currentValue
+						}, player, event)) previousValue.push([get.translation(type), "", currentValue]);
+						if (currentValue == "sha") lib.inpile_nature.forEach(value => {
+							if (filterCard({
+								name: currentValue,
+								nature: value
+							}, player, event)) previousValue.push([get.translation(type), "", currentValue, value]);
+						});
+						return previousValue;
+					}, []), "vcard"]),
+					filter: (button, player) => {
+						const parent = _status.event.getParent();
+						return parent.filterCard({
+							name: button.link[2]
+						}, player, parent);
+					},
+					check: button => {
+						if (_status.event.getParent().type != "phase") return 1;
+						const link = button.link;
+						if (["wugu", "zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].includes(get.name(link))) return 0;
+						return _status.event.player.getUseValue({
+							name: get.name(link),
+							nature: get.nature(link)
+						});
+					},
+					backup: (links, player) => {
+						const link = links[0];
+						return {
+							bestCombination: lib.skill.avn_mathematics.getCombinations(player.getCards("hes").reduce((previousValue, currentValue) => {
+								previousValue.push({
+									number: get.number(currentValue),
+									card: currentValue
+								});
+								return previousValue;
+							}, [{
+								number: player.countCards("hej")
+							}, {
+								number: game.countPlayer(current => current.countCards("ej"))
+							}]), 3).filter(value => {
+								const [{
+									number: first
+								}, {
+									number: second
+								}, {
+									number: third
+								}] = value.sort((a, b) => a.number - b.number);
+								return first + third == second + second || value.every(element => element.number != 0) && first * third == second * second;
+							}).reduce((previousValue, currentValue) => {
+								const cards = currentValue.reduce((previousElement, currentElement) => {
+									const card = currentElement.card;
+									if (card) previousElement.push(card);
+									return previousElement;
+								}, []);
+								if (previousValue.every(value => value.length != cards.length || value.some(element => !cards.includes(element)))) previousValue.push(cards);
+								return previousValue;
+							}, []).sort((a, b) => {
+								const callbackfn = (previousValue, currentValue) => previousValue + get.value(currentValue);
+								return b.reduce(callbackfn, 0) - a.reduce(callbackfn, 0);
+							}).pop(),
+							audio: false,
+							popname: true,
+							position: "hes",
+							filterCard: true,
+							selectCard: () => {
+								const cards = ui.selected.cards;
+								return cards.length && lib.skill.avn_mathematics.hasValidCombination(_status.event.player, cards.map(value => get.number(value))) ? [1, Infinity] : Infinity;
+							},
+							viewAs: {
+								name: link[2],
+								nature: link[3]
+							},
+							ai1: card => lib.skill.avn_mathematics_backup.bestCombination.includes(card) && 8 - get.value(card)
+						};
+					},
+					prompt: (links, player) => {
+						const link = links[0];
+						return [`将至少一张牌当做${get.translation({
+							name: link[2],
+							nature: link[3]
+						})}使用或打出`, lib.skill.avn_mathematics.getAvailableCombinationsPrompt(player)].join(document.createElement("br").outerHTML);
+					}
+				},
+				getCombinations: (array, k, prefix = []) => k <= 0 ? [prefix] : array.flatMap((value, index) => lib.skill.avn_mathematics.getCombinations(array.slice(index + 1), k - 1, prefix.concat(value))),
+				getAvailableCombinationsPrompt: player => {
+					const br = document.createElement("br").outerHTML;
+					return ["↓可以选择的牌的点数的组合↓", lib.skill.avn_mathematics.getCombinations(player.getCards("hes").reduce((previousValue, currentValue) => {
+						previousValue.push({
+							number: get.number(currentValue),
+							card: currentValue
+						});
+						return previousValue;
+					}, [{
+						number: player.countCards("hej")
+					}, {
+						number: game.countPlayer(current => current.countCards("ej"))
+					}]), 3).filter(value => {
+						const [{
+							number: first
+						}, {
+							number: second
+						}, {
+							number: third
+						}] = value.sort((a, b) => a.number - b.number);
+						return first + third == second + second || value.every(element => element.number != 0) && first * third == second * second;
+					}).reduce((previousValue, currentValue) => {
+						const numbers = currentValue.reduce((previousElement, currentElement) => {
+							if (currentElement.card) previousElement.push(currentElement.number);
+							return previousElement;
+						}, []);
+						if (previousValue.every(value => value.length != numbers.length || value.some(element => !numbers.includes(element)))) previousValue.push(numbers);
+						return previousValue;
+					}, []).reduce((previousValue, currentValue) => {
+						const combination = `[${currentValue}]`;
+						return previousValue ? [previousValue, combination].join(br) : combination;
+					}, "")].join(br);
+				},
+				hasValidCombination: (player, numbers) => {
+					const allNumbers = numbers.concat(player.countCards("hej"), game.countPlayer(current => current.countCards("ej"))), length = allNumbers.length;
+					for (let firstIndex = 0; firstIndex < length - 2; firstIndex++) {
+						for (let secondIndex = firstIndex + 1; secondIndex < length - 1; secondIndex++) {
+							for (let thirdIndex = secondIndex + 1; thirdIndex < length; thirdIndex++) {
+								const combination = [allNumbers[firstIndex], allNumbers[secondIndex], allNumbers[thirdIndex]].sort((a, b) => a - b), [first, second, third] = combination;
+								if (first + third == second + second || !combination.includes(0) && first * third == second * second) return true;
+							}
+						}
+					}
+					return false;
+				},
+				ai: {
+					fireAttack: true,
+					respondSha: true,
+					respondShan: true,
+					respondTao: true,
+					save: true,
+					skillTagFilter: player => {
+						const cards = player.getCards("hes");
+						if (!cards.length || !lib.skill.avn_mathematics.hasValidCombination(player, cards.map(value => get.number(value)))) return false;
+					},
+					order: 10,
+					result: {
+						player: player => {
+							const dying = _status.event.dying;
+							return dying ? player.attitudeTo(dying) : 1;
+						}
+					}
 				}
 			},
 			// Kirby
@@ -2291,7 +2507,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_alexcrafter28: "Alexcrafter28",
 			avn_alexcrafter28_ab: "Alex",
 			avn_encounter: "探遇",
-			avn_encounter_info: "出牌阶段限一次，你可以弃置一张牌，然后展示牌堆顶十张牌。若如此做，你可以获得一张展示牌。",
+			get avn_encounter_backup() {
+				return lib.translate.avn_encounter;
+			},
+			avn_encounter_info: "出牌阶段限一次，你可以声明一种花色或类别并展示牌堆顶的十张牌，若如此做，你可以获得一张展示的此花色或类别的牌。",
 			// Warden
 			ska_warden: "监守者",
 			ska_zhenhan: "振撼",
@@ -2303,6 +2522,20 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			sst_mario: "马力欧",
 			sst_jueyi: "决意",
 			sst_jueyi_info: "锁定技，你使用牌指定目标时，若其手牌数大于你，你摸一张牌，令此牌不可被目标响应。",
+			// Animation vs. Math
+			avn_animation_vs_math: "Animation vs. Math",
+			// Euler's identity
+			avn_euler_identity: "Euler's identity",
+			avn_euler_identity_ab: (() => {
+				const sup = document.createElement("sup");
+				sup.textContent = "iπ";
+				return `e${sup.outerHTML}`;
+			})(),
+			avn_mathematics: "数术",
+			get avn_mathematics_backup() {
+				return lib.translate.avn_mathematics;
+			},
+			avn_mathematics_info: "你可以将至少一张牌当做任意基本牌或普通锦囊牌使用或打出，且每张以此法转化的牌的点数，你的区域内的牌数，场上的牌数中的三个数可以排列为等差数列或等比数列。",
 			// Actual Shorts
 			avn_actual_shorts: "Actual Shorts",
 			// Kirby
@@ -2324,17 +2557,20 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 		},
 		help: {}
 	};
-	if (lib.device || lib.node) for (const character in ANIMATION_VS_NONAME.character) {
-		ANIMATION_VS_NONAME.character[character][4].push(`ext:桌面大战/image/character/${character}.webp`);
-	}
-	else for (const character in ANIMATION_VS_NONAME.character) {
-		ANIMATION_VS_NONAME.character[character][4].push(`db:extension-桌面大战:image/character/${character}.webp`);
-	}
-	for (const character in ANIMATION_VS_NONAME.character) {
-		if (!new Set(["avn_alan_becker", "avn_alexcrafter28", "ska_warden", "sst_mario", "sst_kirby", "avn_corn_dog_guy"]).has(character) && !new Set(game.getExtensionConfig("桌面大战", "unlocked_characters")).has(character)) ANIMATION_VS_NONAME.character[character][4].push("unseen");
-	}
-	for (const skill in ANIMATION_VS_NONAME.skill) {
-		ANIMATION_VS_NONAME.skill[skill].audio = false;
-	}
-	return ANIMATION_VS_NONAME;
+	const supportExt = Boolean(lib.device || lib.node), availableCharacters = new Set([
+		"avn_alan_becker",
+		"avn_alexcrafter28",
+		"ska_warden",
+		"sst_mario",
+		"sst_kirby",
+		"avn_corn_dog_guy"
+	]), unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
+	Object.entries(animationVsNoname.character).forEach(([key, value]) => {
+		const exInfo = value[4];
+		if (supportExt) exInfo.push(`ext:桌面大战/image/character/${key}.webp`);
+		else exInfo.push(`db:extension-桌面大战:image/character/${key}.webp`);
+		if (!availableCharacters.has(key) && !unlockedCharacters.has(key)) exInfo.push("unseen");
+	});
+	Object.values(animationVsNoname.skill).forEach(value => value.audio = false);
+	return animationVsNoname;
 });

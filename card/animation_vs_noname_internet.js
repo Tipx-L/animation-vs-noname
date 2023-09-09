@@ -3,7 +3,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 	/**
 	 * @type {importCardConfig}
 	 */
-	const ANIMATION_VS_NONAME_INTERNET = {
+	const animationVsNonameInternet = {
 		name: "animation_vs_noname_internet",
 		connect: true,
 		card: {
@@ -85,8 +85,8 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 						player.gain(result.links, "gain2", "fromRenku");
 					}
 					player.chooseCard("he", [1, Infinity], `${get.translation(event.name)}：你可以交给${get.translation(target)}任意张牌`, card => lib.filter.canBeGained(card, target, player), card => {
-						const player = _status.event.player, target = _status.event.getParent().target, value = get.value(card, target), attitude = player.attitudeTo(target), effect = attitude > 0 ? 3 - value : -value;
-						if (attitude > 0 && player.needsToDiscard() - ui.selected.cards.filter(value => get.position(value) == "h" && game.checkMod(value, player, false, "ignoredHandcard", player) != true).length > 0 && get.position(card) == "h" && game.checkMod(card, player, false, "ignoredHandcard", player) != true) return effect + 5;
+						const player = _status.event.player, target = _status.event.getParent().target, value = get.value(card, target), attitudeTo = player.attitudeTo(target), effect = attitudeTo > 0 ? 3 - value : -value;
+						if (attitudeTo > 0 && player.needsToDiscard() - ui.selected.cards.filter(value => !player.canIgnoreHandcard(value)).length > 0 && !player.canIgnoreHandcard(value)) return effect + 5;
 						return effect;
 					});
 					"step 2"
@@ -526,7 +526,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					if (!player.storage.renku) player.storage.renku = true;
-					const topCardsOfCardPile = get.cards(5);
+					const topCardsOfCardPile = get.cards(2);
 					player.$throw(topCardsOfCardPile);
 					game.cardsGotoSpecial(topCardsOfCardPile, "toRenku");
 					game.log(player, "将", topCardsOfCardPile, "置入了仁库");
@@ -551,7 +551,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 					chooseCardButton.chosenRenkuCards = event.chosenRenkuCards;
 					"step 3"
 					if (result.links?.length) {
-						const renkuCard = result.links[0], backup = `${event.name}_backup`;
+						const renkuCard = result.links[0];
 						event.chosenRenkuCards.add(renkuCard);
 						const chooseUseTarget = event.chooseUseTarget = event.current.chooseUseTarget(renkuCard, false);
 						chooseUseTarget.oncard = card => {
@@ -721,24 +721,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				subtype: "equip5",
 				equipDelay: false,
 				loseDelay: false,
-				onEquip: (event, step, source, player, target, targets, card, cards, skill) => {
-					player.logSkill("avn_plug_in_skill");
-					player.draw(3);
-				},
-				onLose: (event, step, source, player, target, targets, card, cards, skill) => {
-					const avnModuleLose = game.createEvent("avn_plug_in_lose");
-					event.next.remove(avnModuleLose);
-					let parent = event.getParent();
-					if (parent.getlx === false) parent = parent.getParent();
-					parent.after.push(avnModuleLose);
-					avnModuleLose.player = player;
-					avnModuleLose.setContent(() => {
-						if (player.hasCard(card => lib.filter.cardDiscardable(card, player), "he")) {
-							player.logSkill("avn_plug_in_skill");
-							player.chooseToDiscard(`${get.skillTranslation("avn_plug_in_skill", player)}：弃置三张牌`, "he", 3, true);
-						}
-					});
-				},
+				global: ["avn_plug_in_skill", "avn_plug_in_skill_lose"],
 				defaultYingbianEffect: "draw",
 				ai: {
 					basic: {
@@ -1007,7 +990,35 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 					game.delayx();
 				}
 			},
-			avn_plug_in_skill: {},
+			avn_plug_in_skill: {
+				equipSkill: true,
+				forced: true,
+				trigger: {
+					player: "equipAfter"
+				},
+				filter: event => get.name(event.card) == "avn_plug_in",
+				content: (event, step, source, player) => {
+					player.draw(3);
+				},
+				subSkill: {
+					lose: {
+						audio: false,
+						equipSkill: true,
+						forced: true,
+						trigger: {
+							player: "loseAfter",
+							global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
+						},
+						filter: (event, player) => {
+							const evt = event.getl(player);
+							return evt && evt.es.some(card => get.name(card) == "avn_plug_in") && player.hasCard(card => lib.filter.cardDiscardable(card, player), "he");
+						},
+						content: (event, step, source, player) => {
+							player.chooseToDiscard(`${get.skillTranslation(event.name, player)}：弃置三张牌`, "he", 3, true);
+						}
+					}
+				}
+			},
 			avn_cable_skill: {
 				equipSkill: true,
 				delay: false,
@@ -1017,6 +1028,9 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				selectTarget: 2,
 				content: (event, step, source, player, target) => {
 					target.link();
+				},
+				contentAfter: () => {
+					game.delayx();
 				},
 				ai: {
 					order: () => (lib.card.tiesuo.ai.basic.order || 7) + 0.1,
@@ -1262,7 +1276,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_send_info: "出牌阶段，对你攻击范围内的一名角色使用。你获得仁库中的一张牌，然后你可以交给其任意张牌。",
 			avn_download: "下载",
 			get avn_download_skill() {
-				return lib.translate.avn_download;
+				return this.avn_download;
 			},
 			avn_download_info: "出牌阶段，对包含你在内的一名角色使用。其将牌堆顶的两张牌置入仁库，然后本回合结束时，其可以获得仁库中的至多两张牌。",
 			avn_delete: "删除",
@@ -1278,7 +1292,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_create: "创建",
 			avn_create_info: "出牌阶段，对任意名角色使用。其摸一张牌，然后将一张牌置入仁库。",
 			avn_draw: "绘制",
-			avn_draw_info: "出牌阶段，对你攻击范围内的一名角色使用。你将牌堆顶的五张牌置入仁库，然后你与其依次可以使用仁库中的一张牌。",
+			avn_draw_info: "出牌阶段，对你攻击范围内的一名角色使用。你将牌堆顶的两张牌置入仁库，然后你与其依次可以使用仁库中的一张牌。",
 			avn_destroy: "破坏",
 			avn_destroy_info: "出牌阶段，对所有其他角色使用。其删除其区域内的一张牌。",
 			avn_debug: "调试",
@@ -1289,72 +1303,72 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			// Equip
 			avn_tablet: "平板",
 			get avn_tablet_info() {
-				return lib.translate.avn_tablet_skill_info;
+				return this.avn_tablet_skill_info;
 			},
 			get avn_tablet_skill() {
-				return lib.translate.avn_tablet;
+				return this.avn_tablet;
 			},
 			avn_tablet_skill_info: "你可以将两张颜色不同的牌当做【绘制】使用或打出。",
 			avn_couch: "长椅",
 			get avn_couch_info() {
-				return `其他角色至你的距离+1。<br>${lib.translate.avn_couch_skill_info}`;
+				return `其他角色至你的距离+1。<br>${this.avn_couch_skill_info}`;
 			},
 			get avn_couch_skill() {
-				return lib.translate.avn_couch;
+				return this.avn_couch;
 			},
 			avn_couch_skill_info: "锁定技，结束阶段，若你的体力值为全场唯一最少，则你回复1点体力。",
 			avn_plug_in: "插件",
 			get avn_plug_in_info() {
-				return lib.translate.avn_plug_in_skill_info;
+				return this.avn_plug_in_skill_info;
 			},
 			get avn_plug_in_skill() {
-				return lib.translate.avn_plug_in;
+				return this.avn_plug_in;
 			},
 			avn_plug_in_skill_info: "锁定技，当此牌进入你的装备区时，你摸三张牌。当此牌离开你的装备区后，你弃置三张牌。",
 			avn_cable: "线缆",
 			get avn_cable_info() {
-				return lib.translate.avn_cable_skill_info;
+				return this.avn_cable_skill_info;
 			},
 			get avn_cable_skill() {
-				return lib.translate.avn_cable;
+				return this.avn_cable;
 			},
 			avn_cable_skill_info: "出牌阶段限一次，你可以令两名角色依次横置或重置。",
 			avn_hammer: "锤子",
 			get avn_hammer_info() {
-				return `${lib.translate.avn_hammer_skill_info}<br>${lib.translate.avn_reach}：${lib.translate.avn_reach_info}`;
+				return `${this.avn_hammer_skill_info}<br>${lib.translate.avn_reach}：${lib.translate.avn_reach_info}`;
 			},
 			get avn_hammer_skill() {
-				return lib.translate.avn_hammer;
+				return this.avn_hammer;
 			},
 			avn_hammer_skill_info: "每名角色的弃牌阶段开始时，你可以打出一张牌，若如此做，你可以对一名本回合不因摸牌阶段的额定摸牌而获得牌的角色造成1点伤害。",
 			avn_program: "程序",
 			get avn_program_info() {
-				return `你至其他角色的距离-1。<br>${lib.translate.avn_program_skill_info}`;
+				return `你至其他角色的距离-1。<br>${this.avn_program_skill_info}`;
 			},
 			get avn_program_skill() {
-				return lib.translate.avn_program;
+				return this.avn_program;
 			},
 			get avn_program_skill_effect() {
-				return lib.translate.avn_program;
+				return this.avn_program;
 			},
 			avn_program_skill_info: "每轮限一次，一名其他角色的摸牌阶段开始时，你可以〖赠予〗其一张牌。若如此做，当其于本回合使用基本牌或普通锦囊牌结算后，你可以将一张手牌当做此基本牌或普通锦囊牌使用。",
 			avn_virablade: "病刃",
 			get avn_virablade_info() {
-				return `${lib.translate.avn_virablade_skill_info}<br>${lib.translate.avn_cleave}：${lib.translate.avn_cleave_info}`;
+				return `${this.avn_virablade_skill_info}<br>${lib.translate.avn_cleave}：${lib.translate.avn_cleave_info}`;
 			},
 			get avn_virablade_skill() {
-				return lib.translate.avn_virablade;
+				return this.avn_virablade;
 			},
 			avn_virablade_skill_info: "每回合每名角色限一次，当你对其造成伤害后，你可以删除其一张牌。",
 			avn_arcade: "街机",
 			get avn_arcade_info() {
-				return lib.translate.avn_arcade_skill_info;
+				return this.avn_arcade_skill_info;
 			},
 			get avn_arcade_append() {
 				return `<span class="text" style="font-family: yuanli;">${lib.translate.chongxu_faq}：${lib.translate.chongxu_faq_info}</span>`;
 			},
 			get avn_arcade_skill() {
-				return lib.translate.avn_arcade;
+				return this.avn_arcade;
 			},
 			avn_arcade_skill_info: "出牌阶段限一次，你可以弃置一张牌，若如此做，其他角色依次可以弃置一张牌直到有角色如此做，若此角色存在，则随机选择一首音乐且你与其依次演奏之，完成度比对方高的角色摸两张牌，否则你随机演奏一首音乐，并根据完成度来摸牌（至多三张）。",
 			get avn_arcade_skill_append() {
@@ -1421,16 +1435,15 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			["diamond", 2, "avn_arcade", null, ["gifts"]]
 		]
 	};
-	if (typeof lib.decade_extCardImage != "object") lib.decade_extCardImage = {};
-	for (const card in ANIMATION_VS_NONAME_INTERNET.card) {
-		ANIMATION_VS_NONAME_INTERNET.card[card].audio = "ext:桌面大战/audio/card";
-		ANIMATION_VS_NONAME_INTERNET.card[card].fullborder = "simple";
-		ANIMATION_VS_NONAME_INTERNET.card[card].image = `ext:桌面大战/image/card/${card}.webp`;
-		lib.decade_extCardImage[card] = `${lib.assetURL}extension/桌面大战/image/decade_extCardImage/${card}.webp`;
-		if (ANIMATION_VS_NONAME_INTERNET.card[card].nature) ANIMATION_VS_NONAME_INTERNET.card[card].nature.forEach(value => lib.decade_extCardImage[`${card}_${value}`] = `${lib.assetURL}extension/桌面大战/image/decade_extCardImage/${card}_${value}.webp`);
-	}
-	for (const skill in ANIMATION_VS_NONAME_INTERNET.skill) {
-		ANIMATION_VS_NONAME_INTERNET.skill[skill].audio = false;
-	}
-	return ANIMATION_VS_NONAME_INTERNET;
+	if (!lib.decade_extCardImage) lib.decade_extCardImage = {};
+	Object.entries(animationVsNonameInternet.card).forEach(([key, value]) => {
+		value.audio = "ext:桌面大战/audio/card";
+		value.fullborder = "simple";
+		value.image = `ext:桌面大战/image/card/${key}.webp`;
+		lib.decade_extCardImage[key] = `${lib.assetURL}extension/桌面大战/image/decade_extCardImage/${key}.webp`;
+		const nature = value.nature;
+		if (nature) nature.forEach(element => lib.decade_extCardImage[`${key}_${element}`] = `${lib.assetURL}extension/桌面大战/image/decade_extCardImage/${key}_${element}.webp`);
+	});
+	Object.values(animationVsNonameInternet.skill).forEach(value => value.audio = false);
+	return animationVsNonameInternet;
 });
