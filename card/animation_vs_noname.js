@@ -325,11 +325,11 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				type: "trick",
 				enable: true,
 				postAi: targets => targets.length == 1 && targets[0].countCards("j"),
-				filterTarget: (card, player, target) => target.countDiscardableCards(player, "ej"),
-				defaultYingbianEffect: "add",
+				filterTarget: (card, player, target) => target.countCards(player, "ej"),
+				defaultYingbianEffect: "hit",
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
-					player.choosePlayerCard(`${get.translation(event.name)}：删除${get.translation(target)}的场上的一张牌`, target, "ej", true);
+					player.choosePlayerCard(`${get.translation(event.name)}：删除${get.translation(target)}的场上的至多两张牌`, target, "ej", [1, 2]);
 					"step 1"
 					if (!result.cards?.length) return;
 					if (!player.storage.avn_delete) player.storage.avn_delete = true;
@@ -800,11 +800,11 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				charlotte: true,
 				mark: true,
 				intro: {
-					content: "直到你的下回合开始，你的手牌上限-1，且其他角色至你的距离+1"
+					content: "直到你的下回合开始，你的手牌上限-2，且其他角色至你的距离+2"
 				},
 				mod: {
-					maxHandcard: (player, num) => num - 1,
-					globalTo: (from, to, current) => current + 1
+					maxHandcard: (player, num) => num - 2,
+					globalTo: (from, to, current) => current + 2
 				}
 			},
 			avn_wings_skill: {
@@ -962,7 +962,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_clone_skill: "克隆",
 			avn_clone_info: "出牌阶段，对包含你在内的一名角色使用。其本回合下次造成伤害时，此伤害×2。",
 			avn_eraser: "橡皮擦",
-			avn_eraser_info: "出牌阶段，对一名场上有牌的角色使用。你删除其场上的一张牌。",
+			avn_eraser_info: "出牌阶段，对一名场上有牌的角色使用。你删除其场上的至多两张牌。",
 			avn_hand_tool: "抓手工具",
 			avn_hand_tool_info: "出牌阶段，当本回合不为额外回合时，对包含你在内的一名角色使用。其于本回合后执行一个额外回合。",
 			// Delay
@@ -975,7 +975,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			get avn_selection_box_skill() {
 				return this.avn_selection_box;
 			},
-			avn_selection_box_info: "出牌阶段，对一名角色使用。若判定结果不为♦，直到其下回合开始，其手牌上限-1，且除其以外的角色至其距离+1。",
+			avn_selection_box_info: "出牌阶段，对一名角色使用。若判定结果不为♦，直到其下回合开始，其手牌上限-2，且除其以外的角色至其距离+2。",
 			avn_wings: "翅膀",
 			get avn_wings_skill() {
 				return this.avn_wings;

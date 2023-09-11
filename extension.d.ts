@@ -95,6 +95,7 @@ interface AVNMathematicsExSkillData extends ExEventSkillData<ExEvent<"avn_mathem
 	getAvailableCombinationsPrompt(player: Player): string;
 	getCombinations<T>(array: T[], k: number, prefix?: T[]): T[][];
 	hasValidCombination(player: Player, numbers: number[]): boolean;
+	isValidNumber(card: Card, player: Player): boolean;
 }
 interface AVNResistantExSkillData extends ExEventSkillData<ExEvent<"avn_resistant">> {
 	isNotAvailable(player: Player): boolean;
@@ -114,6 +115,7 @@ interface AVNOverflowExEvent extends ExEvent<"avn_overflow"> {
 };
 interface ExChooseButtonConfigData<T, E extends ExEventSkillData<ExEvent<string>>> extends ChooseButtonConfigData {
 	backup?(links?: T[], player?: Player): E;
+	check?(button?: Button): number;
 	prompt?(links?: T[], player?: Player): string;
 }
 interface ExChooseControlButtonConfigData<T extends ExEventSkillData<ExEvent<string>>> extends ChooseButtonConfigData {

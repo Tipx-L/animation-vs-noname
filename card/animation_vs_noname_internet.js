@@ -507,7 +507,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 					result: {
 						target: (player, target) => {
 							const numberOfTargetCards = target.countCards("he");
-							return target == player ? numberOfTargetCards - ui.selected.cards.length : numberOfTargetCards;
+							return Math.sqrt(target == player ? numberOfTargetCards - ui.selected.cards.length : numberOfTargetCards);
 						}
 					},
 					tag: {

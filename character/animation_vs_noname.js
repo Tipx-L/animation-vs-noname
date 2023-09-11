@@ -714,7 +714,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					player.choosePlayerCard(target, "h", [1, Infinity], `${get.skillTranslation(event.name, player)}：令${get.translation(target)}的任意张手牌均视为${get.translation({
 						name: get.name(card),
 						nature: get.nature(card)
-					})}，直到其使用这些牌中的一张结算或其回合结束后`, true, button => _status.event.player.attitudeTo(_status.event.getParent().target) > 0 ? 5 - get.buttonValue(button) : get.buttonValue(button));
+					})}，直到其使用这些牌中的一张结算或其回合结束后`, button => _status.event.player.attitudeTo(_status.event.getParent().target) > 0 ? 5 - get.buttonValue(button) : get.buttonValue(button));
 					"step 2"
 					if (!result.cards?.length) return;
 					const effectSkillName = `${event.name}_effect`;
@@ -1445,7 +1445,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						player.logSkill(event.name, target);
 						if (target != player) player.addExpose(0.2);
 						target.draw("nodelay");
-						target.chooseToDiscard(`${get.skillTranslation(event.name, player)}：弃置一张牌`, "he", true).delay = false;
+						const playerTranslation = get.translation(player);
+						target.chooseToDiscard(`${get.skillTranslation(event.name, player)}：弃置一张牌，然后当${playerTranslation}于此回合内检测本技能发动合法性时，视为${playerTranslation}本回合使用的花色为弃置的牌的花色的牌数-1`, "he", true).delay = false;
 					}
 					else event.finish();
 					"step 2"
@@ -2096,12 +2097,12 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Euler's identity
 			avn_mathematics: {
 				hiddenCard: (player, name) => {
-					const cards = player.getCards("hes");
+					const cards = player.getCards("hes", card => lib.skill.avn_mathematics.isValidNumber(card, player));
 					return cards.length && lib.inpile.includes(name) && ["basic", "trick"].includes(get.type(name)) && lib.skill.avn_mathematics.hasValidCombination(player, cards.map(value => get.number(value)));
 				},
 				enable: ["chooseToUse", "chooseToRespond"],
 				filter: (event, player) => {
-					const cards = player.getCards("hes");
+					const cards = player.getCards("hes", card => lib.skill.avn_mathematics.isValidNumber(card, player));
 					if (!cards.length || !lib.skill.avn_mathematics.hasValidCombination(player, cards.map(value => get.number(value)))) return false;
 					const types = ["basic", "trick"], filterCard = event.filterCard;
 					return lib.inpile.some(value => types.includes(get.type(value)) && filterCard({
@@ -2135,18 +2136,24 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						}, player, parent);
 					},
 					check: button => {
-						if (_status.event.getParent().type != "phase") return 1;
-						const link = button.link;
-						if (["wugu", "zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].includes(get.name(link))) return 0;
-						return _status.event.player.getUseValue({
-							name: get.name(link),
-							nature: get.nature(link)
+						const event = _status.event;
+						if (event.getParent().type != "phase") return 1;
+						const [, , name, nature] = button.link;
+						if (["wugu", "zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].includes(name)) return 0;
+						const player = event.player;
+						return (!player.isPhaseUsing() || !player.hasHistory("useSkill", evt => {
+							if (evt.skill != "avn_mathematics_backup") return false;
+							const card = evt.event.card;
+							return card.name == name && card.nature == nature;
+						})) && player.getUseValue({
+							name: name,
+							nature: nature
 						});
 					},
 					backup: (links, player) => {
 						const link = links[0];
 						return {
-							bestCombination: lib.skill.avn_mathematics.getCombinations(player.getCards("hes").reduce((previousValue, currentValue) => {
+							bestCombination: lib.skill.avn_mathematics.getCombinations(player.getCards("hes", card => lib.skill.avn_mathematics.isValidNumber(card, player)).reduce((previousValue, currentValue) => {
 								previousValue.push({
 									number: get.number(currentValue),
 									card: currentValue
@@ -2180,7 +2187,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 							audio: false,
 							popname: true,
 							position: "hes",
-							filterCard: true,
+							filterCard: lib.skill.avn_mathematics.isValidNumber,
 							selectCard: () => {
 								const cards = ui.selected.cards;
 								return cards.length && lib.skill.avn_mathematics.hasValidCombination(_status.event.player, cards.map(value => get.number(value))) ? [1, Infinity] : Infinity;
@@ -2200,10 +2207,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						})}使用或打出`, lib.skill.avn_mathematics.getAvailableCombinationsPrompt(player)].join(document.createElement("br").outerHTML);
 					}
 				},
+				isValidNumber: (card, player) => !player.hasHistory("useSkill", evt => evt.skill == "avn_mathematics_backup" && evt.event.cards.some(value => get.number(value) == get.number(card))),
 				getCombinations: (array, k, prefix = []) => k <= 0 ? [prefix] : array.flatMap((value, index) => lib.skill.avn_mathematics.getCombinations(array.slice(index + 1), k - 1, prefix.concat(value))),
 				getAvailableCombinationsPrompt: player => {
 					const br = document.createElement("br").outerHTML;
-					return ["↓可以选择的牌的点数的组合↓", lib.skill.avn_mathematics.getCombinations(player.getCards("hes").reduce((previousValue, currentValue) => {
+					return ["↓可以选择的牌的点数的组合↓", lib.skill.avn_mathematics.getCombinations(player.getCards("hes", card => lib.skill.avn_mathematics.isValidNumber(card, player)).reduce((previousValue, currentValue) => {
 						previousValue.push({
 							number: get.number(currentValue),
 							card: currentValue
@@ -2253,7 +2261,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					respondTao: true,
 					save: true,
 					skillTagFilter: player => {
-						const cards = player.getCards("hes");
+						const cards = player.getCards("hes", card => lib.skill.avn_mathematics.isValidNumber(card, player));
 						if (!cards.length || !lib.skill.avn_mathematics.hasValidCombination(player, cards.map(value => get.number(value)))) return false;
 					},
 					order: 10,
@@ -2429,7 +2437,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Green
 			avn_green: "Green",
 			avn_progressive: "筑韵",
-			avn_progressive_info: "当你于一回合内首次使用一种花色的牌时，你可以令一名角色摸一张牌并弃置一张牌，然后你本回合检测本技能发动合法性时视为你本回合使用的花色为此弃置的牌的牌数-1。",
+			avn_progressive_info: "当你于一回合内首次使用一种花色的牌时，你可以令一名角色摸一张牌并弃置一张牌，然后当你于此回合内检测本技能发动合法性时，视为你本回合使用的花色为弃置的牌的花色的牌数-1。",
 			// Blue
 			avn_blue: "Blue",
 			avn_midas_touch: "点金",
@@ -2465,7 +2473,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Purple
 			avn_purple: "Purple",
 			avn_ascending: "攀铭",
-			_avn_ascending_info: "锁定技，若你本回合未因本技能弃置牌，则当你于此回合内使用第二张及以后牌时，若你本回合使用的牌的点数为严格递增，则你摸一张牌，否则你弃置你的体力值张牌。",
+			_avn_ascending_info: "锁定技，若你本回合未以此法弃置牌，则当你于此回合内使用第二张及以后牌时，若你本回合使用的牌的点数为严格递增，则你摸一张牌，否则你弃置你的体力值张牌。",
 			get avn_ascending_info() {
 				const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters"), alteringCondition = "牌堆洗牌后，你修改本技能。";
 				if (unlockedCharacters.includes("avn_dark_blue") || unlockedCharacters.includes("avn_pink")) return `${lib.translate._avn_ascending_info}${alteringCondition}`;
@@ -2478,7 +2486,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_ascending_rewrite() {
 				return `${lib.translate.avn_ascending}·改`;
 			},
-			avn_ascending_rewrite_info: "锁定技，若你本回合未因本技能弃置任意角色的牌，则当你于此回合内使用第二张及以后牌时，若你本回合使用的牌的点数为严格递增，则你令一名角色摸一张牌，否则你弃置一名角色的至多你的体力值张牌。",
+			avn_ascending_rewrite_info: "锁定技，若你本回合未以此法弃置任意角色的牌，则当你于此回合内使用第二张及以后牌时，若你本回合使用的牌的点数为严格递增，则你令一名角色摸一张牌，否则你弃置一名角色的至多你的体力值张牌。",
 			// Dark Blue
 			avn_dark_blue: "Dark Blue",
 			// Pink
@@ -2487,7 +2495,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_king_orange: "King Orange",
 			avn_king_orange_ab: "King",
 			avn_resistant: "抵倾",
-			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未因本技能获得牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则你获得牌堆底的一张牌。",
+			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法获得牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则你获得牌堆底的一张牌。",
 			get avn_resistant_info() {
 				const alteringCondition = "牌堆洗牌后，你修改本技能。";
 				if (game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_gold")) return `${lib.translate._avn_resistant_info}${alteringCondition}`;
@@ -2500,7 +2508,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_resistant_rewrite() {
 				return `${lib.translate.avn_resistant}·改`;
 			},
-			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未因本技能令一名角色获得牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则其获得牌堆底的一张牌。",
+			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法令一名角色获得牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则其获得牌堆底的一张牌。",
 			// Gold
 			avn_gold: "Gold",
 			// Alexcrafter28
@@ -2535,7 +2543,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_mathematics_backup() {
 				return lib.translate.avn_mathematics;
 			},
-			avn_mathematics_info: "你可以将至少一张牌当做任意基本牌或普通锦囊牌使用或打出，且每张以此法转化的牌的点数，你的区域内的牌数，场上的牌数中的三个数可以排列为等差数列或等比数列。",
+			avn_mathematics_info: "你可以将至少一张点数不为你本回合以此法转化的牌的点数的牌当做任意基本牌或普通锦囊牌使用或打出，且每张以此法转化的牌的点数，你的区域内的牌数，场上的牌数中的三个数可以排列为等差数列或等比数列。",
 			// Actual Shorts
 			avn_actual_shorts: "Actual Shorts",
 			// Kirby
