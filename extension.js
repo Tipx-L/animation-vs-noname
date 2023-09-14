@@ -269,19 +269,19 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 						if (newUnlockedHiddenCharacters) {
 							const redSpan = document.createElement("span");
 							ruby.append(redSpan);
-							redSpan.style.color = "#CC0000";
+							redSpan.style.color = "#C00";
 							redSpan.textContent = "武";
 							const greenSpan = document.createElement("span");
 							ruby.append(greenSpan);
-							greenSpan.style.color = "#66CC00";
+							greenSpan.style.color = "#6C0";
 							greenSpan.textContent = "将";
 							const blueSpan = document.createElement("span");
 							ruby.append(blueSpan);
-							blueSpan.style.color = "#33CCFF";
+							blueSpan.style.color = "#3CF";
 							blueSpan.textContent = "解";
 							const yellowSpan = document.createElement("span");
 							ruby.append(yellowSpan);
-							yellowSpan.style.color = "#FFCC00";
+							yellowSpan.style.color = "#FC0";
 							yellowSpan.textContent = "锁";
 						}
 						else ruby.textContent = "武将解锁";
@@ -293,7 +293,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 						if (newUnlockedHiddenCharacters) {
 							const span = document.createElement("span");
 							rt.append(span);
-							span.style.color = "#FF6600";
+							span.style.color = "#F60";
 							span.textContent = "Character Unlocked";
 						}
 						else rt.textContent = "Character Unlocked";
@@ -394,6 +394,29 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 			translate.animation_vs_noname_internet_card_config = "桌战IN";
 			const cardDirectory = `${animationVsNonameDirectory}/card`;
 			jsForExtension(cardDirectory, ["animation_vs_noname", "animation_vs_noname_internet"]);
+			const css = ui.css, {
+				card_style,
+				card_stylesheet,
+				cardback_style,
+				cardback_stylesheet,
+				cardback_stylesheet2
+			} = css;
+			card_style.remove();
+			css.card_style = init.css(`${animationVsNonameDirectory}/theme/style/card`, "avn_metro");
+			if (card_stylesheet) {
+				card_stylesheet.remove();
+				delete css.card_stylesheet;
+			}
+			cardback_style.remove();
+			css.cardback_style = init.css(`${animationVsNonameDirectory}/theme/style/cardback`, "avn_metro");
+			if (cardback_stylesheet) {
+				cardback_stylesheet.remove();
+				delete css.cardback_stylesheet;
+			}
+			if (cardback_stylesheet2) {
+				cardback_stylesheet2.remove();
+				delete css.cardback_stylesheet2;
+			}
 		},
 		onremove: () => game.saveExtensionConfig("桌面大战", "imported"),
 		help: {
@@ -501,19 +524,19 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				if (unlockedTheSecondComingTheChosenOneReturn) {
 					const redSpan = document.createElement("span");
 					animationVsNonameRuby.append(redSpan);
-					redSpan.style.color = "#CC0000";
+					redSpan.style.color = "#C00";
 					redSpan.textContent = "桌";
 					const greenSpan = document.createElement("span");
 					animationVsNonameRuby.append(greenSpan);
-					greenSpan.style.color = "#66CC00";
+					greenSpan.style.color = "#6C0";
 					greenSpan.textContent = "面";
 					const blueSpan = document.createElement("span");
 					animationVsNonameRuby.append(blueSpan);
-					blueSpan.style.color = "#33CCFF";
+					blueSpan.style.color = "#3CF";
 					blueSpan.textContent = "大";
 					const yellowSpan = document.createElement("span");
 					animationVsNonameRuby.append(yellowSpan);
-					yellowSpan.style.color = "#FFCC00";
+					yellowSpan.style.color = "#FC0";
 					yellowSpan.textContent = "战";
 				}
 				else animationVsNonameRuby.textContent = "桌面大战";
@@ -525,7 +548,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				if (unlockedTheSecondComingTheChosenOneReturn) {
 					const span = document.createElement("span");
 					animationVsNonameRT.append(span);
-					span.style.color = "#FF6600";
+					span.style.color = "#F60";
 					span.textContent = "Animation vs. Noname";
 				}
 				else animationVsNonameRT.textContent = "Animation vs. Noname";

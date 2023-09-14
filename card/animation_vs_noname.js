@@ -325,7 +325,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				type: "trick",
 				enable: true,
 				postAi: targets => targets.length == 1 && targets[0].countCards("j"),
-				filterTarget: (card, player, target) => target.countCards(player, "ej"),
+				filterTarget: (card, player, target) => target.countCards("ej"),
 				defaultYingbianEffect: "hit",
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"

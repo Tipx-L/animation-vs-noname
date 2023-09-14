@@ -1324,7 +1324,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			get avn_plug_in_skill() {
 				return this.avn_plug_in;
 			},
-			avn_plug_in_skill_info: "锁定技，当此牌进入你的装备区时，你摸三张牌。当此牌离开你的装备区后，你弃置三张牌。",
+			avn_plug_in_skill_info: "锁定技，当此牌进入你的装备区后，你摸三张牌。当此牌离开你的装备区后，你弃置三张牌。",
 			avn_cable: "线缆",
 			get avn_cable_info() {
 				return this.avn_cable_skill_info;
