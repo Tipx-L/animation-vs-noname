@@ -3,7 +3,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 	const fileSystemAvailable = Boolean(game.download);
 	let animationVsNonameImageSrc;
 	if (fileSystemAvailable) animationVsNonameImageSrc = `${lib.assetURL}extension/桌面大战/animation_vs_noname.webp`;
-	else game.getDB("file", "extension-桌面大战:animation_vs_noname.webp").then(value => animationVsNonameImageSrc = value);
+	else game.getDB("image", "extension-桌面大战:animation_vs_noname.webp").then(value => animationVsNonameImageSrc = value);
 	lib.avnCharacterTitle = {
 		avn_alan_becker: "动画师",
 		avn_victim: "起源",
@@ -433,15 +433,15 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 			} else {
 				css("db:extension-桌面大战", "extension");
 				Promise.all([
-					game.getDB("file", "extension-桌面大战:theme/style/card/avn_metro.css"),
-					game.getDB("file", "extension-桌面大战:theme/style/card/image/avn_metro.webp")
+					game.getDB("image", "extension-桌面大战:theme/style/card/avn_metro.css"),
+					game.getDB("image", "extension-桌面大战:theme/style/card/image/avn_metro.webp")
 				]).then(value => URL.createObjectURL(new Blob([
 					lib.init.decode(value[0].replace(/^data:[\s\S]*\/[\s\S]*;base64,/, "")).replace(/image\/avn_metro\.webp/g, value[1])
 				]))).then(value => uiCSS.card_style = css(value));
 				Promise.all([
-					game.getDB("file", "extension-桌面大战:theme/style/cardback/avn_metro.css"),
-					game.getDB("file", "extension-桌面大战:theme/style/cardback/image/avn_metro.webp"),
-					game.getDB("file", "extension-桌面大战:theme/style/cardback/image/avn_metro2.webp")
+					game.getDB("image", "extension-桌面大战:theme/style/cardback/avn_metro.css"),
+					game.getDB("image", "extension-桌面大战:theme/style/cardback/image/avn_metro.webp"),
+					game.getDB("image", "extension-桌面大战:theme/style/cardback/image/avn_metro2.webp")
 				]).then(value => URL.createObjectURL(new Blob([
 					lib.init.decode(value[0].replace(/^data:[\s\S]*\/[\s\S]*;base64,/, "")).replace(/image\/avn_metro\.webp/g, value[1]).replace(/image\/avn_metro2\.webp/g, value[2])
 				]))).then(value => uiCSS.cardback_style = css(value));
