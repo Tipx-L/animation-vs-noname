@@ -20,30 +20,30 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 		name: "animation_vs_noname",
 		connect: true,
 		character: {
-			avn_alan_becker: ["male", "western", 4, ["avn_animate"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_victim: ["male", "western", 4, ["avn_adaptive"], ["border:wu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_the_chosen_one: ["male", "western", 4, ["avn_overflow"], ["border:wei", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_the_dark_lord: ["male", "western", 4, ["avn_terminal"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_the_second_coming: ["male", "western", 4, ["avn_frame_by_frame_drawing"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_the_second_coming_the_chosen_one_return: ["male", "western", 4, ["avn_awakening"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_red: ["male", "western", 4, ["avn_combative"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_green: ["male", "western", 4, ["avn_progressive"], ["border:wu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_blue: ["male", "western", 4, ["avn_midas_touch"], ["border:wei", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_yellow: ["male", "western", 4, ["avn_intelligence"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_virabot: ["none", "western", 4, ["avn_infection"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_agent: ["male", "western", 4, ["avn_surpression"], ["border:wu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_herobrine: ["male", "western", 4, ["avn_out_of_context"], ["border:wei", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_purple: ["male", "western", 4, ["avn_ascending"], ["border:jin", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_dark_blue: ["male", "western", 4, ["avn_ascending"], ["border:wei", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_pink: ["female", "western", 4, ["avn_ascending"], ["border:jin", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_king_orange: ["male", "western", 4, ["avn_resistant"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_gold: ["male", "western", 4, ["avn_resistant"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_alexcrafter28: ["male", "western", 4, ["avn_encounter"], ["border:wu", "doublegroup:wei:shu:wu:qun:jin"]],
-			ska_warden: ["none", "western", "4/10", ["ska_zhenhan"], ["border:wu", "doublegroup:wei:shu:wu:qun:jin"]],
-			sst_mario: ["male", "western", 4, ["sst_jueyi"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_euler_identity: ["none", "western", 4, ["avn_mathematics"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]],
-			sst_kirby: ["male", "western", 4, ["sst_qushi"], ["border:shu", "doublegroup:wei:shu:wu:qun:jin"]],
-			avn_corn_dog_guy: ["male", "western", 4, ["avn_rebranding"], ["border:qun", "doublegroup:wei:shu:wu:qun:jin"]]
+			avn_alan_becker: ["male", "western", 4, ["avn_animate"], ["border:shu", "ruby"]],
+			avn_victim: ["male", "western", 4, ["avn_adaptive"], ["border:wu"]],
+			avn_the_chosen_one: ["male", "western", 4, ["avn_overflow"], ["border:wei", "ruby"]],
+			avn_the_dark_lord: ["male", "western", 4, ["avn_terminal"], ["border:shu", "ruby"]],
+			avn_the_second_coming: ["male", "western", 4, ["avn_frame_by_frame_drawing"], ["border:qun", "ruby"]],
+			avn_the_second_coming_the_chosen_one_return: ["male", "western", 4, ["avn_awakening"], ["border:qun", "ruby"]],
+			avn_red: ["male", "western", 4, ["avn_combative"], ["border:shu"]],
+			avn_green: ["male", "western", 4, ["avn_progressive"], ["border:wu"]],
+			avn_blue: ["male", "western", 4, ["avn_midas_touch"], ["border:wei"]],
+			avn_yellow: ["male", "western", 4, ["avn_intelligence"], ["border:qun"]],
+			avn_virabot: ["none", "western", 4, ["avn_infection"], ["border:shu"]],
+			avn_agent: ["male", "western", 4, ["avn_surpression"], ["border:wu"]],
+			avn_herobrine: ["male", "western", 4, ["avn_out_of_context"], ["border:wei"]],
+			avn_purple: ["male", "western", 4, ["avn_ascending"], ["border:jin"]],
+			avn_dark_blue: ["male", "western", 4, ["avn_ascending"], ["border:wei"]],
+			avn_pink: ["female", "western", 4, ["avn_ascending"], ["border:jin"]],
+			avn_king_orange: ["male", "western", 4, ["avn_resistant"], ["border:qun", "ruby"]],
+			avn_gold: ["male", "western", 4, ["avn_resistant"], ["border:qun"]],
+			avn_alexcrafter28: ["male", "western", 4, ["avn_encounter"], ["border:wu", "ruby"]],
+			ska_warden: ["none", "western", "4/10", ["ska_zhenhan"], ["border:wu"]],
+			sst_mario: ["male", "western", 4, ["sst_jueyi"], ["border:shu"]],
+			avn_euler_identity: ["none", "western", 4, ["avn_mathematics"], ["border:qun", "ruby"]],
+			sst_kirby: ["male", "western", 4, ["sst_qushi"], ["border:shu"]],
+			avn_corn_dog_guy: ["male", "western", 4, ["avn_rebranding"], ["border:qun", "ruby"]]
 		},
 		characterFilter: {},
 		characterSort: {
@@ -1464,7 +1464,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"step 0"
 					player.showCards(event.cards = game.cardsGotoOrdering(get.cards(event.num = new Set(player.getHistory("useCard", evt => get.type2(evt.card)).map(value => get.type2(value.card))).size)).cards, `${get.translation(player)}发动了【${get.skillTranslation(event.name, player)}】`);
 					"step 1"
-					if (cards.length) player.chooseTarget([1, event.num], `${get.skillTranslation(event.name, player)}：指定至多${get.cnNumber(event.num)}名角色，这些角色可以依次获得${get.translation(cards)}${cards.length > 1 ? "中的一张牌" : ""}`).ai = target => {
+					if (cards.length) player.chooseTarget([1, event.num], `${get.skillTranslation(event.name, player)}：你可以指定至多${get.cnNumber(event.num)}名角色，这些角色依次可以获得${get.translation(cards)}${cards.length > 1 ? "中的一张牌" : ""}`).ai = target => {
 						const attitude = _status.event.player.attitudeTo(target), squareRootOfAttitude = attitude < 0 ? -Math.sqrt(-attitude) : Math.sqrt(attitude), cards = _status.event.getParent().cards, preChosenTargets = [...ui.selected.targets, target].sortBySeat(_status.currentPhase || player);
 						preChosenTargets.splice(preChosenTargets.indexOf(target));
 						if (!preChosenTargets.length) {
@@ -2395,6 +2395,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_alan_becker: "Alan Becker",
 			avn_alan_becker_ab: "Alan",
 			avn_animate: "赋名",
+			avn_animate_rt: "Animate",
 			get avn_animate_effect() {
 				return lib.translate.avn_animate;
 			},
@@ -2402,21 +2403,25 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Victim
 			avn_victim: "Victim",
 			avn_adaptive: "应识",
+			avn_adaptive_rt: "Adaptive",
 			avn_adaptive_info: "每回合限一次，你可以展示一张基本牌或普通锦囊牌，将一张牌当做展示的牌使用（无距离和次数限制且不计入使用次数），且以此法使用的牌拥有全部应变条件和「摸一张牌」、「获得响应的牌」的应变效果。",
 			// The Chosen One
 			avn_the_chosen_one: "The Chosen One",
 			avn_the_chosen_one_ab: "Chosen",
 			avn_overflow: "超限",
+			avn_overflow_rt: "Overflow",
 			avn_overflow_info: "出牌阶段开始时，你可以展示所有手牌并弃置一种花色的所有手牌（至少一张），对一名角色造成1点属性伤害，然后你可以将弃置的牌中的一张赠予一名手牌数不大于你的其他角色。",
 			// The Dark Lord
 			avn_the_dark_lord: "The Dark Lord",
 			avn_the_dark_lord_ab: "Dark",
 			avn_terminal: "终解",
+			avn_terminal_rt: "Terminal",
 			avn_terminal_info: "出牌阶段结束时，你可以展示一名角色的所有手牌，然后你可以删除其中的一种花色的所有牌。",
 			// The Second Coming
 			avn_the_second_coming: "The Second Coming",
 			avn_the_second_coming_ab: "Second",
 			avn_frame_by_frame_drawing: "逐绘",
+			avn_frame_by_frame_drawing_rt: "Frame by Frame Drawing",
 			get avn_frame_by_frame_drawing_backup() {
 				return lib.translate.avn_frame_by_frame_drawing;
 			},
@@ -2429,30 +2434,37 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				return lib.translate.avn_the_second_coming_ab;
 			},
 			avn_awakening: "决唤",
+			avn_awakening_rt: "Awakening",
 			avn_awakening_info: "出牌阶段限一次，你可以展示一名角色的所有手牌，然后你可以选择一项：1. 令其弃置其所有红色手牌，然后回复1点体力；2. 令其摸其黑色手牌数张牌，然后失去1点体力。",
 			// Red
 			avn_red: "Red",
 			avn_combative: "攻端",
+			avn_combative_rt: "Combative",
 			avn_combative_info: "当有牌被抵消后，你可以使用牌堆顶的一张牌与一名角色拼点，若你赢，则你可以使用一张拼点牌，否则你将你的区域内的一张牌置于武将牌上。当你造成伤害后，你可以将武将牌上的任意张牌交给一名角色。",
 			// Green
 			avn_green: "Green",
 			avn_progressive: "筑韵",
-			avn_progressive_info: "当你于一回合内首次使用一种花色的牌时，你可以令一名角色摸一张牌并弃置一张牌，然后当你于此回合内检测本技能发动合法性时，视为你本回合使用的花色为弃置的牌的花色的牌数-1。",
+			avn_progressive_rt: "Progressive",
+			avn_progressive_info: "当你于一回合内首次使用一种花色的牌时，你可以令一名角色摸一张牌并弃置一张牌，然后当你于此回合内检测本技能发动合法性时，视为你本回合使用的这张弃置的牌的花色的牌数-1。",
 			// Blue
 			avn_blue: "Blue",
 			avn_midas_touch: "点金",
-			avn_midas_touch_info: "每名角色的结束阶段，若你本回合使用过牌，则你可以亮出牌堆顶的你本回合使用的牌的类别数张牌，然后指定至多等量角色，这些角色依次可以获得一张亮出的牌。",
+			avn_midas_touch_rt: "Midas Touch",
+			avn_midas_touch_info: "每名角色的结束阶段，你可以亮出牌堆顶的你本回合使用的牌的类别数张牌，若如此做，你可以指定至多等量角色，这些角色依次可以获得一张亮出的牌。",
 			// Yellow
 			avn_yellow: "Yellow",
-			avn_intelligence: "机能",
+			avn_intelligence: "机埶",
+			avn_intelligence: "Intelligence",
 			avn_intelligence_info: "每名角色的回合结束时，若此回合不为额外回合，且你本回合使用过的牌的名称字数之和为2的自然数次方，则你可以令一名角色执行一个额外回合。",
 			// ViraBot
 			avn_virabot: "ViraBot",
 			avn_infection: "侵染",
+			avn_infection_rt: "Infection",
 			avn_infection_info: "出牌阶段结束时，你可以展示一名角色的一张手牌，然后若此牌为红色，你获得此牌，否则你删除此牌。",
 			// [Agent]
 			avn_agent: "[Agent]",
 			avn_surpression: "戡定",
+			avn_surpression_rt: "Surpression",
 			get avn_surpression_effect() {
 				return lib.translate.avn_surpression;
 			},
@@ -2466,6 +2478,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Herobrine
 			avn_herobrine: "Herobrine",
 			avn_out_of_context: "异造",
+			avn_out_of_context_rt: "Out of Context",
 			get avn_out_of_context_effect() {
 				return lib.translate.avn_out_of_context;
 			},
@@ -2473,6 +2486,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Purple
 			avn_purple: "Purple",
 			avn_ascending: "攀铭",
+			avn_ascending_rt: "Ascending",
 			_avn_ascending_info: "锁定技，若你本回合未以此法弃置牌，则当你于此回合内使用第二张及以后牌时，若你本回合使用的牌的点数为严格递增，则你摸一张牌，否则你弃置你的体力值张牌。",
 			get avn_ascending_info() {
 				const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters"), alteringCondition = "牌堆洗牌后，你修改本技能。";
@@ -2495,6 +2509,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_king_orange: "King Orange",
 			avn_king_orange_ab: "King",
 			avn_resistant: "抵倾",
+			avn_resistant_rt: "Resistant",
 			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法获得牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则你获得牌堆底的一张牌。",
 			get avn_resistant_info() {
 				const alteringCondition = "牌堆洗牌后，你修改本技能。";
@@ -2515,12 +2530,14 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_alexcrafter28: "Alexcrafter28",
 			avn_alexcrafter28_ab: "Alex",
 			avn_encounter: "探遇",
+			avn_encounter_rt: "Encounter",
 			get avn_encounter_backup() {
 				return lib.translate.avn_encounter;
 			},
 			avn_encounter_info: "出牌阶段限一次，你可以声明一种花色或类别并展示牌堆顶的十张牌，若如此做，你可以获得一张展示的此花色或类别的牌。",
 			// Warden
 			ska_warden: "监守者",
+			ska_warden_rt: "Warden",
 			ska_zhenhan: "振撼",
 			ska_zhenhan_effect: "振撼",
 			ska_zhenhan_info: "准备阶段，或带有「赠」标签的牌进入弃牌堆后，你可以指定一名其他角色，若你至其距离大于1，则你本局游戏至其距离-1，否则你令其失去1点体力并复原本技能的距离计算。",
@@ -2540,6 +2557,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				return `e${sup.outerHTML}`;
 			})(),
 			avn_mathematics: "数术",
+			avn_mathematics_rt: "Mathematics",
 			get avn_mathematics_backup() {
 				return lib.translate.avn_mathematics;
 			},
@@ -2554,6 +2572,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_corn_dog_guy: "Corn Dog Guy",
 			avn_corn_dog_guy_ab: "CDG",
 			avn_rebranding: "品创",
+			avn_rebranding_rt: "Rebranding",
 			avn_rebranding_info: "每名角色的出牌阶段限一次，其可以赠予你一张牌（若其为你，则改为弃置一张牌）并摸一张牌。当你受到伤害后，你将本技能中的前两个“一张牌”改为“两张牌”，第一个“摸一张牌”改为“获得1点护甲”。",
 			get avn_rebranding_rewrite() {
 				return `${lib.translate.avn_rebranding}·改`;
@@ -2563,9 +2582,18 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				return `出牌阶段限一次，你可以赠予一名拥有〖${lib.translate.avn_rebranding}〗的角色一张牌（若其为你，则改为弃置一张牌）并摸一张牌，或赠予一名拥有〖${lib.translate.avn_rebranding_rewrite}〗的角色两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。`;
 			}
 		},
+		pinyins: {
+			"Alan Becker": ["Ælən", "Bɛkər"],
+			Victim: ["Vɪktəm"],
+			"": [],
+			"": [],
+			"The Second Coming": ["Ðə", "Sɛkənd", "Kʌmɪŋ"],
+			马力欧: ["Mario"],
+			卡比: ["Kirby"]
+		},
 		help: {}
 	};
-	const supportExt = Boolean(lib.device || lib.node), availableCharacters = new Set([
+	const fileSystemAvailable = Boolean(game.download), availableCharacters = new Set([
 		"avn_alan_becker",
 		"avn_alexcrafter28",
 		"ska_warden",
@@ -2575,8 +2603,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 	]), unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
 	Object.entries(animationVsNoname.character).forEach(([key, value]) => {
 		const exInfo = value[4];
-		if (supportExt) exInfo.push(`ext:桌面大战/image/character/${key}.webp`);
+		if (fileSystemAvailable) exInfo.push(`ext:桌面大战/image/character/${key}.webp`);
 		else exInfo.push(`db:extension-桌面大战:image/character/${key}.webp`);
+		exInfo.push("doublegroup:wei:shu:wu:qun:jin");
 		if (!availableCharacters.has(key) && !unlockedCharacters.has(key)) exInfo.push("unseen");
 	});
 	Object.values(animationVsNoname.skill).forEach(value => value.audio = false);

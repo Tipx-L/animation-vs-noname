@@ -1,5 +1,9 @@
 "use strict";
 game.import("extension", (lib, game, ui, get, ai, _status) => {
+	const fileSystemAvailable = Boolean(game.download);
+	let animationVsNonameImageSrc;
+	if (fileSystemAvailable) animationVsNonameImageSrc = `${lib.assetURL}extension/桌面大战/animation_vs_noname.webp`;
+	else game.getDB("file", "extension-桌面大战:animation_vs_noname.webp").then(value => animationVsNonameImageSrc = value);
 	lib.avnCharacterTitle = {
 		avn_alan_becker: "动画师",
 		avn_victim: "起源",
@@ -35,7 +39,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 	return {
 		name: "桌面大战",
 		content: (config, pack) => {
-			if (typeof game.shijianCreateProgress != "function") {
+			if (fileSystemAvailable && typeof game.shijianCreateProgress != "function") {
 				game.shijianCreateProgress = (title, max, fileName, value) => {
 					const parent = ui.create.div(ui.window, {
 						textAlign: "center",
@@ -107,7 +111,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 			const {
 				arenaReady, avnHiddenCharacters, characterPack, rank
 			} = lib;
-			arenaReady.push(() => {
+			if (fileSystemAvailable) arenaReady.push(() => {
 				if (lib.extensionPack.桌面大战) {
 					const address = `https://ghproxy.com/https://raw.githubusercontent.com/Show-K/animation-vs-noname/master/`;
 					fetch(`${address}update.js?date=${(new Date()).getTime()}`)
@@ -259,7 +263,8 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				confirmed_unlocked_characters, unlocked_characters
 			} = config, confirmedUnlockedCharacters = confirmed_unlocked_characters || [], newUnlockedCharacters = (unlocked_characters || []).filter(value => !confirmedUnlockedCharacters.includes(value));
 			if (newUnlockedCharacters.length) {
-				game.saveExtensionConfig("桌面大战", "confirmed_unlocked_characters", game.getExtensionConfig("桌面大战", "confirmed_unlocked_characters").addArray(newUnlockedCharacters));
+				game.getExtensionConfig("桌面大战", "confirmed_unlocked_characters").addArray(newUnlockedCharacters);
+				game.saveExtensionConfigValue("桌面大战", "confirmed_unlocked_characters");
 				arenaReady.push(() => {
 					const dialog = ui.create.dialog((() => {
 						const ruby = document.createElement("ruby"), style = ruby.style;
@@ -283,8 +288,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 							ruby.append(yellowSpan);
 							yellowSpan.style.color = "#FC0";
 							yellowSpan.textContent = "锁";
-						}
-						else ruby.textContent = "武将解锁";
+						} else ruby.textContent = "武将解锁";
 						const leftParenthesisRP = document.createElement("rp");
 						ruby.append(leftParenthesisRP);
 						leftParenthesisRP.textContent = "（";
@@ -295,8 +299,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 							rt.append(span);
 							span.style.color = "#F60";
 							span.textContent = "Character Unlocked";
-						}
-						else rt.textContent = "Character Unlocked";
+						} else rt.textContent = "Character Unlocked";
 						const rightParenthesisRP = document.createElement("rp");
 						ruby.append(rightParenthesisRP);
 						rightParenthesisRP.textContent = "）";
@@ -358,67 +361,125 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 			if (!isArray(data.unlocked_characters)) saveExtensionConfig("桌面大战", "unlocked_characters", []);
 			if (!isArray(data.confirmed_unlocked_characters)) saveExtensionConfig("桌面大战", "confirmed_unlocked_characters", []);
 			game.lockTheSecondComingTheChosenOneReturn = () => {
-				getExtensionConfig("桌面大战", "unlocked_characters").remove("avn_the_second_coming_the_chosen_one_return");
-				saveExtensionConfigValue("桌面大战", "unlocked_characters");
-				getExtensionConfig("桌面大战", "confirmed_unlocked_characters").remove("avn_the_second_coming_the_chosen_one_return");
-				saveExtensionConfigValue("桌面大战", "confirmed_unlocked_characters");
+				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters");
+				if (unlockedCharacters) {
+					unlockedCharacters.remove("avn_the_second_coming_the_chosen_one_return");
+					saveExtensionConfigValue("桌面大战", "unlocked_characters");
+				}
+				const confirmedUnlockedCharacters = getExtensionConfig("桌面大战", "confirmed_unlocked_characters");
+				if (confirmedUnlockedCharacters) {
+					confirmedUnlockedCharacters.remove("avn_the_second_coming_the_chosen_one_return");
+					saveExtensionConfigValue("桌面大战", "confirmed_unlocked_characters");
+				}
 			};
 			game.unlockAllAnimationVsNonameCharacters = () => {
-				const animationVsNoname = lib.characterPack.animation_vs_noname;
-				getExtensionConfig("桌面大战", "unlocked_characters").addArray(Object.keys(animationVsNoname).filter(value => animationVsNoname[value][4].includes("unseen")));
+				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters"), unlockableCharacters = Object.entries(lib.characterPack.animation_vs_noname).reduce((previousValue, [key, value]) => {
+					if (value[4].includes("unseen")) previousValue.push(key);
+					return previousValue;
+				}, []);
+				if (unlockedCharacters) unlockedCharacters.addArray(unlockableCharacters);
+				else lib.config.extension_桌面大战_unlocked_characters = unlockableCharacters;
 				saveExtensionConfigValue("桌面大战", "unlocked_characters");
 			};
 			game.unlockAllAnimationVsNonameCharactersExceptHidden = () => {
-				const animationVsNoname = lib.characterPack.animation_vs_noname, hiddenCharacters = lib.avnHiddenCharacters;
-				getExtensionConfig("桌面大战", "unlocked_characters").addArray(Object.keys(animationVsNoname).filter(value => !hiddenCharacters.has(value) && animationVsNoname[value][4].includes("unseen")));
+				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters"), hiddenCharacters = lib.avnHiddenCharacters, unlockableCharacters = Object.entries(lib.characterPack.animation_vs_noname).reduce((previousValue, [key, value]) => {
+					if (!hiddenCharacters.has(key) && value[4].includes("unseen")) previousValue.push(key);
+					return previousValue;
+				}, []);
+				if (unlockedCharacters) unlockedCharacters.addArray(unlockableCharacters);
+				else lib.config.extension_桌面大战_unlocked_characters = unlockableCharacters;
 				saveExtensionConfigValue("桌面大战", "unlocked_characters");
 			};
 			const {
-				config, init, translate
-			} = lib, animationVsNonameDirectory = `${lib.assetURL}extension/桌面大战`;
-			init.css(animationVsNonameDirectory, "extension");
-			if (!data.imported) {
-				saveExtensionConfig("桌面大战", "imported", true);
-				config.characters.add("animation_vs_noname");
-				saveConfigValue("characters");
-				config.cards.addArray(["animation_vs_noname", "animation_vs_noname_internet"]);
-				saveConfigValue("cards");
-			}
-			const all = config.all;
-			all.characters.add("animation_vs_noname");
-			translate.animation_vs_noname_character_config = "桌面大战";
-			const jsForExtension = init.jsForExtension;
-			jsForExtension(`${animationVsNonameDirectory}/character`, "animation_vs_noname");
-			all.cards.addArray(["animation_vs_noname", "animation_vs_noname_internet"]);
-			translate.animation_vs_noname_card_config = "桌面大战";
-			translate.animation_vs_noname_internet_card_config = "桌战IN";
-			const cardDirectory = `${animationVsNonameDirectory}/card`;
-			jsForExtension(cardDirectory, ["animation_vs_noname", "animation_vs_noname_internet"]);
-			const css = ui.css, {
+				config: {
+					all: {
+						cards: allCards,
+						characters: allCharacters
+					}
+				},
+				init: {
+					css,
+					js,
+					jsForExtension
+				},
+				onload,
+				translate
+			} = lib, uiCSS = ui.css, {
 				card_style,
 				card_stylesheet,
 				cardback_style,
 				cardback_stylesheet,
 				cardback_stylesheet2
-			} = css;
+			} = uiCSS;
 			card_style.remove();
-			css.card_style = init.css(`${animationVsNonameDirectory}/theme/style/card`, "avn_metro");
 			if (card_stylesheet) {
 				card_stylesheet.remove();
-				delete css.card_stylesheet;
+				delete uiCSS.card_stylesheet;
 			}
 			cardback_style.remove();
-			css.cardback_style = init.css(`${animationVsNonameDirectory}/theme/style/cardback`, "avn_metro");
 			if (cardback_stylesheet) {
 				cardback_stylesheet.remove();
-				delete css.cardback_stylesheet;
+				delete uiCSS.cardback_stylesheet;
 			}
 			if (cardback_stylesheet2) {
 				cardback_stylesheet2.remove();
-				delete css.cardback_stylesheet2;
+				delete uiCSS.cardback_stylesheet2;
 			}
+			if (fileSystemAvailable) {
+				const animationVsNonameDirectory = `${lib.assetURL}extension/桌面大战`;
+				css(animationVsNonameDirectory, "extension");
+				uiCSS.card_style = css(`${animationVsNonameDirectory}/theme/style/card`, "avn_metro");
+				uiCSS.cardback_style = css(`${animationVsNonameDirectory}/theme/style/cardback`, "avn_metro");
+			} else {
+				css("db:extension-桌面大战", "extension");
+				Promise.all([
+					game.getDB("file", "extension-桌面大战:theme/style/card/avn_metro.css"),
+					game.getDB("file", "extension-桌面大战:theme/style/card/image/avn_metro.webp")
+				]).then(value => URL.createObjectURL(new Blob([
+					lib.init.decode(value[0].replace(/^data:[\s\S]*\/[\s\S]*;base64,/, "")).replace(/image\/avn_metro\.webp/g, value[1])
+				]))).then(value => uiCSS.card_style = css(value));
+				Promise.all([
+					game.getDB("file", "extension-桌面大战:theme/style/cardback/avn_metro.css"),
+					game.getDB("file", "extension-桌面大战:theme/style/cardback/image/avn_metro.webp"),
+					game.getDB("file", "extension-桌面大战:theme/style/cardback/image/avn_metro2.webp")
+				]).then(value => URL.createObjectURL(new Blob([
+					lib.init.decode(value[0].replace(/^data:[\s\S]*\/[\s\S]*;base64,/, "")).replace(/image\/avn_metro\.webp/g, value[1]).replace(/image\/avn_metro2\.webp/g, value[2])
+				]))).then(value => uiCSS.cardback_style = css(value));
+			}
+			if (!data.imported) {
+				saveExtensionConfig("桌面大战", "imported", true);
+				const {
+					cards,
+					characters
+				} = lib.config;
+				cards.add("animation_vs_noname");
+				cards.add("animation_vs_noname_internet");
+				saveConfigValue("cards");
+				characters.add("animation_vs_noname");
+				saveConfigValue("characters");
+			}
+			onload.push(() => {
+				allCards.add("animation_vs_noname");
+				allCards.add("animation_vs_noname_internet");
+				allCharacters.add("animation_vs_noname");
+			});
+			translate.animation_vs_noname_card_config = "桌面大战";
+			translate.animation_vs_noname_character_config = "桌面大战";
+			translate.animation_vs_noname_internet_card_config = "桌战IN";
+			const animationVsNonameDirectory = fileSystemAvailable ? `${lib.assetURL}extension/桌面大战/` : "db:extension-桌面大战:", cardDirectory = `${animationVsNonameDirectory}card`;
+			jsForExtension(cardDirectory, "animation_vs_noname");
+			jsForExtension(cardDirectory, "animation_vs_noname_internet");
+			jsForExtension(`${animationVsNonameDirectory}character`, "animation_vs_noname");
+			css("https://npm.onmicrosoft.cn/comment-core-library/dist/css", "style.min");
+			js("https://npm.onmicrosoft.cn/comment-core-library/dist", "CommentCoreLibrary.min", () => js("https://npm.onmicrosoft.cn/socket.io-client/dist", "socket.io.min", () => {
+				const CM = new CommentManager(document.body);
+				CM.init();
+				CM.start();
+				const socket = io("https://socketrhythmized.glitch.me");
+				socket.on("connect", () => socket.emit("join", get.connectNickname()));
+				socket.on("danmaku", danmaku => CM.send(danmaku));
+			}));
 		},
-		onremove: () => game.saveExtensionConfig("桌面大战", "imported"),
 		help: {
 			桌面大战: (description => {
 				/**
@@ -449,8 +510,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 							const descriptionLI = document.createElement("li");
 							descriptionUL.append(descriptionLI);
 							descriptionLI.textContent = value;
-						}
-						else {
+						} else {
 							li = document.createElement("li");
 							ul.append(li);
 							li.textContent = value;
@@ -503,21 +563,22 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				onclick: () => {
 					if (!confirm("是否重置此扩展？\n《桌面大战》的所有相关配置都会被删除！\n不会影响游戏正常运行。\n初始状态重启游戏后生效。")) return;
 					Object.keys(lib.config).forEach(value => {
-						if (value.indexOf("extension_桌面大战_") == 0 && value != "extension_桌面大战_enable") game.saveConfig(value);
+						if (value != "extension_桌面大战_enable" && value.indexOf("extension_桌面大战_") == 0) game.saveConfig(value);
 					});
 					alert("已重置此扩展！\n初始状态重启游戏后生效。");
 				}
 			}
 		},
 		package: {
-			intro: (() => {
-				const hr = document.createElement("hr"), h2 = document.createElement("h2"), img = document.createElement("img");
-				h2.append(img);
-				img.src = `${lib.assetURL}extension/桌面大战/animation_vs_noname.webp`;
-				const style = img.style;
+			get intro() {
+				const hr = document.createElement("hr"), h2 = document.createElement("h2"), image = new Image();
+				image.id = "animation-vs-noname-image";
+				image.src = animationVsNonameImageSrc;
+				const style = image.style;
 				style.float = "left";
 				style.height = "1.5em";
 				style.marginRight = "5px";
+				h2.append(image);
 				const animationVsNonameRuby = document.createElement("ruby");
 				h2.append(animationVsNonameRuby);
 				const unlockedTheSecondComingTheChosenOneReturn = (game.getExtensionConfig("桌面大战", "unlocked_characters") || []).includes("avn_the_second_coming_the_chosen_one_return");
@@ -538,8 +599,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					animationVsNonameRuby.append(yellowSpan);
 					yellowSpan.style.color = "#FC0";
 					yellowSpan.textContent = "战";
-				}
-				else animationVsNonameRuby.textContent = "桌面大战";
+				} else animationVsNonameRuby.textContent = "桌面大战";
 				const leftParenthesisRP = document.createElement("rp");
 				animationVsNonameRuby.append(leftParenthesisRP);
 				leftParenthesisRP.textContent = "（";
@@ -550,8 +610,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					animationVsNonameRT.append(span);
 					span.style.color = "#F60";
 					span.textContent = "Animation vs. Noname";
-				}
-				else animationVsNonameRT.textContent = "Animation vs. Noname";
+				} else animationVsNonameRT.textContent = "Animation vs. Noname";
 				const rightParenthesisRP = document.createElement("rp");
 				animationVsNonameRuby.append(rightParenthesisRP);
 				rightParenthesisRP.textContent = "）";
@@ -616,24 +675,26 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				animatorVsAnimationRT.textContent = "火柴人VS动画师";
 				animatorVsAnimationRuby.append(rightParenthesisRP.cloneNode());
 				return `${h2.outerHTML}${hr.outerHTML}${citeOuterHTML}${cite.outerHTML}${hr.outerHTML}一个基于《${animatorVsAnimationRuby.outerHTML}》系列的同人《无名杀》扩展，不隶属于Alan Becker等相关创作者。${hr.outerHTML}`;
-			})(),
+			},
 			author: "Show-K",
 			diskURL: "https://github.com/Show-K/animation-vs-noname",
 			forumURL: "https://github.com/Show-K/animation-vs-noname/issues",
 			version: "2",
-			changeLog: [
-				`<h2><img style="float: left; height: 1.5em; margin-right: 5px;" src="${lib.assetURL}extension/桌面大战/animation_vs_noname.webp"><ruby>更新日志<rp>（</rp><rt>2</rt><rp>）</rp></ruby></h2>`,
-				`<ol>${[
-					"新武将：Herobrine（待解锁）；",
-					"新武将：<ruby>紫<rp>（</rp><rt>Purple</rt><rp>）</rp></ruby>（待解锁）；",
-					"新武将：<ruby>橙国王<rp>（</rp><rt>King Orange</rt><rp>）</rp></ruby>（待解锁）；",
-					"新武将：Alexcrafter28；",
-					"新武将：<ruby>监守者<rp>（</rp><rt>Warden</rt><rp>）</rp></ruby>；",
-					"新卡牌包：<ruby>桌面大战<rp>（</rp><rt>Animation vs. Noname</rt><rp>）</rp></ruby>；",
-					"调整了<ruby>艾伦·贝克尔<rp>（</rp><rt>Alan Becker</rt><rp>）</rp></ruby>〖赋名〗；",
-					"修复了一些小问题。"
-				].reduce((previousValue, currentValue) => `${previousValue}<li>${currentValue}</li>`, "")}</ol>`
-			].join("")
+			get changeLog() {
+				return [
+					`<h2><img style="float: left; height: 1.5em; margin-right: 5px;" src="${animationVsNonameImageSrc}"><ruby>更新日志<rp>（</rp><rt>2</rt><rp>）</rp></ruby></h2>`,
+					`<ol>${[
+						"新武将：Herobrine（待解锁）；",
+						"新武将：<ruby>紫<rp>（</rp><rt>Purple</rt><rp>）</rp></ruby>（待解锁）；",
+						"新武将：<ruby>橙国王<rp>（</rp><rt>King Orange</rt><rp>）</rp></ruby>（待解锁）；",
+						"新武将：Alexcrafter28；",
+						"新武将：<ruby>监守者<rp>（</rp><rt>Warden</rt><rp>）</rp></ruby>；",
+						"新卡牌包：<ruby>桌面大战<rp>（</rp><rt>Animation vs. Noname</rt><rp>）</rp></ruby>；",
+						"调整了<ruby>艾伦·贝克尔<rp>（</rp><rt>Alan Becker</rt><rp>）</rp></ruby>〖赋名〗；",
+						"修复了一些小问题。"
+					].reduce((previousValue, currentValue) => `${previousValue}<li>${currentValue}</li>`, "")}</ol>`
+				].join("");
+			}
 		}
 	};
 });

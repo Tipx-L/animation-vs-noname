@@ -1,21 +1,27 @@
-progress.zxgxProgress {
-	width: 75%;
-	height: 10px;
-	border: 2px solid;
-	border-radius: 15px;
-	vertical-align: middle;
-	appearance: none;
-	-webkit-appearance: none;
+#avn-pre-awaking {
+	box-shadow: inset 0 0 200px 200px #D8EEC2;
+	height: 100%;
+	left: 0;
+	opacity: 0;
+	pointer-events: none;
+	position: fixed;
+	top: 0;
+	transition-duration: 180s;
+	width: 100%;
+	z-index: 100;
 }
 
-progress.zxgxProgress::-webkit-progress-bar {
-	background: rgb(239, 239, 239);
-	border-radius: 0.2rem;
+.avn-pulse {
+	animation: avn-pulse 1s ease-in-out;
 }
 
-progress.zxgxProgress::-webkit-progress-value {
-	border-radius: 0.2rem;
-	background: rgb(0, 117, 255);
+.avn-strong-pulse {
+	animation: avn-strong-pulse 1s ease-in-out;
+}
+
+.cmt.css-optimize {
+	white-space: nowrap;
+	z-index: 16;
 }
 
 @keyframes avn-pulse {
@@ -46,23 +52,22 @@ progress.zxgxProgress::-webkit-progress-value {
 	}
 }
 
-.avn-pulse {
-	animation: avn-pulse 1s ease-in-out;
+progress.zxgxProgress {
+	width: 75%;
+	height: 10px;
+	border: 2px solid;
+	border-radius: 15px;
+	vertical-align: middle;
+	appearance: none;
+	-webkit-appearance: none;
 }
 
-.avn-strong-pulse {
-	animation: avn-strong-pulse 1s ease-in-out;
+progress.zxgxProgress::-webkit-progress-bar {
+	background: rgb(239, 239, 239);
+	border-radius: 0.2rem;
 }
 
-#avn-pre-awaking {
-	box-shadow: inset 0 0 200px 200px #D8EEC2;
-	height: 100%;
-	left: 0;
-	opacity: 0;
-	pointer-events: none;
-	position: fixed;
-	top: 0;
-	transition-duration: 180s;
-	width: 100%;
-	z-index: 100;
+progress.zxgxProgress::-webkit-progress-value {
+	border-radius: 0.2rem;
+	background: rgb(0, 117, 255);
 }
