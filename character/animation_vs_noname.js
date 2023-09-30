@@ -12,7 +12,13 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 	 * Insert line break opportunities into a URL.
 	 * @param {String} url The URL.
 	 */
-	const formatURL = url => url.split("//").map(str => str.replace(/(?<after>:)/giu, "$1<wbr>").replace(/(?<before>[/~.,\-_?#%])/giu, "<wbr>$1").replace(/(?<beforeAndAfter>[=&])/giu, "<wbr>$1<wbr>")).join("//<wbr>");
+	const formatURL = url => url
+		.split("//")
+		.map(str => str
+			.replace(/(?<after>:)/giu, "$1<wbr>")
+			.replace(/(?<before>[/~.,\-_?#%])/giu, "<wbr>$1")
+			.replace(/(?<beforeAndAfter>[=&])/giu, "<wbr>$1<wbr>"))
+		.join("//<wbr>");
 	/**
 	 * @type {AnimationVsNonameImportCharacterConfig}
 	 */
@@ -38,6 +44,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_pink: ["female", "western", 4, ["avn_ascending"], ["border:jin"]],
 			avn_king_orange: ["male", "western", 4, ["avn_resistant"], ["border:qun", "ruby"]],
 			avn_gold: ["male", "western", 4, ["avn_resistant"], ["border:qun"]],
+			avn_butcher: ["male", "western", 4, ["avn_cookery"], ["border:qun"]],
 			avn_alexcrafter28: ["male", "western", 4, ["avn_encounter"], ["border:wu", "ruby"]],
 			ska_warden: ["none", "western", "4/10", ["ska_zhenhan"], ["border:wu"]],
 			sst_mario: ["male", "western", 4, ["sst_jueyi"], ["border:shu"]],
@@ -69,6 +76,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"avn_pink",
 					"avn_king_orange",
 					"avn_gold",
+					"avn_butcher",
 					"avn_alexcrafter28",
 					"ska_warden"
 				],
@@ -284,6 +292,17 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"再也无法陪伴。"
 				].join("");
 			},
+			get avn_butcher() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_butcher")}. Butcher<br>`,
+					"首次登场：Titan Ravager - AVM Shorts Episode 23",
+					"<hr>",
+					"大师食谱其实已经在你的手……啊！"
+				].join("");
+			},
 			get avn_alexcrafter28() {
 				return [
 					"联动来源：《大乱桌斗》<br>",
@@ -399,6 +418,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_pink: ["avn_purple", "avn_dark_blue"],
 			avn_king_orange: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow", "avn_herobrine", "avn_purple"],
 			avn_gold: ["avn_king_orange"],
+			avn_butcher: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow"],
 			ska_warden: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow", "avn_herobrine", "avn_purple", "avn_king_orange"],
 			sst_mario: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow"],
 			avn_euler_identity: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return"],
@@ -1459,7 +1479,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				trigger: {
 					global: "phaseJieshuBegin"
 				},
-				filter: (event, player) => player.getHistory("useCard").length,
+				filter: (event, player) => player.getHistory("useCard", evt => get.type2(evt.card)).length,
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					player.showCards(event.cards = game.cardsGotoOrdering(get.cards(event.num = new Set(player.getHistory("useCard", evt => get.type2(evt.card)).map(value => get.type2(value.card))).size)).cards, `${get.translation(player)}发动了【${get.skillTranslation(event.name, player)}】`);
@@ -1824,7 +1844,12 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						if (target.hasSkillTag("nogain")) return effect / 10;
 						return effect;
 					};
-					else if ((event.num = player.getHp()) && game.hasPlayer(current => current.countDiscardableCards(player, "he"))) player.chooseTarget(`${get.skillTranslation(name, player)}：弃置一名角色的至多${get.cnNumber(event.num)}张牌`, true, (card, player, target) => target.countDiscardableCards(player, "he")).set("targetprompt", "被弃置牌").ai = target => get.effect(target, "guohe_copy2", _status.event.player, _status.event.player);
+					else if ((event.num = player.getHp()) && game.hasPlayer(current => current.countDiscardableCards(player, "he"))) player.chooseTarget(`${get.skillTranslation(name, player)}：弃置一名角色的至多${get.cnNumber(event.num)}张牌`, true, (card, player, target) => target.countDiscardableCards(player, "he")).set("targetprompt", "被弃置牌").ai = target => {
+						const player = _status.event.player;
+						return get.effect(target, {
+							name: "guohe_copy2"
+						}, player, player);
+					};
 					else event.finish();
 					"step 1"
 					if (!result.targets?.length) return;
@@ -1965,6 +1990,100 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				animationStr: "抵倾",
 				animationColor: "orange"
 			},
+			// Butcher
+			avn_cookery: {
+				direct: true,
+				trigger: {
+					global: "phaseJieshuBegin"
+				},
+				filter: (event, player) => player.getHistory("useCard", evt => get.type2(evt.card)).length,
+				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
+					"step 0"
+					player.chooseTarget(
+						[1, event.num = new Set(player.getHistory("useCard", evt => get.type2(evt.card)).map(evt => get.type2(evt.card))).size],
+						get.prompt2(event.name),
+						(testingCard, testingPlayer, testingTarget) => testingTarget.countCards("h"),
+						aiTarget => {
+							const aiPlayer = _status.event.player;
+							return aiTarget.isTurnedOver() || aiTarget.isLinked() && get.effect(aiTarget, {
+								name: "tiesuo"
+							}, aiPlayer, aiPlayer) > 0 ? aiPlayer.attitudeTo(aiTarget) : -aiPlayer.attitudeTo(aiTarget);
+						}
+					);
+					"step 1"
+					if (result?.targets.length) {
+						player.logSkill(event.name, event.targets = result.targets.sortBySeat(_status.currentPhase || player));
+						event.cards = [];
+						event.targetsIndex = 0;
+					}
+					else event.finish();
+					"step 2"
+					player.choosePlayerCard(
+						event.target = targets[event.targetsIndex],
+						`${get.skillTranslation(event.name, player)}：明置或暗置${get.translation(event.target)}的一张手牌`,
+						"h",
+						true
+					);
+					"step 3"
+					const links = result?.links;
+					if (links?.length) {
+						cards.addArray(links);
+						links.forEach(chosenCard => {
+							if (get.is.shownCard(chosenCard)) target.hideShownCards([chosenCard]);
+							else target.addShownCards([chosenCard], `visible_${event.name}`);
+						});
+					}
+					if (++event.targetsIndex < targets.length) event.goto(2);
+					"step 4"
+					game.delayx();
+					const typesForAllSame = cards.map(chosenCard => get.type2(chosenCard)), targetsLength = targets.length;
+					if (typesForAllSame.length && typesForAllSame.slice(0, -1).every((type, index) => typesForAllSame.slice(index + 1).every(testingType => testingType == type))) player.chooseTarget(
+						[1, targetsLength],
+						`${get.skillTranslation(event.name, player)}：你可以${targetsLength > 1 ? `依次横置或重置${get.translation(targets)}中的任意名角色` : `横置或重置${get.translation(targets)}`}`,
+						(testingCard, testingPlayer, testingTarget) => _status.event.getParent().targets.includes(testingTarget),
+						aiTarget => {
+							const aiPlayer = _status.event.player;
+							return get.effect(aiTarget, {
+								name: "tiesuo"
+							}, aiPlayer, aiPlayer);
+						}
+					);
+					else event.goto(6);
+					"step 5"
+					const linkingTargets = result?.targets;
+					if (!linkingTargets?.length) return;
+					player.line(linkingTargets.sortBySeat(_status.currentPhase || player), "green");
+					player.addExpose(0.2);
+					linkingTargets.forEach(linkingTarget => linkingTarget.link());
+					game.delayex();
+					"step 6"
+					const typesForAllDifferent = cards.map(chosenCard => get.type2(chosenCard));
+					if (typesForAllDifferent.length > 1 && typesForAllDifferent.slice(0, -1).every((type, index) => typesForAllDifferent.slice(index + 1).every(testingType => testingType != type))) player.chooseTarget(
+						`${get.skillTranslation(event.name, player)}：你可以令${targets.length > 1 ? `${get.translation(targets)}中的一名角色翻面` : `${get.translation(targets)}翻面`}`,
+						(testingCard, testingPlayer, testingTarget) => _status.event.getParent().targets.includes(testingTarget),
+						aiTarget => {
+							if (aiTarget.hasSkillTag("noturn")) return 0;
+							const attitude = _status.event.player.attitudeTo(aiTarget);
+							if (attitude > 0) return aiTarget.isTurnedOver() ? attitude : -1;
+							if (attitude < 0) {
+								if (aiTarget.isTurnedOver()) return attitude;
+								const currentPhase = _status.currentPhase;
+								if (currentPhase && aiTarget.getSeatNum() <= currentPhase.getSeatNum()) return -attitude;
+								return 42.5 * Math.sqrt(Math.max(0.01, get.threaten(aiTarget))) + 2 * game.countPlayer() / (currentPhase ? get.distance(currentPhase, aiTarget, "absolute") : 1);
+							}
+							return aiTarget.hasJudge("lebu") ? Math.random() / 3 : Math.sqrt(get.threaten(aiTarget)) / 5 + Math.random() / 2;
+						}
+					);
+					else event.finish();
+					"step 7"
+					const turningOverTargets = result?.targets;
+					if (!turningOverTargets?.length) return;
+					player.line(turningOverTargets.sortBySeat(_status.currentPhase || player), "green");
+					player.addExpose(0.2);
+					turningOverTargets.forEach(turningOverTarget => turningOverTarget.turnOver());
+					game.delayex();
+				}
+			},
 			// Alexcrafter28
 			avn_encounter: {
 				enable: "phaseUse",
@@ -2032,9 +2151,12 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				filter: (event, player, name) => name == "phaseZhunbeiBegin" || event.getd().some(card => get.cardtag(card, "gifts")),
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
-					player.chooseTarget(get.prompt2("ska_zhenhan"), lib.filter.notMe, target => get.distance(_status.event.player, target) > 1 ? -_status.event.player.attitudeTo(target) : get.effect(target, {
-						name: "losehp"
-					})).targetprompt = target => get.distance(_status.event.player, target) > 1 ? "距离-1" : "失去体力";
+					player.chooseTarget(get.prompt2("ska_zhenhan"), lib.filter.notMe, target => {
+						const player = _status.event.player;
+						return get.distance(player, target) > 1 ? -player.attitudeTo(target) : get.effect(target, {
+							name: "losehp"
+						}, player, player);
+					}).targetprompt = target => get.distance(_status.event.player, target) > 1 ? "距离-1" : "失去体力";
 					"step 1"
 					if (result.targets?.length) {
 						const target = result.targets[0];
@@ -2394,6 +2516,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Alan Becker
 			avn_alan_becker: "Alan Becker",
 			avn_alan_becker_ab: "Alan",
+			avn_alan_becker_rt: "艾伦·贝克尔",
 			avn_animate: "赋名",
 			avn_animate_rt: "Animate",
 			get avn_animate_effect() {
@@ -2402,24 +2525,28 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_animate_info: "出牌阶段限一次，你可以展示一张基本牌或普通锦囊牌，令一名角色的任意张手牌均视为此牌，直到其使用这些牌中的一张结算后或其回合结束后。",
 			// Victim
 			avn_victim: "Victim",
+			avn_victim_rt: "受害者",
 			avn_adaptive: "应识",
 			avn_adaptive_rt: "Adaptive",
 			avn_adaptive_info: "每回合限一次，你可以展示一张基本牌或普通锦囊牌，将一张牌当做展示的牌使用（无距离和次数限制且不计入使用次数），且以此法使用的牌拥有全部应变条件和「摸一张牌」、「获得响应的牌」的应变效果。",
 			// The Chosen One
 			avn_the_chosen_one: "The Chosen One",
 			avn_the_chosen_one_ab: "Chosen",
+			avn_the_chosen_one_rt: "天选之子",
 			avn_overflow: "超限",
 			avn_overflow_rt: "Overflow",
 			avn_overflow_info: "出牌阶段开始时，你可以展示所有手牌并弃置一种花色的所有手牌（至少一张），对一名角色造成1点属性伤害，然后你可以将弃置的牌中的一张赠予一名手牌数不大于你的其他角色。",
 			// The Dark Lord
 			avn_the_dark_lord: "The Dark Lord",
 			avn_the_dark_lord_ab: "Dark",
+			avn_the_dark_lord_rt: "黑暗领主",
 			avn_terminal: "终解",
 			avn_terminal_rt: "Terminal",
 			avn_terminal_info: "出牌阶段结束时，你可以展示一名角色的所有手牌，然后你可以删除其中的一种花色的所有牌。",
 			// The Second Coming
 			avn_the_second_coming: "The Second Coming",
 			avn_the_second_coming_ab: "Second",
+			avn_the_second_coming_rt: "再临者",
 			avn_frame_by_frame_drawing: "逐绘",
 			avn_frame_by_frame_drawing_rt: "Frame by Frame Drawing",
 			get avn_frame_by_frame_drawing_backup() {
@@ -2432,6 +2559,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			},
 			get avn_the_second_coming_the_chosen_one_return_ab() {
 				return lib.translate.avn_the_second_coming_ab;
+			},
+			get avn_the_second_coming_the_chosen_one_return_rt() {
+				return lib.translate.avn_the_second_coming_rt;
 			},
 			avn_awakening: "决唤",
 			avn_awakening_rt: "Awakening",
@@ -2524,6 +2654,15 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				return `${lib.translate.avn_resistant}·改`;
 			},
 			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法令一名角色获得牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则其获得牌堆底的一张牌。",
+			// Butcher
+			avn_butcher: "屠夫",
+			avn_butcher_rt: "Butcher",
+			avn_cookery: "料传",
+			avn_cookery_rt: "Cookery",
+			get visible_avn_cookery() {
+				return lib.translate.avn_cookery;
+			},
+			avn_cookery_info: "每名角色的结束阶段，你可以依次明置或暗置至多你本回合使用的牌的类别数名角色的一张手牌，然后若这些牌的类别均：相同，则你可以依次横置或重置其中任意名角色；不相同，则你可以令其中一名角色翻面。",
 			// Gold
 			avn_gold: "Gold",
 			// Alexcrafter28
@@ -2583,11 +2722,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			}
 		},
 		pinyins: {
-			"Alan Becker": ["Ælən", "Bɛkər"],
-			Victim: ["Vɪktəm"],
-			"": [],
-			"": [],
-			"The Second Coming": ["Ðə", "Sɛkənd", "Kʌmɪŋ"],
 			马力欧: ["Mario"],
 			卡比: ["Kirby"]
 		},
@@ -2601,13 +2735,13 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 		"sst_kirby",
 		"avn_corn_dog_guy"
 	]), unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
-	Object.entries(animationVsNoname.character).forEach(([key, value]) => {
-		const exInfo = value[4];
+	Object.entries(animationVsNoname.character).forEach(([key, heroData]) => {
+		const exInfo = heroData[4];
 		if (fileSystemAvailable) exInfo.push(`ext:桌面大战/image/character/${key}.webp`);
 		else exInfo.push(`db:extension-桌面大战:image/character/${key}.webp`);
 		exInfo.push("doublegroup:wei:shu:wu:qun:jin");
 		if (!availableCharacters.has(key) && !unlockedCharacters.has(key)) exInfo.push("unseen");
 	});
-	Object.values(animationVsNoname.skill).forEach(value => value.audio = false);
+	Object.values(animationVsNoname.skill).forEach(exSkillData => exSkillData.audio = false);
 	return animationVsNoname;
 });

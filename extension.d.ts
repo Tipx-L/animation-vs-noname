@@ -19,6 +19,7 @@ declare namespace Lib {
 		avn_ascending: AVNAscendingExSkillData;
 		avn_adaptive: AVNAdaptiveExSkillData;
 		avn_adaptive_backup?: AVNAdaptiveBackupExSkillData;
+		avn_cookery: ExEventSkillData<AVNCookeryExEvent>;
 		avn_encounter: AVNEncounterExSkillData;
 		avn_encounter_backup: AVNEncounterBackupExSkillData;
 		avn_frame_by_frame_drawing: AVNFrameByFrameDrawingExSkillData;
@@ -61,6 +62,9 @@ interface AVNAdaptiveExSkillData extends ExEventSkillData<ExEvent<"avn_adaptive"
 }
 interface AVNAscendingExSkillData extends ExEventSkillData<ExEvent<"avn_ascending">> {
 	isNotAvailable(player: Player): boolean;
+}
+interface AVNCookeryExEvent extends ExEvent<"avn_cookery"> {
+	targetsIndex: number;
 }
 interface AVNDynamicLinkExSkillData extends ExEventSkillData<ExEvent<"_avn_dynamic_link">> {
 	changeMain: AVNDynamicLinkContentFuncByAll;

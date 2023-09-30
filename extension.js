@@ -23,6 +23,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 		avn_pink: "落花",
 		avn_king_orange: "执念",
 		avn_gold: "稚子",
+		avn_butcher: "厨艺大师",
 		avn_alexcrafter28: "世界奇闻者",
 		ska_warden: "循声守卫",
 		sst_mario: "炎烈意决",
@@ -475,9 +476,20 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				const CM = new CommentManager(document.body);
 				CM.init();
 				CM.start();
-				const socket = io("https://socketrhythmized.glitch.me");
-				socket.on("connect", () => socket.emit("join", get.connectNickname()));
+				const socket = io("https://socketrhythmized.glitch.me", {
+					query: {
+						connectNickname: get.connectNickname()
+					}
+				});
 				socket.on("danmaku", danmaku => CM.send(danmaku));
+				socket.on("disconnect", () => CM.send({
+					text: "正在从服务器断开连接",
+					mode: 1,
+					size: 25,
+					color: 0xffffff,
+					border: false,
+					shadow: true
+				}));
 			}));
 		},
 		help: {

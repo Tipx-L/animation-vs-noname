@@ -637,8 +637,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				content: (event, step, source, player, target, targets, card, cards, skill) => {
 					if (!target.storage.renku) target.storage.renku = true;
 					game.updateRenku();
-					const length = _status.renku.length;
-					if (length) target.chooseToGuanxing(length);
+					target.chooseToGuanxing(_status.renku.length + 1);
 					target.draw();
 				},
 				ai: {
@@ -1296,7 +1295,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_destroy: "破坏",
 			avn_destroy_info: "出牌阶段，对所有其他角色使用。其删除其区域内的一张牌。",
 			avn_debug: "调试",
-			avn_debug_info: "出牌阶段，对包含你在内的一名角色使用。其卜算X（X为仁库中的牌数），然后摸一张牌。",
+			avn_debug_info: "出牌阶段，对包含你在内的一名角色使用。其卜算X（X为仁库中的牌数+1），然后摸一张牌。",
 			avn_clean: "清理",
 			avn_clean_info: "出牌阶段，对你攻击范围内的区域内有牌的任意名角色使用。你弃置其区域里的至多仁库中的牌数的一半（向下取整，且至少一张）张牌。",
 			// Delay

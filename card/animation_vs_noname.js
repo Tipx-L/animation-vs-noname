@@ -380,13 +380,14 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			},
 			avn_hand_tool: {
 				type: "trick",
+				global: "avn_hand_tool_skill",
 				enable: () => typeof _status.event.getParent("phase")?.skill != "string",
 				selectTarget: -1,
 				toself: true,
 				filterTarget: lib.filter.isMe,
 				modTarget: true,
 				defaultYingbianEffect: "add",
-				content: (event, step, source, player, target, targets, card, cards, skill) => {
+				content: (event, step, source, player, target) => {
 					target.insertPhase();
 				},
 				ai: {
@@ -779,6 +780,17 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				},
 				ai: {
 					damageBonus: true
+				}
+			},
+			avn_hand_tool_skill: {
+				cardSkill: true,
+				forced: true,
+				trigger: {
+					player: "phaseDrawBegin2"
+				},
+				filter: event => event.getParent().skill == "avn_hand_tool" && !event.numFixed && event.num > 0,
+				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger) => {
+					trigger.num--;
 				}
 			},
 			// Delay
