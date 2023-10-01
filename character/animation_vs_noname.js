@@ -33,9 +33,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_the_second_coming: ["male", "western", 4, ["avn_frame_by_frame_drawing"], ["border:qun", "ruby"]],
 			avn_the_second_coming_the_chosen_one_return: ["male", "western", 4, ["avn_awakening"], ["border:qun", "ruby"]],
 			avn_red: ["male", "western", 4, ["avn_combative"], ["border:shu"]],
+			avn_yellow: ["male", "western", 4, ["avn_intelligence"], ["border:qun"]],
 			avn_green: ["male", "western", 4, ["avn_progressive"], ["border:wu"]],
 			avn_blue: ["male", "western", 4, ["avn_midas_touch"], ["border:wei"]],
-			avn_yellow: ["male", "western", 4, ["avn_intelligence"], ["border:qun"]],
 			avn_virabot: ["none", "western", 4, ["avn_infection"], ["border:shu"]],
 			avn_agent: ["male", "western", 4, ["avn_surpression"], ["border:wu"]],
 			avn_herobrine: ["male", "western", 4, ["avn_out_of_context"], ["border:wei"]],
@@ -63,9 +63,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"avn_the_second_coming",
 					"avn_the_second_coming_the_chosen_one_return",
 					"avn_red",
+					"avn_yellow",
 					"avn_green",
 					"avn_blue",
-					"avn_yellow",
 					"avn_virabot",
 					"avn_agent"
 				],
@@ -170,6 +170,17 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"身先士卒。"
 				].join("");
 			},
+			get avn_yellow() {
+				return [
+					"武将作者：Show-K<br>",
+					"插图作者：Alan Becker",
+					"<hr>",
+					`AvN${getCharacterIndex("avn_yellow")}. Yellow<br>`,
+					"首次登场：Animator vs. Animation IV",
+					"<hr>",
+					"精益求精。"
+				].join("");
+			},
 			get avn_green() {
 				return [
 					"武将作者：Show-K<br>",
@@ -190,17 +201,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"首次登场：Animator vs. Animation IV",
 					"<hr>",
 					"雪中送炭。"
-				].join("");
-			},
-			get avn_yellow() {
-				return [
-					"武将作者：Show-K<br>",
-					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_yellow")}. Yellow<br>`,
-					"首次登场：Animator vs. Animation IV",
-					"<hr>",
-					"精益求精。"
 				].join("");
 			},
 			get avn_virabot() {
@@ -363,7 +363,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					"武将作者：Show-K<br>",
 					"插图作者：Alan Becker",
 					"<hr>",
-					`AvN${getCharacterIndex("avn_euler_identity")}. Euler's identity<br>`,
+					`AvN${getCharacterIndex("avn_euler_identity")}. Euler’s identity<br>`,
 					"首次登场：Animation vs. Math",
 					"<hr>",
 					"-1。"
@@ -408,19 +408,19 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_the_second_coming: ["avn_alan_becker", "avn_victim", "avn_the_chosen_one", "avn_the_dark_lord"],
 			avn_the_second_coming_the_chosen_one_return: ["avn_alan_becker", "avn_victim", "avn_the_chosen_one", "avn_the_dark_lord", "avn_the_second_coming"],
 			avn_red: ["avn_alan_becker", "avn_the_chosen_one", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return"],
-			avn_green: ["avn_alan_becker", "avn_the_chosen_one", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red"],
-			avn_blue: ["avn_alan_becker", "avn_the_chosen_one", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green"],
-			avn_yellow: ["avn_alan_becker", "avn_the_chosen_one", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue"],
+			avn_yellow: ["avn_alan_becker", "avn_the_chosen_one", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red"],
+			avn_green: ["avn_alan_becker", "avn_the_chosen_one", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow"],
+			avn_blue: ["avn_alan_becker", "avn_the_chosen_one", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green"],
 			avn_virabot: ["avn_the_dark_lord"],
-			avn_herobrine: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow"],
-			avn_purple: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow", "avn_herobrine"],
+			avn_herobrine: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue"],
+			avn_purple: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue", "avn_herobrine"],
 			avn_dark_blue: ["avn_purple"],
 			avn_pink: ["avn_purple", "avn_dark_blue"],
-			avn_king_orange: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow", "avn_herobrine", "avn_purple"],
+			avn_king_orange: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue", "avn_herobrine", "avn_purple"],
 			avn_gold: ["avn_king_orange"],
-			avn_butcher: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow"],
-			ska_warden: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow", "avn_herobrine", "avn_purple", "avn_king_orange"],
-			sst_mario: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_green", "avn_blue", "avn_yellow"],
+			avn_butcher: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue"],
+			ska_warden: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue", "avn_herobrine", "avn_purple", "avn_king_orange"],
+			sst_mario: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue"],
 			avn_euler_identity: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return"],
 			sst_kirby: ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_yellow"]
 		},
@@ -436,58 +436,12 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				},
 				filter: (event, player, name) => name == "enterGame" || !game.phaseNumber,
 				content: (event, step, source, player) => {
-					const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
-					const getUnlockableAVAIVCharacters = () => [
-						"avn_red",
-						"avn_green",
-						"avn_blue",
-						"avn_yellow"
-					].filter(value => !unlockedCharacters.has(value)), getUnlockableAVMCharacters = () => {
-						if (!unlockedCharacters.has("avn_herobrine")) return ["avn_herobrine"];
-						if (!unlockedCharacters.has("avn_purple")) return ["avn_purple"];
-						if (unlockedCharacters.has("avn_virabot") && !unlockedCharacters.has("avn_king_orange")) return ["avn_king_orange"];
-						return [];
-					}, getUnlockableAVAVCharacters = () => unlockedCharacters.has("avn_purple") ? ["avn_virabot"].filter(value => !unlockedCharacters.has(value)) : [], getUnlockableAVAVICharacters = () => unlockedCharacters.has("avn_king_orange") ? ["avn_agent"].filter(value => !unlockedCharacters.has(value)) : [], getUnlockableCharacters = () => {
-						const unlockableAVMCharacters = getUnlockableAVMCharacters();
-						if (unlockableAVMCharacters.length) return unlockableAVMCharacters;
-						const unlockableAVAVCharacters = getUnlockableAVAVCharacters();
-						if (unlockableAVAVCharacters.length) return unlockableAVAVCharacters;
-						return getUnlockableAVAVICharacters();
-					};
-					const characterUnlockMap = new Map([
-						["avn_alan_becker", () => {
-							if (!unlockedCharacters.has("avn_victim")) return ["avn_victim"];
-							if (!unlockedCharacters.has("avn_the_chosen_one")) return ["avn_the_chosen_one"];
-							if (!unlockedCharacters.has("avn_the_dark_lord")) return ["avn_the_dark_lord"];
-							if (!unlockedCharacters.has("avn_the_second_coming")) return ["avn_the_second_coming"];
-							const unlockableAVAIVCharacters = getUnlockableAVAIVCharacters();
-							if (unlockableAVAIVCharacters.length) return unlockableAVAIVCharacters;
-							return getUnlockableAVAVCharacters();
-						}],
-						["avn_the_chosen_one", () => {
-							if (!unlockedCharacters.has("avn_the_dark_lord")) return ["avn_the_dark_lord"];
-							const unlockableAVAVCharacters = getUnlockableAVAVCharacters();
-							if (unlockableAVAVCharacters.length) return unlockableAVAVCharacters;
-							return getUnlockableAVAVICharacters();
-						}],
-						["avn_the_dark_lord", getUnlockableAVAVCharacters],
-						["avn_the_second_coming", () => {
-							const unlockableAVAIVCharacters = getUnlockableAVAIVCharacters();
-							if (unlockableAVAIVCharacters.length) return unlockableAVAIVCharacters;
-							return getUnlockableCharacters();
-						}],
-						["avn_red", getUnlockableCharacters],
-						["avn_green", getUnlockableCharacters],
-						["avn_blue", getUnlockableCharacters],
-						["avn_yellow", getUnlockableCharacters],
-						["avn_purple", getUnlockableAVMCharacters]
-					]);
-					[player.name1, player.name2].forEach(value => {
-						if (!characterUnlockMap.has(value)) return;
-						const unlockableCharacters = characterUnlockMap.get(value)();
-						if (!unlockableCharacters.length) return;
-						game.saveExtensionConfig("桌面大战", "unlocked_characters", [...unlockedCharacters, ...unlockableCharacters]);
-					});
+					const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters") || [];
+					for (const [key, value] of lib.avnCharacterUnlockingMap) {
+						if (key.every(unlockedCharacters.includes, unlockedCharacters)) continue;
+						if (value.includes(player.name1) || value.includes(player.name2)) game.saveExtensionConfig("桌面大战", "unlocked_characters", unlockedCharacters.addArray(value));
+						break;
+					}
 				}
 			},
 			_avn_dynamic_link: {
@@ -724,7 +678,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					player.showCards(event.card = cards[0], `${get.translation(player)}对${(targets => {
-						if (get.itemtype(targets) == 'player') targets = [targets];
+						if (get.itemtype(targets) == "player") targets = [targets];
 						if (targets[0] != player) return get.translation(targets);
 						const targetsIncludingSelf = targets.slice();
 						targetsIncludingSelf[0] = "自己";
@@ -857,7 +811,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 								const skill = result.skill.slice(0, -7), targets = result.targets;
 								player.logSkill(skill, targets);
 								player.showCards(lib.skill.avn_adaptive_backup.shownCard, `${get.translation(player)}对${(targets => {
-									if (get.itemtype(targets) == 'player') targets = [targets];
+									if (get.itemtype(targets) == "player") targets = [targets];
 									if (targets[0] != player) return get.translation(targets);
 									const targetsIncludingSelf = targets.slice();
 									targetsIncludingSelf[0] = "自己";
@@ -870,8 +824,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 									if (!Array.isArray(event.temporaryYingbian)) event.temporaryYingbian = [];
 									const temporaryYingbian = event.temporaryYingbian;
 									temporaryYingbian.addArray(get.yingbianConditions());
-									temporaryYingbian.add('draw');
-									temporaryYingbian.add('gain');
+									temporaryYingbian.add("draw");
+									temporaryYingbian.add("gain");
 								};
 							}
 						}
@@ -957,7 +911,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						player.logSkill(event.name, target);
 						if (target != player) player.addExpose(0.2);
 						player.showHandcards(`${get.translation(player)}对${(targets => {
-							if (get.itemtype(targets) == 'player') targets = [targets];
+							if (get.itemtype(targets) == "player") targets = [targets];
 							if (targets[0] != player) return get.translation(targets);
 							const targetsIncludingSelf = targets.slice();
 							targetsIncludingSelf[0] = "自己";
@@ -1035,7 +989,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						const target = event.target = result.targets[0];
 						player.logSkill(event.name, target);
 						player.showCards(target.getCards("h"), `${get.translation(player)}对${(targets => {
-							if (get.itemtype(targets) == 'player') targets = [targets];
+							if (get.itemtype(targets) == "player") targets = [targets];
 							if (targets[0] != player) return get.translation(targets);
 							const targetsIncludingSelf = targets.slice();
 							targetsIncludingSelf[0] = "自己";
@@ -1290,7 +1244,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
 					"step 0"
 					player.showCards(target.getCards("h"), `${get.translation(player)}对${(targets => {
-						if (get.itemtype(targets) == 'player') targets = [targets];
+						if (get.itemtype(targets) == "player") targets = [targets];
 						if (targets[0] != player) return get.translation(targets);
 						const targetsIncludingSelf = targets.slice();
 						targetsIncludingSelf[0] = "自己";
@@ -1437,6 +1391,27 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					if (!player.hasHistory("useCard", evt => evt.getParent() == event.chooseUseTarget)) event.goto(3);
 				}
 			},
+			// Yellow
+			avn_intelligence: {
+				direct: true,
+				trigger: {
+					global: "phaseEnd"
+				},
+				filter: (event, player) => typeof event.skill != "string" && Math.log2(player.getHistory("useCard", evt => typeof evt.card.name == "string").reduce((previousValue, currentValue) => previousValue + get.translation(currentValue.card.name).length, 0)) % 1 === 0,
+				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
+					"step 0"
+					player.chooseTarget(get.prompt2(event.name)).ai = target => {
+						if (target.hasJudge("lebu")) return -1;
+						if (player.attitudeTo(target) > 4) return get.threaten(target) / Math.sqrt(target.hp + 1) / Math.sqrt(target.countCards("h") + 1);
+						return -1;
+					};
+					"step 1"
+					if (!result.targets?.length) return;
+					player.logSkill(event.name, event.target = result.targets[0]);
+					if (event.target != player) player.addExpose(0.2);
+					event.target.insertPhase();
+				}
+			},
 			// Green
 			avn_progressive: {
 				locked: false,
@@ -1516,27 +1491,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					if (++event.num < targets.length) event.goto(3);
 				}
 			},
-			// Yellow
-			avn_intelligence: {
-				direct: true,
-				trigger: {
-					global: "phaseEnd"
-				},
-				filter: (event, player) => typeof event.skill != "string" && Math.log2(player.getHistory("useCard", evt => typeof evt.card.name == "string").reduce((previousValue, currentValue) => previousValue + get.translation(currentValue.card.name).length, 0)) % 1 === 0,
-				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result) => {
-					"step 0"
-					player.chooseTarget(get.prompt2(event.name)).ai = target => {
-						if (target.hasJudge("lebu")) return -1;
-						if (player.attitudeTo(target) > 4) return get.threaten(target) / Math.sqrt(target.hp + 1) / Math.sqrt(target.countCards("h") + 1);
-						return -1;
-					};
-					"step 1"
-					if (!result.targets?.length) return;
-					player.logSkill(event.name, event.target = result.targets[0]);
-					if (event.target != player) player.addExpose(0.2);
-					event.target.insertPhase();
-				}
-			},
 			// ViraBot
 			avn_infection: {
 				direct: true,
@@ -1563,7 +1517,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					else event.finish();
 					"step 2"
 					if (result.links?.length) player.showCards(event.cards = result.links, `${get.translation(player)}对${(targets => {
-						if (get.itemtype(targets) == 'player') targets = [targets];
+						if (get.itemtype(targets) == "player") targets = [targets];
 						if (targets[0] != player) return get.translation(targets);
 						const targetsIncludingSelf = targets.slice();
 						targetsIncludingSelf[0] = "自己";
@@ -2011,7 +1965,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						}
 					);
 					"step 1"
-					if (result?.targets.length) {
+					if (result.targets?.length) {
 						player.logSkill(event.name, event.targets = result.targets.sortBySeat(_status.currentPhase || player));
 						event.cards = [];
 						event.targetsIndex = 0;
@@ -2025,7 +1979,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						true
 					);
 					"step 3"
-					const links = result?.links;
+					const links = result.links;
 					if (links?.length) {
 						cards.addArray(links);
 						links.forEach(chosenCard => {
@@ -2050,7 +2004,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					);
 					else event.goto(6);
 					"step 5"
-					const linkingTargets = result?.targets;
+					const linkingTargets = result.targets;
 					if (!linkingTargets?.length) return;
 					player.line(linkingTargets.sortBySeat(_status.currentPhase || player), "green");
 					player.addExpose(0.2);
@@ -2076,7 +2030,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					);
 					else event.finish();
 					"step 7"
-					const turningOverTargets = result?.targets;
+					const turningOverTargets = result.targets;
 					if (!turningOverTargets?.length) return;
 					player.line(turningOverTargets.sortBySeat(_status.currentPhase || player), "green");
 					player.addExpose(0.2);
@@ -2216,7 +2170,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					skillTagFilter: (player, tag, arg) => arg.target.countCards("h") > player.countCards("h")
 				}
 			},
-			// Euler's identity
+			// Euler’s identity
 			avn_mathematics: {
 				hiddenCard: (player, name) => {
 					const cards = player.getCards("hes", card => lib.skill.avn_mathematics.isValidNumber(card, player));
@@ -2516,7 +2470,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Alan Becker
 			avn_alan_becker: "Alan Becker",
 			avn_alan_becker_ab: "Alan",
-			avn_alan_becker_rt: "艾伦·贝克尔",
 			avn_animate: "赋名",
 			avn_animate_rt: "Animate",
 			get avn_animate_effect() {
@@ -2525,35 +2478,31 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_animate_info: "出牌阶段限一次，你可以展示一张基本牌或普通锦囊牌，令一名角色的任意张手牌均视为此牌，直到其使用这些牌中的一张结算后或其回合结束后。",
 			// Victim
 			avn_victim: "Victim",
-			avn_victim_rt: "受害者",
 			avn_adaptive: "应识",
 			avn_adaptive_rt: "Adaptive",
 			avn_adaptive_info: "每回合限一次，你可以展示一张基本牌或普通锦囊牌，将一张牌当做展示的牌使用（无距离和次数限制且不计入使用次数），且以此法使用的牌拥有全部应变条件和「摸一张牌」、「获得响应的牌」的应变效果。",
 			// The Chosen One
 			avn_the_chosen_one: "The Chosen One",
 			avn_the_chosen_one_ab: "Chosen",
-			avn_the_chosen_one_rt: "天选之子",
 			avn_overflow: "超限",
 			avn_overflow_rt: "Overflow",
 			avn_overflow_info: "出牌阶段开始时，你可以展示所有手牌并弃置一种花色的所有手牌（至少一张），对一名角色造成1点属性伤害，然后你可以将弃置的牌中的一张赠予一名手牌数不大于你的其他角色。",
 			// The Dark Lord
 			avn_the_dark_lord: "The Dark Lord",
 			avn_the_dark_lord_ab: "Dark",
-			avn_the_dark_lord_rt: "黑暗领主",
 			avn_terminal: "终解",
 			avn_terminal_rt: "Terminal",
 			avn_terminal_info: "出牌阶段结束时，你可以展示一名角色的所有手牌，然后你可以删除其中的一种花色的所有牌。",
 			// The Second Coming
 			avn_the_second_coming: "The Second Coming",
 			avn_the_second_coming_ab: "Second",
-			avn_the_second_coming_rt: "再临者",
 			avn_frame_by_frame_drawing: "逐绘",
 			avn_frame_by_frame_drawing_rt: "Frame by Frame Drawing",
 			get avn_frame_by_frame_drawing_backup() {
 				return lib.translate.avn_frame_by_frame_drawing;
 			},
 			avn_frame_by_frame_drawing_info: "你可以将一张点数不小于你本回合上一张以此法转化的牌的牌当做最后进入弃牌堆的五张牌中的一张与其花色、类别和字数均不同的基本牌或普通锦囊牌使用或打出。",
-			// The Second Coming (The Chosen One's Return)
+			// The Second Coming (The Chosen One’s Return)
 			get avn_the_second_coming_the_chosen_one_return() {
 				return lib.translate.avn_the_second_coming;
 			},
@@ -2571,6 +2520,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_combative: "攻端",
 			avn_combative_rt: "Combative",
 			avn_combative_info: "当有牌被抵消后，你可以使用牌堆顶的一张牌与一名角色拼点，若你赢，则你可以使用一张拼点牌，否则你将你的区域内的一张牌置于武将牌上。当你造成伤害后，你可以将武将牌上的任意张牌交给一名角色。",
+			// Yellow
+			avn_yellow: "Yellow",
+			avn_intelligence: "机埶",
+			avn_intelligence: "Intelligence",
+			avn_intelligence_info: "每名角色的回合结束时，若此回合不为额外回合，且你本回合使用过的牌的名称字数之和为2的自然数次方，则你可以令一名角色执行一个额外回合。",
 			// Green
 			avn_green: "Green",
 			avn_progressive: "筑韵",
@@ -2581,11 +2535,6 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_midas_touch: "点金",
 			avn_midas_touch_rt: "Midas Touch",
 			avn_midas_touch_info: "每名角色的结束阶段，你可以亮出牌堆顶的你本回合使用的牌的类别数张牌，若如此做，你可以指定至多等量角色，这些角色依次可以获得一张亮出的牌。",
-			// Yellow
-			avn_yellow: "Yellow",
-			avn_intelligence: "机埶",
-			avn_intelligence: "Intelligence",
-			avn_intelligence_info: "每名角色的回合结束时，若此回合不为额外回合，且你本回合使用过的牌的名称字数之和为2的自然数次方，则你可以令一名角色执行一个额外回合。",
 			// ViraBot
 			avn_virabot: "ViraBot",
 			avn_infection: "侵染",
@@ -2688,8 +2637,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			sst_jueyi_info: "锁定技，你使用牌指定目标时，若其手牌数大于你，你摸一张牌，令此牌不可被目标响应。",
 			// Animation vs. Math
 			avn_animation_vs_math: "Animation vs. Math",
-			// Euler's identity
-			avn_euler_identity: "Euler's identity",
+			// Euler’s identity
+			avn_euler_identity: "Euler’s identity",
 			avn_euler_identity_ab: (() => {
 				const sup = document.createElement("sup");
 				sup.textContent = "iπ";
@@ -2722,6 +2671,26 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			}
 		},
 		pinyins: {
+			"Alan Becker": ["Al-uhn", "bEk-uhr"],
+			Victim: ["vIk-tuhm"],
+			"The Chosen One": ["THuh", "chOH-zn", "wUHn"],
+			"The Dark Lord": ["THuh", "dAHRk", "lORd"],
+			"The Second Coming": ["THuh", "sEk-uhnd", "kUHm-ing"],
+			Red: ["rEd"],
+			Yellow: ["yEl-oh"],
+			Green: ["grEEn"],
+			Blue: ["blOO"],
+			ViraBot: ["vIE-ruh-baht"],
+			"[Agent]": ["[AY-juhnt]"],
+			Herobrine: ["hAIR-oh-brien"],
+			Purple: ["pUHR-puhl"],
+			"Dark Blue": ["dAHRk", "blOO"],
+			Pink: ["pIngk"],
+			"King Orange": ["kIng", "AHR-inj"],
+			Gold: ["gOHld"],
+			Alexcrafter28: ["Al-iks-kraf-tuhr-twen-tee-ayt"],
+			"Euler’s identity": ["OI-luhrz", "ie-dEn-tuh-tee"],
+			"Corn Dog Guy": ["kORn", "dAWg", "gIE"],
 			马力欧: ["Mario"],
 			卡比: ["Kirby"]
 		},

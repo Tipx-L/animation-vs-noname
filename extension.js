@@ -12,9 +12,9 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 		avn_the_second_coming: "出神入化",
 		avn_the_second_coming_the_chosen_one_return: "归来",
 		avn_red: "蓄势待发",
+		avn_yellow: "足智多谋",
 		avn_green: "鬼斧神工",
 		avn_blue: "返璞归真",
-		avn_yellow: "足智多谋",
 		avn_virabot: "恶意",
 		avn_agent: "控制",
 		avn_herobrine: "传说",
@@ -31,6 +31,20 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 		sst_kirby: "灯火之星",
 		avn_corn_dog_guy: "适逢其时"
 	};
+	lib.avnCharacterUnlockingMap = new Map([
+		[["avn_victim"], ["avn_alan_becker"]],
+		[["avn_the_chosen_one"], ["avn_alan_becker"]],
+		[["avn_the_dark_lord"], ["avn_alan_becker", "avn_the_chosen_one"]],
+		[["avn_the_second_coming"], ["avn_alan_becker", "avn_the_chosen_one", "avn_the_dark_lord"]],
+		[["avn_red", "avn_yellow", "avn_green", "avn_blue"], ["avn_alan_becker", "avn_the_chosen_one", "avn_the_dark_lord", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return"]],
+		[["avn_herobrine"], ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue"]],
+		[["avn_purple"], ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue", "avn_herobrine"]],
+		[["avn_virabot"], ["avn_alan_becker", "avn_the_chosen_one", "avn_the_dark_lord", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue"]],
+		[["avn_king_orange"], ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue", "avn_herobrine", "avn_purple"]],
+		[["avn_butcher"], ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", "avn_red", "avn_yellow", "avn_green", "avn_blue", "avn_king_orange"]],
+		[["avn_agent"], ["avn_victim", "avn_the_chosen_one", "avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return"]],
+		[["avn_euler_identity"], ["avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return"]]
+	]);
 	lib.avnHiddenCharacters = new Set([
 		"avn_the_second_coming_the_chosen_one_return",
 		"avn_dark_blue",
@@ -368,24 +382,23 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					saveExtensionConfigValue("桌面大战", "unlocked_characters");
 				}
 				const confirmedUnlockedCharacters = getExtensionConfig("桌面大战", "confirmed_unlocked_characters");
-				if (confirmedUnlockedCharacters) {
-					confirmedUnlockedCharacters.remove("avn_the_second_coming_the_chosen_one_return");
-					saveExtensionConfigValue("桌面大战", "confirmed_unlocked_characters");
-				}
+				if (!confirmedUnlockedCharacters) return;
+				confirmedUnlockedCharacters.remove("avn_the_second_coming_the_chosen_one_return");
+				saveExtensionConfigValue("桌面大战", "confirmed_unlocked_characters");
 			};
 			game.unlockAllAnimationVsNonameCharacters = () => {
-				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters"), unlockableCharacters = Object.entries(lib.characterPack.animation_vs_noname).reduce((previousValue, [key, value]) => {
-					if (value[4].includes("unseen")) previousValue.push(key);
-					return previousValue;
+				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters"), unlockableCharacters = Object.entries(lib.characterPack.animation_vs_noname).reduce((constructingUnlockableCharacters, [key, heroData]) => {
+					if (heroData[4].includes("unseen")) constructingUnlockableCharacters.push(key);
+					return constructingUnlockableCharacters;
 				}, []);
 				if (unlockedCharacters) unlockedCharacters.addArray(unlockableCharacters);
 				else lib.config.extension_桌面大战_unlocked_characters = unlockableCharacters;
 				saveExtensionConfigValue("桌面大战", "unlocked_characters");
 			};
 			game.unlockAllAnimationVsNonameCharactersExceptHidden = () => {
-				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters"), hiddenCharacters = lib.avnHiddenCharacters, unlockableCharacters = Object.entries(lib.characterPack.animation_vs_noname).reduce((previousValue, [key, value]) => {
-					if (!hiddenCharacters.has(key) && value[4].includes("unseen")) previousValue.push(key);
-					return previousValue;
+				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters"), hiddenCharacters = lib.avnHiddenCharacters, unlockableCharacters = Object.entries(lib.characterPack.animation_vs_noname).reduce((constructingUnlockableCharacters, [key, heroData]) => {
+					if (!hiddenCharacters.has(key) && heroData[4].includes("unseen")) constructingUnlockableCharacters.push(key);
+					return constructingUnlockableCharacters;
 				}, []);
 				if (unlockedCharacters) unlockedCharacters.addArray(unlockableCharacters);
 				else lib.config.extension_桌面大战_unlocked_characters = unlockableCharacters;
@@ -486,7 +499,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					text: "正在从服务器断开连接",
 					mode: 1,
 					size: 25,
-					color: 0xffffff,
+					color: 0xFFFFFF,
 					border: false,
 					shadow: true
 				}));
@@ -626,53 +639,12 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				const rightParenthesisRP = document.createElement("rp");
 				animationVsNonameRuby.append(rightParenthesisRP);
 				rightParenthesisRP.textContent = "）";
-				const citeOuterHTML = (() => {
-					const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters") || []), getUnlockableAVAIVCharacters = () => [
-						"avn_red",
-						"avn_green",
-						"avn_blue",
-						"avn_yellow"
-					].filter(value => !unlockedCharacters.has(value)), getUnlockableAVMCharacters = () => {
-						if (!unlockedCharacters.has("avn_herobrine")) return ["avn_herobrine"];
-						if (!unlockedCharacters.has("avn_purple")) return ["avn_purple"];
-						if (unlockedCharacters.has("avn_virabot") && !unlockedCharacters.has("avn_king_orange")) return ["avn_king_orange"];
-						return [];
-					}, getUnlockableAVAVCharacters = () => unlockedCharacters.has("avn_purple") ? ["avn_virabot"].filter(value => !unlockedCharacters.has(value)) : [], getUnlockableAVAVICharacters = () => unlockedCharacters.has("avn_king_orange") ? ["avn_agent"].filter(value => !unlockedCharacters.has(value)) : [], getUnlockableCharacters = () => {
-						const unlockableAVMCharacters = getUnlockableAVMCharacters();
-						if (unlockableAVMCharacters.length) return unlockableAVMCharacters;
-						const unlockableAVAVCharacters = getUnlockableAVAVCharacters();
-						if (unlockableAVAVCharacters.length) return unlockableAVAVCharacters;
-						return getUnlockableAVAVICharacters();
-					};
-					for (const getCharacters of [
-						() => {
-							if (!unlockedCharacters.has("avn_victim")) return ["avn_victim"];
-							if (!unlockedCharacters.has("avn_the_chosen_one")) return ["avn_the_chosen_one"];
-							if (!unlockedCharacters.has("avn_the_dark_lord")) return ["avn_the_dark_lord"];
-							if (!unlockedCharacters.has("avn_the_second_coming")) return ["avn_the_second_coming"];
-							const unlockableAVAIVCharacters = getUnlockableAVAIVCharacters();
-							if (unlockableAVAIVCharacters.length) return unlockableAVAIVCharacters;
-							return getUnlockableAVAVCharacters();
-						},
-						() => {
-							if (!unlockedCharacters.has("avn_the_dark_lord")) return ["avn_the_dark_lord"];
-							const unlockableAVAVCharacters = getUnlockableAVAVCharacters();
-							if (unlockableAVAVCharacters.length) return unlockableAVAVCharacters;
-							return getUnlockableAVAVICharacters();
-						},
-						getUnlockableAVAVCharacters,
-						() => {
-							const unlockableAVAIVCharacters = getUnlockableAVAIVCharacters();
-							if (unlockableAVAIVCharacters.length) return unlockableAVAIVCharacters;
-							return getUnlockableCharacters();
-						},
-						getUnlockableCharacters,
-						getUnlockableAVMCharacters
-					]) {
-						const characters = getCharacters();
-						if (!characters.length) continue;
-						const cite = document.createElement("cite");
-						cite.textContent = characters.reduce((previousValue, currentValue) => `${previousValue}“${lib.avnCharacterTitle[currentValue]}”`, "");
+				const characterUnlockingHint = (() => {
+					const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
+					for (const key of lib.avnCharacterUnlockingMap.keys()) {
+						if (key.every(unlockedCharacters.has, unlockedCharacters)) continue;
+						const cite = document.createElement("cite"), characterTitle = lib.avnCharacterTitle;
+						cite.textContent = key.reduce((textContent, unlockingCharacter) => `${textContent}“${characterTitle[unlockingCharacter]}”`, "");
 						return `${cite.outerHTML}${hr.outerHTML}`;
 					}
 					return "";
@@ -686,7 +658,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				animatorVsAnimationRuby.append(animatorVsAnimationRT);
 				animatorVsAnimationRT.textContent = "火柴人VS动画师";
 				animatorVsAnimationRuby.append(rightParenthesisRP.cloneNode());
-				return `${h2.outerHTML}${hr.outerHTML}${citeOuterHTML}${cite.outerHTML}${hr.outerHTML}一个基于《${animatorVsAnimationRuby.outerHTML}》系列的同人《无名杀》扩展，不隶属于Alan Becker等相关创作者。${hr.outerHTML}`;
+				return `${h2.outerHTML}${hr.outerHTML}${characterUnlockingHint}${cite.outerHTML}${hr.outerHTML}一个基于《${animatorVsAnimationRuby.outerHTML}》系列的同人《无名杀》扩展，不隶属于Alan Becker等相关创作者。${hr.outerHTML}`;
 			},
 			author: "Show-K",
 			diskURL: "https://github.com/Show-K/animation-vs-noname",

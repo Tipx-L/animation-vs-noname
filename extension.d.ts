@@ -7,6 +7,7 @@ declare interface Game {
 }
 declare interface Lib {
 	avnCharacterTitle: SMap<string>;
+	avnCharacterUnlockingMap: Map<string[], string[]>;
 	avnHiddenCharacters: Set<string>;
 }
 declare interface PlayerStorage {
