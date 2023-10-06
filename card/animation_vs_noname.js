@@ -693,7 +693,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 				trigger: {
 					player: "useCardToTargeted"
 				},
-				filter: (event, player) => !player.hasHistory("useSkill", evt => evt.skill == "_avn_once") && player.hasCard(card => get.tag(card, "avn_once"), "e") && get.info(event.card)?.range && get.distance(player, event.target) > 1 && event.target.countDiscardableCards(player, "hej"),
+				filter: (event, player) => !player.hasHistory("useSkill", evt => evt.skill == "_avn_once") && player.hasCard(card => get.tag(card, "avn_once"), "e") && get.distance(player, event.target) > 1 && event.target.countDiscardableCards(player, "hej"),
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger) => {
 					player.discardPlayerCard(`###${get.prompt(event.name, trigger.target)}###你可以弃置${get.translation(trigger.target)}的区域内的一张牌`, trigger.target, "hej").logSkill = [event.name, trigger.target];
 				}
@@ -931,7 +931,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			get _avn_once() {
 				return lib.translate.avn_once;
 			},
-			_avn_once_info: "每回合限一次，当你使用有距离限制的牌指定目标后，若你的装备区内有带有「一次」标签的牌，且你与其距离大于1，你可以弃置其区域内的一张牌。",
+			_avn_once_info: "每回合限一次，当你使用牌指定距离大于1的角色为目标后，若你的装备区内有带有「一次」标签的牌，你可以弃置其区域内的一张牌。",
 			get _avn_throwable() {
 				return lib.translate.avn_throwable;
 			},
@@ -949,7 +949,7 @@ game.import("card", (lib, game, ui, get, ai, _status) => {
 			avn_reach_2: "延伸2",
 			avn_reach_2_info: "当你使用基本牌或普通锦囊牌选择目标后，你可以增加至多两名与任意目标的座次相邻的角色为目标。",
 			avn_once: "一次",
-			avn_once_info: "每回合限一次，当你使用有距离限制的牌指定目标后，若你与其距离大于1，你可以弃置其区域内的一张牌。",
+			avn_once_info: "每回合限一次，当你使用牌指定距离大于1的角色为目标后，你可以弃置其区域内的一张牌。",
 			avn_throwable: "可抛",
 			avn_throwable_info: "出牌阶段，你可以弃置装备区内的此牌，对一名与你的座次不相邻的其他角色造成1点伤害。",
 			avn_cleave: "劈开",

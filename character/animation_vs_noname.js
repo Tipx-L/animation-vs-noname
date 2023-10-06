@@ -1,6 +1,35 @@
 "use strict";
 game.import("character", (lib, game, ui, get, ai, _status) => {
 	/**
+	 * @param {string} rubyTextContent
+	 * @param {string} rtTextContent
+	 */
+	const annotate = (rubyTextContent, rtTextContent) => {
+		const ruby = document.createElement("ruby");
+		ruby.textContent = rubyTextContent;
+		const leftParenthesisRP = document.createElement("rp");
+		leftParenthesisRP.textContent = "（";
+		ruby.append(leftParenthesisRP);
+		const rt = document.createElement("rt");
+		rt.textContent = rtTextContent;
+		ruby.append(rt);
+		const rightParenthesisRP = document.createElement("rp");
+		rightParenthesisRP.textContent = "）";
+		ruby.append(rightParenthesisRP);
+		return ruby.outerHTML;
+	};
+	/**
+	 * Insert line break opportunities into a URL.
+	 * @param {string} url The URL.
+	 */
+	const formatURL = url => url
+		.split("//")
+		.map(subURL => subURL
+			.replace(/(?<after>:)/giu, "$1<wbr>")
+			.replace(/(?<before>[/~.,\-_?#%])/giu, "<wbr>$1")
+			.replace(/(?<beforeAndAfter>[=&])/giu, "<wbr>$1<wbr>"))
+		.join("//<wbr>");
+	/**
 	 * @param {string} character
 	 * @returns {number}
 	 */
@@ -8,17 +37,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 		const hiddenCharacters = lib.avnHiddenCharacters;
 		return Object.keys(lib.characterPack.animation_vs_noname).filter(value => !hiddenCharacters.has(value)).indexOf(character);
 	};
-	/**
-	 * Insert line break opportunities into a URL.
-	 * @param {String} url The URL.
-	 */
-	const formatURL = url => url
-		.split("//")
-		.map(str => str
-			.replace(/(?<after>:)/giu, "$1<wbr>")
-			.replace(/(?<before>[/~.,\-_?#%])/giu, "<wbr>$1")
-			.replace(/(?<beforeAndAfter>[=&])/giu, "<wbr>$1<wbr>"))
-		.join("//<wbr>");
+	const lineBreak = document.createElement("br").outerHTML, thematicBreak = document.createElement("hr").outerHTML;
 	/**
 	 * @type {AnimationVsNonameImportCharacterConfig}
 	 */
@@ -95,307 +114,385 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 		characterIntro: {
 			get avn_alan_becker() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker、Bradley G. Munkowitz",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_alan_becker")}. Alan Becker<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_alan_becker")}. Alan Becker`,
+					lineBreak,
 					"首次登场：Animator vs. Animation",
-					"<hr>",
+					thematicBreak,
 					"伴随火柴人们一起成长。"
 				].join("");
 			},
 			get avn_victim() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：救赎",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_victim")}. Victim<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_victim")}. Victim`,
+					lineBreak,
 					"首次登场：Animator vs. Animation",
-					"<hr>",
+					thematicBreak,
 					"万物起源。"
 				].join("");
 			},
 			get avn_the_chosen_one() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：救赎",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_the_chosen_one")}. The Chosen One<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_the_chosen_one")}. The Chosen One`,
+					lineBreak,
 					"首次登场：Animator vs. Animation II",
-					"<hr>",
+					thematicBreak,
 					"奋起反抗。"
 				].join("");
 			},
 			get avn_the_dark_lord() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_the_dark_lord")}. The Dark Lord<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_the_dark_lord")}. The Dark Lord`,
+					lineBreak,
 					"首次登场：Animator vs. Animation III",
-					"<hr>",
+					thematicBreak,
 					"“mission.The_Dark_Lord = destroy(The_Chosen_One);”"
 				].join("");
 			},
 			get avn_the_second_coming() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：厉眠",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_the_second_coming")}. The Second Coming<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_the_second_coming")}. The Second Coming`,
+					lineBreak,
 					"首次登场：Animator vs. Animation IV",
-					"<hr>",
-					"嘿！需要帮忙？"
+					thematicBreak,
+					"Hey! Need help?"
 				].join("");
 			},
 			get avn_the_second_coming_the_chosen_one_return() {
+				const span = document.createElement("span"), style = span.style;
+				style.fontSize = "larger";
+				style.fontWeight = "bold";
+				span.textContent = "You ended my friends. Now I will end you.";
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_the_second_coming")}+. The Second Coming<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_the_second_coming")}+. The Second Coming`,
+					lineBreak,
 					"首次登场：The Showdown - AVA Shorts Episode 4",
-					"<hr>",
-					`<span style="font-size: 30px; font-weight: bold;">你终结了我的朋友。<br>现在我要终结你。</span>`
+					thematicBreak,
+					span.outerHTML
 				].join("");
 			},
 			get avn_red() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：厉眠",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_red")}. Red<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_red")}. Red`,
+					lineBreak,
 					"首次登场：Animator vs. Animation IV",
-					"<hr>",
+					thematicBreak,
 					"身先士卒。"
 				].join("");
 			},
 			get avn_yellow() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_yellow")}. Yellow<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_yellow")}. Yellow`,
+					lineBreak,
 					"首次登场：Animator vs. Animation IV",
-					"<hr>",
+					thematicBreak,
 					"精益求精。"
 				].join("");
 			},
 			get avn_green() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：厉眠",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_green")}. Green<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_green")}. Green`,
+					lineBreak,
 					"首次登场：Animator vs. Animation IV",
-					"<hr>",
+					thematicBreak,
 					"锦上添花。"
 				].join("");
 			},
 			get avn_blue() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：厉眠",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_blue")}. Blue<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_blue")}. Blue`,
+					lineBreak,
 					"首次登场：Animator vs. Animation IV",
-					"<hr>",
+					thematicBreak,
 					"雪中送炭。"
 				].join("");
 			},
 			get avn_virabot() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_virabot")}. [Agent]<br>`,
-					"首次登场：Wanted - Animator vs. Animation VI - Ep 1",
-					"<hr>",
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_virabot")}. ViraBot`,
+					lineBreak,
+					"首次登场：The Virus - AVA Shorts Episode 1",
+					thematicBreak,
 					"突如其来。"
 				].join("");
 			},
 			get avn_agent() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：帆",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_agent")}. [Agent]<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_agent")}. [Agent]`,
+					lineBreak,
 					"首次登场：Wanted - Animator vs. Animation VI - Ep 1",
-					"<hr>",
+					thematicBreak,
 					"一发入魂。"
 				].join("");
 			},
 			get avn_herobrine() {
+				const del = document.createElement("del");
+				del.textContent = "未";
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_herobrine")}. Herobrine<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_herobrine")}. Herobrine`,
+					lineBreak,
 					"首次登场：Animation vs. Minecraft",
-					"<hr>",
-					"<del>未</del>已解之谜。"
+					thematicBreak,
+					`${del.outerHTML}已解之谜。`
 				].join("");
 			},
 			get avn_purple() {
-				const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters");
+				const unlockedCharacters = lib.config.avn_unlocked_characters;
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_purple")}. Purple<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_purple")}. Purple`,
+					lineBreak,
 					"首次登场：The Nether - AVM Shorts Episode 8",
-					"<hr>",
-					["avn_dark_blue", "avn_pink"].some(value => unlockedCharacters.includes(value)) ? "终于得到了认可。" : "努力得到认可。"
+					thematicBreak,
+					unlockedCharacters && ["avn_dark_blue", "avn_pink"].some(unlockedCharacters.includes, unlockedCharacters) ? "终于得到了认可。" : "努力得到认可。"
 				].join("");
 			},
 			get avn_dark_blue() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：林、阿陌",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_purple")}-1. Dark Blue<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_purple")}-1. Dark Blue`,
+					lineBreak,
 					"首次登场：Note Block Universe - AVM Shorts Episode 29",
-					"<hr>",
+					thematicBreak,
 					"再也无法挽留。"
 				].join("");
 			},
 			get avn_pink() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：林、阿陌",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_purple")}-2. Pink<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_purple")}-2. Pink`,
+					lineBreak,
 					"首次登场：Note Block Universe - AVM Shorts Episode 29",
-					"<hr>",
+					thematicBreak,
 					"再也无法触及。"
 				].join("");
 			},
 			get avn_king_orange() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：救赎",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_king_orange")}. King Orange<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_king_orange")}. King Orange`,
+					lineBreak,
 					"首次登场：Parkour - AVM Shorts Episode 22",
-					"<hr>",
-					game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_gold") ? "不想失去任何人了。不能失去任何人了。" : "不想输给任何人了。不能输给任何人了。"
+					thematicBreak,
+					lib.config.avn_unlocked_characters?.includes("avn_gold") ? "不想失去任何人了。不能失去任何人了。" : "不想输给任何人了。不能输给任何人了。"
 				].join("");
 			},
 			get avn_gold() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_king_orange")}-1. Gold<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_king_orange")}-1. Gold`,
+					lineBreak,
 					"首次登场：The King - AVM Shorts Episode 30",
-					"<hr>",
+					thematicBreak,
 					"再也无法陪伴。"
 				].join("");
 			},
 			get avn_butcher() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_butcher")}. Butcher<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_butcher")}. Butcher`,
+					lineBreak,
 					"首次登场：Titan Ravager - AVM Shorts Episode 23",
-					"<hr>",
+					thematicBreak,
 					"大师食谱其实已经在你的手……啊！"
 				].join("");
 			},
 			get avn_alexcrafter28() {
 				return [
-					"联动来源：《大乱桌斗》<br>",
-					"武将作者：Show-K、mario not mary<br>",
+					"联动来源：《大乱桌斗》",
+					lineBreak,
+					"武将作者：Show-K、mario not mary",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_alexcrafter28")}. Alexcrafter28<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_alexcrafter28")}. Alexcrafter28`,
+					lineBreak,
 					"首次登场：Lush Caves - AVM Shorts Episode 24",
-					"<hr>",
-					"1428. 史蒂夫/Steve/スティーブ<br>",
-					"系列：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
-					"首次登场：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
-					"来自一个由立方体构成的世界的神秘人物，身为一名探险家（同时还是一名矿工），他将（和他心爱的镐子）探索这个世界，并与各位斗士们进行一次武艺切磋。<br>",
+					thematicBreak,
+					"1428. 史蒂夫/Steve/スティーブ",
+					lineBreak,
+					`系列：${annotate("我的世界", "Minecraft")}`,
+					lineBreak,
+					`首次登场：${annotate("我的世界", "Minecraft")}`,
+					lineBreak,
+					"来自一个由立方体构成的世界的神秘人物，身为一名探险家（同时还是一名矿工），他将（和他心爱的镐子）探索这个世界，并与各位斗士们进行一次武艺切磋。",
+					lineBreak,
 					"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
-					"<hr>",
+					thematicBreak,
 					"这个世界上未曾发生过有人玩Minecraft时突然有两个火柴人从游戏窗口内钻出来到桌面，然后找到邮件程序并把火柴人自己发送出去的事情。"
 				].join("");
 			},
 			get ska_warden() {
 				return [
-					"联动来源：《大乱桌斗》<br>",
-					"武将作者：Show-K<br>",
+					"联动来源：《大乱桌斗》",
+					lineBreak,
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：《我的世界》",
-					"<hr>",
-					`AvN${getCharacterIndex("ska_warden")}. 监守者/Warden/ウォーデン<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("ska_warden")}. 监守者/Warden/ウォーデン`,
+					lineBreak,
 					"首次登场：The Warden - AVM Shorts Episode 26",
-					"<hr>",
-					"S010. 监守者/Warden/ウォーデン<br>",
-					"系列：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
-					"首次登场：<ruby>我的世界<rp>（</rp><rt>Minecraft</rt><rp>）</rp></ruby><br>",
-					"监守者（Warden）是一种高大而危险的敌对生物，会根据振动和气息判断生物的位置。<br>",
+					thematicBreak,
+					"S010. 监守者/Warden/ウォーデン",
+					lineBreak,
+					`系列：${annotate("我的世界", "Minecraft")}`,
+					lineBreak,
+					`首次登场：${annotate("我的世界", "Minecraft")}`,
+					lineBreak,
+					"监守者（Warden）是一种高大而危险的敌对生物，会根据振动和气息判断生物的位置。",
+					lineBreak,
 					"——《Minecraft Wiki》",
-					"<hr>",
+					thematicBreak,
 					"没有人知道历史。"
 				].join("");
 			},
 			get sst_mario() {
 				return [
-					"联动来源：《大乱桌斗》<br>",
-					"武将作者：mario not mary、Show-K<br>",
-					"插图作者：黯まめ<br>",
+					"联动来源：《大乱桌斗》",
+					lineBreak,
+					"武将作者：mario not mary、Show-K",
+					lineBreak,
+					"插图作者：黯まめ",
+					lineBreak,
 					`——${formatURL("https://twitter.com/kuromame_983/status/601696186274160640")}`,
-					"<hr>",
-					`AvN${getCharacterIndex("sst_mario")}. 马力欧/Mario/マリオ<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("sst_mario")}. 马力欧/Mario/マリオ`,
+					lineBreak,
 					"首次登场：Animation vs. Super Mario Bros",
-					"<hr>",
-					"0001. 马力欧/Mario/マリオ<br>",
-					"系列：<ruby>马力欧<rp>（</rp><rt>Mario</rt><rp>）</rp></ruby><br>",
-					"首次登场：<ruby>咚奇刚<rp>（</rp><rt>Donkey Kong</rt><rp>）</rp></ruby><br>",
-					"超级标志性的角色！这位游戏巨星常常从酷霸王手中拯救世界。他有惊人的跳跃能力和多种变身道具。在闲暇时刻，他还会参与体育运动，擅长的项目数也数不清。在大乱斗里，他是一个值得信赖的全能型斗士。让我们一起来说：“是我，马力欧！”<br>",
+					thematicBreak,
+					"0001. 马力欧/Mario/マリオ",
+					lineBreak,
+					`系列：${annotate("马力欧", "Mario")}`,
+					lineBreak,
+					`首次登场：${annotate("咚奇刚", "Donkey Kong")}`,
+					lineBreak,
+					"超级标志性的角色！这位游戏巨星常常从酷霸王手中拯救世界。他有惊人的跳跃能力和多种变身道具。在闲暇时刻，他还会参与体育运动，擅长的项目数也数不清。在大乱斗里，他是一个值得信赖的全能型斗士。让我们一起来说：“是我，马力欧！”",
+					lineBreak,
 					"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
-					"<hr>",
+					thematicBreak,
 					"太激昂了，太生生不息了。"
 				].join("");
 			},
 			get avn_euler_identity() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_euler_identity")}. Euler’s identity<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_euler_identity")}. Euler’s identity`,
+					lineBreak,
 					"首次登场：Animation vs. Math",
-					"<hr>",
+					thematicBreak,
 					"-1。"
 				].join("");
 			},
 			get sst_kirby() {
 				return [
-					"联动来源：《大乱桌斗》<br>",
-					"武将作者：mario not mary<br>",
-					"插图作者：kotori<br>",
+					"联动来源：《大乱桌斗》",
+					lineBreak,
+					"武将作者：mario not mary",
+					lineBreak,
+					"插图作者：kotori",
+					lineBreak,
 					`——${formatURL("https://www.pixiv.net/artworks/26818738")}`,
-					"<hr>",
-					`AvN${getCharacterIndex("sst_kirby")}. 卡比/Kirby/カービィ<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("sst_kirby")}. 卡比/Kirby/カービィ`,
+					lineBreak,
 					"首次登场：Kirby - An Actual Short",
-					"<hr>",
-					"0323. 卡比/Kirby/カービィ<br>",
-					"系列：<ruby>星之卡比<rp>（</rp><rt>Kirby</rt><rp>）</rp></ruby><br>",
-					"首次登场：<ruby>星之卡比<rp>（</rp><rt>Kirby\x27s Dream Land</rt><rp>）</rp></ruby><br>",
-					"圆圆滚滚的可爱卡比在波普之星过着平静的生活。它可以吸入物品或者生物，并且将它们吐出来或者复制能力。在大乱斗中，卡比吸入斗士之后可以复制他们的通常必杀技。它虽然很容易被击飞，但回场能力还不错。<br>",
+					thematicBreak,
+					"0323. 卡比/Kirby/カービィ",
+					lineBreak,
+					`系列：${annotate("星之卡比", "Kirby")}`,
+					lineBreak,
+					`首次登场：${annotate("星之卡比", "Kirby’s Dream Land")}`,
+					lineBreak,
+					"圆圆滚滚的可爱卡比在波普之星过着平静的生活。它可以吸入物品或者生物，并且将它们吐出来或者复制能力。在大乱斗中，卡比吸入斗士之后可以复制他们的通常必杀技。它虽然很容易被击飞，但回场能力还不错。",
+					lineBreak,
 					"——封羽翎烈，《任天堂明星大乱斗特别版全命魂介绍》",
-					"<hr>",
+					thematicBreak,
 					"樱井亲儿子，粉红恶魔，灯火之星。"
 				].join("");
 			},
 			get avn_corn_dog_guy() {
 				return [
-					"武将作者：Show-K<br>",
+					"武将作者：Show-K",
+					lineBreak,
 					"插图作者：Alan Becker",
-					"<hr>",
-					`AvN${getCharacterIndex("avn_corn_dog_guy")}. Corn Dog Guy<br>`,
+					thematicBreak,
+					`AvN${getCharacterIndex("avn_corn_dog_guy")}. Corn Dog Guy`,
+					lineBreak,
 					"首次登场：Corn Dog Guy - An Actual Short",
-					"<hr>",
+					thematicBreak,
 					"又是不平静的一天。"
 				].join("");
 			}
@@ -436,10 +533,13 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				},
 				filter: (event, player, name) => name == "enterGame" || !game.phaseNumber,
 				content: (event, step, source, player) => {
-					const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters") || [];
+					const unlockedCharacters = lib.config.avn_unlocked_characters ??= [];
 					for (const [key, value] of lib.avnCharacterUnlockingMap) {
 						if (key.every(unlockedCharacters.includes, unlockedCharacters)) continue;
-						if (value.includes(player.name1) || value.includes(player.name2)) game.saveExtensionConfig("桌面大战", "unlocked_characters", unlockedCharacters.addArray(value));
+						if (value.includes(player.name1) || value.includes(player.name2)) {
+							unlockedCharacters.addArray(value);
+							game.saveConfigValue("avn_unlocked_characters");
+						}
 						break;
 					}
 				}
@@ -1110,17 +1210,48 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					}
 				}
 			},
+			_avn_awaking_check: {
+				ruleSkill: true,
+				forced: true,
+				trigger: {
+					player: "changeHp"
+				},
+				filter: (event, player) => {
+					if (lib.config.avn_unlocked_characters?.includes("avn_the_second_coming_the_chosen_one_return")) return false;
+					if (player.storage.avn_awaking) return false;
+					if (event.num > 0) return false;
+					if (![player.name1, player.name2].includes("avn_the_second_coming")) return false;
+					const friends = game.filterPlayer2(current => current.isFriendsOf(player) || player.isFriendsOf(current)), inGameFriends = friends.filter(friend => friend.isIn());
+					return inGameFriends.length < friends.length && inGameFriends.every(friend => [friend.name1, friend.name2].includes("avn_the_second_coming"));
+				},
+				content: (event, step, source, player) => {
+					if (!player.storage.avn_pre_awaking) {
+						player.storage.avn_pre_awaking = true;
+						game.broadcastAll(() => {
+							const preAwaking = ui.create.div("#avn-pre-awaking", document.body);
+							new Promise(resolve => setTimeout(resolve, 1000)).then(() => preAwaking.style.opacity = "0.5");
+						});
+					}
+					if (player.hp <= 0) player.addSkill("avn_awaking");
+				}
+			},
 			avn_awaking: {
 				charlotte: true,
 				init: (player, skill) => {
 					if (player.storage[skill]) return;
 					player.storage[skill] = 1;
-					game.broadcastAll(player => {
-						player.nodying = true;
-						ui.window.addEventListener("animationend", ev => {
-							if (ev.animationName == "avn-pulse" || ev.animationName == "avn-strong-pulse") ui.window.classList.remove(ev.animationName);
+					game.addGlobalSkill("avn_awaking_effect");
+					game.broadcastAll(broadcastingPlayer => {
+						broadcastingPlayer.nodying = true;
+						ui.window.addEventListener("animationend", animationEvent => {
+							if (animationEvent.animationName == "avn-pulse" || animationEvent.animationName == "avn-strong-pulse") ui.window.classList.remove(animationEvent.animationName);
 						});
-						setTimeout(() => new Image().src = `${lib.assetURL}extension/桌面大战/image/background/avn_the_second_coming_the_chosen_one_return_bg.webp`, 1000);
+						(game.download ? Promise.resolve(
+							`${lib.assetURL}extension/桌面大战/image/background/avn_the_second_coming_the_chosen_one_return_bg.webp`
+						) : game.getDB(
+							"image",
+							"extension-桌面大战:image/background/avn_the_second_coming_the_chosen_one_return_bg.webp"
+						)).then(value => new Image().src = value);
 					}, player);
 				},
 				forced: true,
@@ -1129,104 +1260,74 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				},
 				content: (event, step, source, player, target, targets, card, cards, skill, forced, num, trigger) => {
 					"step 0"
-					const playerNames = [player.name1, player.name2];
-					if (player.storage[event.name] == 1 && trigger.player == player && playerNames.includes("avn_the_second_coming")) {
-						game.broadcastAll(player => {
-							const preAwaking = document.getElementById("avn-pre-awaking"), awake = () => {
-								_status._aozhan = true;
-								_status.tempAozhan = "ext:桌面大战/audio/background/music_arrival.opus";
-								game.playBackgroundMusic();
-								_status.tempBackground = "ext:桌面大战/image/background/avn_the_second_coming_the_chosen_one_return_bg.webp";
-								game.updateBackground();
-							};
-							if (preAwaking) {
-								preAwaking.style.transitionDuration = "1s";
-								preAwaking.style.boxShadow = "inset 0 0 200px 400px #d8eec2";
-								preAwaking.style.opacity = "1";
-								setTimeout(() => {
-									awake();
-									preAwaking.style.boxShadow = "inset 0 0 200px 200px #d8eec2";
-									preAwaking.style.opacity = "0";
-								}, 1000);
-							}
-							else setTimeout(awake, 1000);
-							if (player.showIdentity) player.showIdentity();
-						}, player);
-						player.storage[event.name] = 2;
-						playerNames.forEach(value => {
-							if (value != "avn_the_second_coming") return;
-							player.reinit(value, "avn_the_second_coming_the_chosen_one_return", false);
-							game.triggerEnter(player);
-						});
+					if (player.storage[event.name] > 1 || trigger.player != player || ![player.name1, player.name2].includes("avn_the_second_coming")) {
+						if (player.hp < player.maxHp) player.draw()._triggered = player.recover()._triggered = null;
+						event.finish();
 						return;
 					}
-					if (player.hp < player.maxHp) {
-						player.recover()._triggered = null;
-						player.draw()._triggered = null;
-					}
-					event.finish();
+					game.broadcastAll(broadcastingPlayer => {
+						const preAwaking = document.getElementById("avn-pre-awaking"), awake = () => {
+							_status._aozhan = true;
+							if (game.download) {
+								_status.tempAozhan = "ext:桌面大战/audio/background/music_arrival.opus";
+								_status.tempBackground = "ext:桌面大战/image/background/avn_the_second_coming_the_chosen_one_return_bg.webp";
+							}
+							else {
+								_status.tempAozhan = "extension-桌面大战:audio/background/music_arrival.opus";
+								_status.tempBackground = "extension-桌面大战:image/background/avn_the_second_coming_the_chosen_one_return_bg.webp";
+							}
+							game.playBackgroundMusic();
+							game.updateBackground();
+						};
+						if (preAwaking) {
+							const style = preAwaking.style;
+							style.transitionDuration = "1s";
+							style.boxShadow = "inset 0 0 200px 400px #d8eec2";
+							style.opacity = "1";
+							new Promise(resolve => setTimeout(resolve, 1000)).then(() => {
+								awake();
+								style.boxShadow = "inset 0 0 200px 200px #d8eec2";
+								style.opacity = "0";
+							});
+						}
+						else new Promise(resolve => setTimeout(resolve, 1000)).then(awake);
+						broadcastingPlayer?.showIdentity();
+					}, player);
+					player.storage[event.name] = 2;
+					player.reinit("avn_the_second_coming", "avn_the_second_coming_the_chosen_one_return", false);
+					game.triggerEnter(player);
 					"step 1"
 					const damagedHp = player.maxHp - player.hp;
-					if (damagedHp > 0) {
-						player.recover(damagedHp)._triggered = null;
-						player.draw(damagedHp)._triggered = null;
-					}
-					game.broadcastAll(player => delete player.nodying, player);
+					if (damagedHp > 0) player.draw(damagedHp)._triggered = player.recover(damagedHp)._triggered = null;
+					game.broadcastAll(broadcastedPlayer => delete broadcastedPlayer.nodying, player);
 					lib.onover.push(resultbool => {
-						if (resultbool) game.filterPlayer2(current => current.isUnderControl(true) && [current.name1, current.name2].includes("avn_the_second_coming_the_chosen_one_return")).forEach(value => game.filterPlayer2(current => {
-							game.getExtensionConfig("桌面大战", "unlocked_characters").add("avn_the_second_coming_the_chosen_one_return");
-							game.saveExtensionConfig("桌面大战", "unlocked_characters", game.getExtensionConfig("桌面大战", "unlocked_characters"));
-							if (current.isIn() || !current.isFriendsOf(value) && !value.isFriendsOf(current)) return;
-							value.line(current, "green");
-							game.broadcastAll(current => {
-								current.in();
-								if (current.isDead()) current.revive(current.maxHp);
+						if (resultbool) game.filterPlayer2(current => current.isUnderControl(true) && [current.name1, current.name2].includes("avn_the_second_coming_the_chosen_one_return")).forEach(theSecondComing => game.filterPlayer2(current => {
+							(lib.config.avn_unlocked_characters ??= []).add("avn_the_second_coming_the_chosen_one_return");
+							game.saveConfigValue("avn_unlocked_characters");
+							if (current.isIn() || !current.isFriendsOf(theSecondComing) && !theSecondComing.isFriendsOf(current)) return;
+							theSecondComing.line(current, "green");
+							game.broadcastAll(broadcastedCurrent => {
+								broadcastedCurrent.in();
+								if (broadcastedCurrent.isDead()) broadcastedCurrent.revive(broadcastedCurrent.maxHp);
 							}, current);
 						}));
 					});
 				}
 			},
-			_avn_awaking_check: {
-				ruleSkill: true,
-				forced: true,
-				trigger: {
-					player: "changeHp"
-				},
-				filter: (event, player) => {
-					if (game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_the_second_coming_the_chosen_one_return")) return false;
-					if (player.storage.avn_awaking) return false;
-					if (event.num > 0) return false;
-					if (![player.name1, player.name2].includes("avn_the_second_coming")) return false;
-					const friends = game.filterPlayer2(current => current.isFriendsOf(player) || player.isFriendsOf(current)), inGameFriends = friends.filter(value => value.isIn());
-					return inGameFriends.length < friends.length && inGameFriends.every(value => [value.name1, value.name2].includes("avn_the_second_coming"));
-				},
-				content: (event, step, source, player) => {
-					if (!player.storage.avn_pre_awaking) {
-						player.storage.avn_pre_awaking = true;
-						game.broadcastAll(() => {
-							const preAwaking = document.createElement("div");
-							document.body.appendChild(preAwaking);
-							preAwaking.id = "avn-pre-awaking";
-							setTimeout(preAwaking => preAwaking.style.opacity = "0.5", 1000, preAwaking);
-						});
-					}
-					if (player.hp <= 0) player.addSkill("avn_awaking");
-				}
-			},
-			_avn_awaking_effect: {
+			avn_awaking_effect: {
 				ruleSkill: true,
 				forced: true,
 				trigger: {
 					global: "changeHp"
 				},
 				filter: event => {
-					if (game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_the_second_coming_the_chosen_one_return")) return false;
-					const evt = event.getParent();
-					switch (evt.name) {
-						case "damage": return evt.player && evt.player.storage.avn_awaking || evt.source && evt.source.storage.avn_awaking;
-						case "loseHp":
-							if (evt.player && evt.player.storage.avn_awaking) return true;
-							return evt.getParent()?.player.storage.avn_awaking;
+					const parent = event.getParent(), {
+						name,
+						player,
+					} = parent;
+					switch (name) {
+						case "damage": return player.storage.avn_awaking || parent.source?.storage.avn_awaking;
+						case "loseHp": return player.storage.avn_awaking || parent.getParent()?.player.storage.avn_awaking;
 					}
 					return false;
 				},
@@ -1235,7 +1336,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					else game.broadcastAll(() => ui.window.classList.add("avn-pulse"));
 				}
 			},
-			// The Second Coming (The Chosen One"s Return)
+			// The Second Coming (The Chosen One’s Return)
 			avn_awakening: {
 				delay: false,
 				enable: "phaseUse",
@@ -1251,63 +1352,48 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						return get.translation(targetsIncludingSelf);
 					})(target)}发动了【${get.skillTranslation(event.name, player)}】`);
 					"step 1"
-					const controls = ["选项二", "cancel2"], numberOfBlackCards = target.countCards("h", {
+					const controls = ["选项二", "cancel2"], targetTranslation = get.translation(target), choiceList = [`令${targetTranslation}失去${event.num = Math.abs(target.countCards("h", {
+						color: "red"
+					}) - target.countCards("h", {
 						color: "black"
-					}), choiceList = [`令${get.translation(target)}${numberOfBlackCards ? `摸${get.cnNumber(numberOfBlackCards)}张牌，然后` : ""}失去1点体力`], firstControl = [], redCards = target.getCards("h", card => lib.filter.cardDiscardable(card, target) && get.color(card) == "red");
-					if (redCards.length) firstControl.push(`弃置${get.translation(redCards)}`);
-					if (target.hp < target.maxHp) firstControl.push("回复1点体力");
-					if (firstControl.length) {
+					}))}点体力`];
+					if (target.hp < target.maxHp) {
 						controls.unshift("选项一");
-						choiceList.unshift(`令${get.translation(target)}${firstControl.join("，然后")}`);
+						choiceList.unshift(`令${targetTranslation}回复${event.num}点体力`);
 					}
-					else choiceList.unshift(`<span style="opacity: 0.5;">此选项不可用</span>`);
-					player.chooseControl(...controls, (event, player) => {
-						const choices = _status.event.controls.filter(value => {
-							if (value != "选项一" && value != "选项二") return false;
-							const target = event.target, attitude = player.attitudeTo(target), squareRootOfAttitude = (attitude < 0 ? -Math.sqrt(-attitude) : Math.sqrt(attitude));
-							if (value == "选项一") {
-								const valueOfRedCards = target.getCards("h", card => lib.filter.cardDiscardable(card, target) && get.color(card) == "red").reduce((previousValue, currentValue) => previousValue + get.value(currentValue, target), 0);
-								let effect = -squareRootOfAttitude * (valueOfRedCards < 0 ? -Math.sqrt(-valueOfRedCards) : Math.sqrt(valueOfRedCards));
-								if (target.hasSkillTag("noh")) effect *= 3;
-								return effect + get.recoverEffect(target, player, player) > 0;
-							}
-							const numberOfBlackCards = target.countCards("h", {
-								color: "black"
-							});
-							let effect = squareRootOfAttitude * numberOfBlackCards * 0.75;
-							if (numberOfBlackCards && target.hasSkillTag("nogain")) effect /= 10;
-							return effect + get.effect(target, {
+					else {
+						const span = document.createElement("span");
+						span.style.opacity = "0.5";
+						span.textContent = "此选项不可用";
+						choiceList.unshift(span.outerHTML);
+					}
+					player.chooseControl(...controls, (event, player) => _status.event.controls.map(control => {
+						if (control == "选项一") return {
+							control,
+							effect: event.getParent().target.countCards("h") * get.recoverEffect(event.target, player, player)
+						};
+						if (control == "选项二") return {
+							control,
+							effect: event.getParent().target.countCards("h") * get.effect(event.target, {
 								name: "losehp"
-							}, player, player) > 0;
-						});
-						if (choices.length) return choices.randomGet();
-						return "cancel2";
-					}).set("choiceList", choiceList).prompt = `${get.skillTranslation(event.name, player)}：你可以选择一项`;
+							}, player, player)
+						};
+						return {
+							control,
+							effect: 0
+						};
+					}).sort((a, b) => a.effect - b.effect).pop().control).set("choiceList", choiceList).prompt = `${get.skillTranslation(event.name, player)}：你可以选择一项`;
 					"step 2"
 					switch (result.control) {
 						case "选项一":
-							const redCards = target.getCards("h", card => lib.filter.cardDiscardable(card, target) && get.color(card) == "red");
-							if (redCards.length) target.discard(redCards);
 							if (target.hp < target.maxHp) {
-								const delayx = game.createEvent("delayx");
-								event.next.remove(delayx);
-								target.recover().after.push(delayx);
-								delayx.setContent(() => {
-									game.delayx();
-								});
+								target.recover(num);
+								game.delayex();
 							}
 							break;
 						case "选项二":
-							const lengthOfBlackCards = target.countCards("h", {
-								color: "black"
-							});
-							if (lengthOfBlackCards) target.draw(lengthOfBlackCards);
-							const delayx = game.createEvent("delayx");
-							event.next.remove(delayx);
-							target.loseHp().after.push(delayx);
-							delayx.setContent(() => {
-								game.delayx();
-							});
+							target.loseHp(num);
+							game.delayex();
 					}
 				},
 				ai: {
@@ -1738,8 +1824,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Purple, Dark Blue, Pink
 			avn_ascending: {
 				get derivation() {
-					const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters");
-					if (unlockedCharacters.includes("avn_dark_blue") || unlockedCharacters.includes("avn_pink")) return "avn_ascending_rewrite";
+					const unlockedCharacters = lib.config.avn_unlocked_characters;
+					if (unlockedCharacters && ["avn_dark_blue", "avn_pink"].some(unlockedCharacters.includes, unlockedCharacters)) return "avn_ascending_rewrite";
 				},
 				intro: {
 					content: (storage, player) => get.skillInfoTranslation("avn_ascending", player)
@@ -1768,11 +1854,11 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					if (event.triggername == "washCard") {
 						player.logSkill(name);
 						player.trySkillAnimate(`${name}_rewrite`, name, player.checkShow(name));
-						const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
-						if (!unlockedCharacters.has("avn_dark_blue") || !unlockedCharacters.has("avn_pink")) {
+						const unlockedCharacters = lib.config.avn_unlocked_characters ??= [];
+						if (["avn_dark_blue", "avn_pink"].some(unlockingCharacter => !unlockedCharacters.includes(unlockingCharacter))) {
 							unlockedCharacters.add("avn_dark_blue");
 							unlockedCharacters.add("avn_pink");
-							game.saveExtensionConfig("桌面大战", "unlocked_characters", Array.from(unlockedCharacters));
+							game.saveConfigValue("avn_unlocked_characters");
 						}
 						player.storage[name] = true;
 						player.markSkill(name);
@@ -1842,7 +1928,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// King Orange, Gold
 			avn_resistant: {
 				get derivation() {
-					if (game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_gold")) return "avn_resistant_rewrite";
+					if (lib.config.avn_unlocked_characters?.includes("avn_gold")) return "avn_resistant_rewrite";
 				},
 				intro: {
 					content: (storage, player) => get.skillInfoTranslation("avn_resistant", player)
@@ -1867,10 +1953,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 					if (event.triggername == "washCard") {
 						player.logSkill(name);
 						player.trySkillAnimate(`${name}_rewrite`, name, player.checkShow(name));
-						const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
-						if (!unlockedCharacters.has("avn_gold")) {
+						const unlockedCharacters = lib.config.avn_unlocked_characters ??= [];
+						if (!unlockedCharacters.includes("avn_gold")) {
 							unlockedCharacters.add("avn_gold");
-							game.saveExtensionConfig("桌面大战", "unlocked_characters", Array.from(unlockedCharacters));
+							game.saveConfigValue("avn_unlocked_characters");
 						}
 						player.storage[name] = true;
 						player.markSkill(name);
@@ -2187,7 +2273,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 				},
 				prompt: () => {
 					const player = _status.event.player;
-					return [get.skillInfoTranslation("avn_mathematics", player), lib.skill.avn_mathematics.getAvailableCombinationsPrompt(player)].join(document.createElement("br").outerHTML);
+					return [get.skillInfoTranslation("avn_mathematics", player), lib.skill.avn_mathematics.getAvailableCombinationsPrompt(player)].join(lineBreak);
 				},
 				chooseButton: {
 					dialog: (event, player) => ui.create.dialog(get.skillTranslation("avn_mathematics", player), [lib.inpile.reduce((previousValue, currentValue) => {
@@ -2280,44 +2366,51 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 						return [`将至少一张牌当做${get.translation({
 							name: link[2],
 							nature: link[3]
-						})}使用或打出`, lib.skill.avn_mathematics.getAvailableCombinationsPrompt(player)].join(document.createElement("br").outerHTML);
+						})}使用或打出`, lib.skill.avn_mathematics.getAvailableCombinationsPrompt(player)].join(lineBreak);
 					}
 				},
-				isValidNumber: (card, player) => !player.hasHistory("useSkill", evt => evt.skill == "avn_mathematics_backup" && evt.event.cards.some(value => get.number(value) == get.number(card))),
+				isValidNumber: (card, player) => !player.hasHistory("useSkill", evt => evt.skill == "avn_mathematics_backup" && evt.event.cards.some(testingCard => get.number(testingCard) == get.number(card))),
 				getCombinations: (array, k, prefix = []) => k <= 0 ? [prefix] : array.flatMap((value, index) => lib.skill.avn_mathematics.getCombinations(array.slice(index + 1), k - 1, prefix.concat(value))),
-				getAvailableCombinationsPrompt: player => {
-					const br = document.createElement("br").outerHTML;
-					return ["↓可以选择的牌的点数的组合↓", lib.skill.avn_mathematics.getCombinations(player.getCards("hes", card => lib.skill.avn_mathematics.isValidNumber(card, player)).reduce((previousValue, currentValue) => {
-						previousValue.push({
-							number: get.number(currentValue),
-							card: currentValue
+				getAvailableCombinationsPrompt: player => [
+					"↓可以选择的牌的点数的组合↓",
+					lib.skill.avn_mathematics.getCombinations(player.getCards("hes", card => lib.skill.avn_mathematics.isValidNumber(card, player)).reduce((array, card) => {
+						array.push({
+							number: get.number(card),
+							card
 						});
-						return previousValue;
-					}, [{
-						number: player.countCards("hej")
-					}, {
-						number: game.countPlayer(current => current.countCards("ej"))
-					}]), 3).filter(value => {
-						const [{
-							number: first
-						}, {
-							number: second
-						}, {
-							number: third
-						}] = value.sort((a, b) => a.number - b.number);
-						return first + third == second + second || value.every(element => element.number != 0) && first * third == second * second;
-					}).reduce((previousValue, currentValue) => {
-						const numbers = currentValue.reduce((previousElement, currentElement) => {
-							if (currentElement.card) previousElement.push(currentElement.number);
-							return previousElement;
+						return array;
+					}, [
+						{
+							number: player.countCards("hej")
+						},
+						{
+							number: game.countPlayer(current => current.countCards("ej"))
+						}
+					]), 3).filter(combination => {
+						const [
+							{
+								number: first
+							},
+							{
+								number: second
+							},
+							{
+								number: third
+							}
+						] = combination.sort((a, b) => a.number - b.number);
+						return first + third == second + second || combination.every(item => item.number != 0) && first * third == second * second;
+					}).reduce((numberCombinations, combination) => {
+						const numbers = combination.reduce((constructingNumbers, item) => {
+							if (item.card) constructingNumbers.push(item.number);
+							return constructingNumbers;
 						}, []);
-						if (previousValue.every(value => value.length != numbers.length || value.some(element => !numbers.includes(element)))) previousValue.push(numbers);
-						return previousValue;
-					}, []).reduce((previousValue, currentValue) => {
-						const combination = `[${currentValue}]`;
-						return previousValue ? [previousValue, combination].join(br) : combination;
-					}, "")].join(br);
-				},
+						if (numberCombinations.every(numberCombination => numberCombination.length != numbers.length || numberCombination.some(number => !numbers.includes(number)))) numberCombinations.push(numbers);
+						return numberCombinations;
+					}, []).reduce((combinationsPrompt, numberCombination) => {
+						const combination = `[${numberCombination}]`;
+						return combinationsPrompt ? [combinationsPrompt, combination].join(lineBreak) : combination;
+					}, "")
+				].join(lineBreak),
 				hasValidCombination: (player, numbers) => {
 					const allNumbers = numbers.concat(player.countCards("hej"), game.countPlayer(current => current.countCards("ej"))), length = allNumbers.length;
 					for (let firstIndex = 0; firstIndex < length - 2; firstIndex++) {
@@ -2382,6 +2475,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			},
 			// Corn Dog Guy
 			avn_rebranding: {
+				derivation: "avn_rebranding_rewrite",
 				global: "avn_rebranding_global",
 				intro: {
 					content: (storage, player) => get.skillInfoTranslation("avn_rebranding", player)
@@ -2514,7 +2608,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			},
 			avn_awakening: "决唤",
 			avn_awakening_rt: "Awakening",
-			avn_awakening_info: "出牌阶段限一次，你可以展示一名角色的所有手牌，然后你可以选择一项：1. 令其弃置其所有红色手牌，然后回复1点体力；2. 令其摸其黑色手牌数张牌，然后失去1点体力。",
+			avn_awakening_info: "出牌阶段限一次，你可以展示一名角色的所有手牌，然后你可以令其回复X点体力或失去X点体力（X为其红色手牌数与黑色手牌数之差）。",
 			// Red
 			avn_red: "Red",
 			avn_combative: "攻端",
@@ -2523,13 +2617,13 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			// Yellow
 			avn_yellow: "Yellow",
 			avn_intelligence: "机埶",
-			avn_intelligence: "Intelligence",
+			avn_intelligence_rt: "Intelligence",
 			avn_intelligence_info: "每名角色的回合结束时，若此回合不为额外回合，且你本回合使用过的牌的名称字数之和为2的自然数次方，则你可以令一名角色执行一个额外回合。",
 			// Green
 			avn_green: "Green",
 			avn_progressive: "筑韵",
 			avn_progressive_rt: "Progressive",
-			avn_progressive_info: "当你于一回合内首次使用一种花色的牌时，你可以令一名角色摸一张牌并弃置一张牌，然后当你于此回合内检测本技能发动合法性时，视为你本回合使用的这张弃置的牌的花色的牌数-1。",
+			avn_progressive_info: "当你于一回合内首次使用一种花色的牌时，你可以令一名角色摸一张牌并弃置一张牌，若如此做，当你于此回合内检测本技能发动合法性时，视为你本回合使用的这张弃置的牌的花色的牌数-1。",
 			// Blue
 			avn_blue: "Blue",
 			avn_midas_touch: "点金",
@@ -2539,7 +2633,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_virabot: "ViraBot",
 			avn_infection: "侵染",
 			avn_infection_rt: "Infection",
-			avn_infection_info: "出牌阶段结束时，你可以展示一名角色的一张手牌，然后若此牌为红色，你获得此牌，否则你删除此牌。",
+			avn_infection_info: "出牌阶段结束时，你可以展示一名角色的一张手牌，若此牌为红色，你获得此牌，否则你删除此牌。",
 			// [Agent]
 			avn_agent: "[Agent]",
 			avn_surpression: "戡定",
@@ -2568,8 +2662,8 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_ascending_rt: "Ascending",
 			_avn_ascending_info: "锁定技，若你本回合未以此法弃置牌，则当你于此回合内使用第二张及以后牌时，若你本回合使用的牌的点数为严格递增，则你摸一张牌，否则你弃置你的体力值张牌。",
 			get avn_ascending_info() {
-				const unlockedCharacters = game.getExtensionConfig("桌面大战", "unlocked_characters"), alteringCondition = "牌堆洗牌后，你修改本技能。";
-				if (unlockedCharacters.includes("avn_dark_blue") || unlockedCharacters.includes("avn_pink")) return `${lib.translate._avn_ascending_info}${alteringCondition}`;
+				const unlockedCharacters = lib.config.avn_unlocked_characters, alteringCondition = "牌堆洗牌后，你修改本技能。";
+				if (unlockedCharacters && ["avn_dark_blue", "avn_pink"].some(unlockedCharacters.includes, unlockedCharacters)) return `${lib.translate._avn_ascending_info}${alteringCondition}`;
 				const span = document.createElement("span"), style = span.style;
 				style.backgroundColor = "currentcolor";
 				style.textShadow = "none";
@@ -2578,6 +2672,9 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			},
 			get avn_ascending_rewrite() {
 				return `${lib.translate.avn_ascending}·改`;
+			},
+			get avn_ascending_rewrite_rt() {
+				return `${lib.translate.avn_ascending_rt} Rewrite`;
 			},
 			avn_ascending_rewrite_info: "锁定技，若你本回合未以此法弃置任意角色的牌，则当你于此回合内使用第二张及以后牌时，若你本回合使用的牌的点数为严格递增，则你令一名角色摸一张牌，否则你弃置一名角色的至多你的体力值张牌。",
 			// Dark Blue
@@ -2589,10 +2686,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			avn_king_orange_ab: "King",
 			avn_resistant: "抵倾",
 			avn_resistant_rt: "Resistant",
-			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法获得牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则你获得牌堆底的一张牌。",
+			_avn_resistant_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法获得牌，则你亮出并获得牌堆底的你已损失的体力值张牌（至少一张），若这些牌中有点数为K的牌，则你获得牌堆底的一张牌。",
 			get avn_resistant_info() {
 				const alteringCondition = "牌堆洗牌后，你修改本技能。";
-				if (game.getExtensionConfig("桌面大战", "unlocked_characters").includes("avn_gold")) return `${lib.translate._avn_resistant_info}${alteringCondition}`;
+				if (lib.config.avn_unlocked_characters?.includes("avn_gold")) return `${lib.translate._avn_resistant_info}${alteringCondition}`;
 				const span = document.createElement("span"), style = span.style;
 				style.backgroundColor = "currentcolor";
 				style.textShadow = "none";
@@ -2602,7 +2699,10 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_resistant_rewrite() {
 				return `${lib.translate.avn_resistant}·改`;
 			},
-			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法令一名角色获得牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），然后若这些牌中有点数为K的牌，则其获得牌堆底的一张牌。",
+			get avn_resistant_rewrite_rt() {
+				return `${lib.translate.avn_resistant_rt} Rewrite`;
+			},
+			avn_resistant_rewrite_info: "锁定技，当你造成或受到伤害后，若你本回合未以此法令一名角色获得牌，则你令一名角色亮出并获得牌堆底的你已损失的体力值张牌（至少一张），若这些牌中有点数为K的牌，则其获得牌堆底的一张牌。",
 			// Butcher
 			avn_butcher: "屠夫",
 			avn_butcher_rt: "Butcher",
@@ -2611,7 +2711,7 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get visible_avn_cookery() {
 				return lib.translate.avn_cookery;
 			},
-			avn_cookery_info: "每名角色的结束阶段，你可以依次明置或暗置至多你本回合使用的牌的类别数名角色的一张手牌，然后若这些牌的类别均：相同，则你可以依次横置或重置其中任意名角色；不相同，则你可以令其中一名角色翻面。",
+			avn_cookery_info: "每名角色的结束阶段，你可以依次明置或暗置至多你本回合使用的牌的类别数名角色的一张手牌，若这些牌的类别均：相同，则你可以依次横置或重置其中任意名角色；不相同，则你可以令其中一名角色翻面。",
 			// Gold
 			avn_gold: "Gold",
 			// Alexcrafter28
@@ -2665,32 +2765,35 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 			get avn_rebranding_rewrite() {
 				return `${lib.translate.avn_rebranding}·改`;
 			},
+			get avn_rebranding_rewrite_rt() {
+				return `${lib.translate.avn_rebranding_rt} Rewrite`;
+			},
 			avn_rebranding_rewrite_info: "每名角色的出牌阶段限一次，其可以赠予你两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。",
 			get avn_rebranding_global_info() {
 				return `出牌阶段限一次，你可以赠予一名拥有〖${lib.translate.avn_rebranding}〗的角色一张牌（若其为你，则改为弃置一张牌）并摸一张牌，或赠予一名拥有〖${lib.translate.avn_rebranding_rewrite}〗的角色两张牌（若其为你，则改为弃置两张牌）并获得1点护甲。`;
 			}
 		},
 		pinyins: {
-			"Alan Becker": ["Al-uhn", "bEk-uhr"],
-			Victim: ["vIk-tuhm"],
-			"The Chosen One": ["THuh", "chOH-zn", "wUHn"],
-			"The Dark Lord": ["THuh", "dAHRk", "lORd"],
-			"The Second Coming": ["THuh", "sEk-uhnd", "kUHm-ing"],
-			Red: ["rEd"],
-			Yellow: ["yEl-oh"],
-			Green: ["grEEn"],
-			Blue: ["blOO"],
-			ViraBot: ["vIE-ruh-baht"],
-			"[Agent]": ["[AY-juhnt]"],
-			Herobrine: ["hAIR-oh-brien"],
-			Purple: ["pUHR-puhl"],
-			"Dark Blue": ["dAHRk", "blOO"],
-			Pink: ["pIngk"],
-			"King Orange": ["kIng", "AHR-inj"],
-			Gold: ["gOHld"],
-			Alexcrafter28: ["Al-iks-kraf-tuhr-twen-tee-ayt"],
-			"Euler’s identity": ["OI-luhrz", "ie-dEn-tuh-tee"],
-			"Corn Dog Guy": ["kORn", "dAWg", "gIE"],
+			"Alan Becker": ["ˈælən", "ˈbɛkɚ"],
+			Victim: ["ˈvɪktəm"],
+			"The Chosen One": ["ðə", "ˈtʃoʊzn̩", "ˈwən"],
+			"The Dark Lord": ["ðə", "ˈdɑɹk", "ˈlɔɹd"],
+			"The Second Coming": ["ðə", "ˈsɛkənd", "ˈkəmɪŋ"],
+			Red: ["ˈɹɛd"],
+			Yellow: ["ˈjɛloʊ"],
+			Green: ["ˈɡɹin"],
+			Blue: ["ˈblu"],
+			ViraBot: ["ˈvaɪɹəˌbɑt"],
+			"[Agent]": ["[ˈeɪdʒənt]"],
+			Herobrine: ["ˈhɛɹoʊˌbɹaɪn"],
+			Purple: ["ˈpɝpəl"],
+			"Dark Blue": ["ˈdɑɹk", "ˈblu"],
+			Pink: ["ˈpɪŋk"],
+			"King Orange": ["ˈkɪŋ", "ˈɑɹɪndʒ"],
+			Gold: ["ˈɡoʊld"],
+			Alexcrafter28: ["ˈælɪksˌkɹæftɚˌtwɛntiˌeɪt"],
+			"Euler’s identity": ["ˈɔɪlɚz", "aɪˈdɛntəti"],
+			"Corn Dog Guy": ["ˈkɔɹn", "ˈdɔɡ", "ˈɡaɪ"],
 			马力欧: ["Mario"],
 			卡比: ["Kirby"]
 		},
@@ -2703,13 +2806,13 @@ game.import("character", (lib, game, ui, get, ai, _status) => {
 		"sst_mario",
 		"sst_kirby",
 		"avn_corn_dog_guy"
-	]), unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
+	]), unlockedCharacters = lib.config.avn_unlocked_characters;
 	Object.entries(animationVsNoname.character).forEach(([key, heroData]) => {
 		const exInfo = heroData[4];
 		if (fileSystemAvailable) exInfo.push(`ext:桌面大战/image/character/${key}.webp`);
 		else exInfo.push(`db:extension-桌面大战:image/character/${key}.webp`);
 		exInfo.push("doublegroup:wei:shu:wu:qun:jin");
-		if (!availableCharacters.has(key) && !unlockedCharacters.has(key)) exInfo.push("unseen");
+		if (!availableCharacters.has(key) && !unlockedCharacters?.includes(key)) exInfo.push("unseen");
 	});
 	Object.values(animationVsNoname.skill).forEach(exSkillData => exSkillData.audio = false);
 	return animationVsNoname;

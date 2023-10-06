@@ -274,12 +274,10 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 			const characters = Object.keys(characterPack.animation_vs_noname);
 			rank.rarity.rare.addArray(characters);
 			rank.bp.addArray(characters);
-			const {
-				confirmed_unlocked_characters, unlocked_characters
-			} = config, confirmedUnlockedCharacters = confirmed_unlocked_characters || [], newUnlockedCharacters = (unlocked_characters || []).filter(value => !confirmedUnlockedCharacters.includes(value));
-			if (newUnlockedCharacters.length) {
-				game.getExtensionConfig("桌面大战", "confirmed_unlocked_characters").addArray(newUnlockedCharacters);
-				game.saveExtensionConfigValue("桌面大战", "confirmed_unlocked_characters");
+			const confirmedUnlockedCharacters = lib.config.avn_confirmed_unlocked_characters ??= [], newUnlockedCharacters = lib.config.avn_unlocked_characters?.filter(value => !confirmedUnlockedCharacters.includes(value));
+			if (newUnlockedCharacters?.length) {
+				confirmedUnlockedCharacters.addArray(newUnlockedCharacters);
+				game.saveConfigValue("avn_confirmed_unlocked_characters");
 				arenaReady.push(() => {
 					const dialog = ui.create.dialog((() => {
 						const ruby = document.createElement("ruby"), style = ruby.style;
@@ -366,43 +364,47 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 		},
 		precontent: data => {
 			if (!data.enable) return;
-			if (parseInt(navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)[2]) <= 51) {
+			if (parseInt(navigator.userAgent.match(/Chrom(?:e|ium)\/(\d+)/)[1]) <= 51) {
 				alert(`《无名杀》由理版（Windows）或由理兼容版不支持运行《桌面大战》。`);
 				return;
 			}
 			const isArray = Array.isArray, {
-				getExtensionConfig, saveConfigValue, saveExtensionConfig, saveExtensionConfigValue
+				saveConfig,
+				saveConfigValue,
+				saveExtensionConfig
 			} = game;
-			if (!isArray(data.unlocked_characters)) saveExtensionConfig("桌面大战", "unlocked_characters", []);
-			if (!isArray(data.confirmed_unlocked_characters)) saveExtensionConfig("桌面大战", "confirmed_unlocked_characters", []);
+			if (!isArray(lib.config.avn_unlocked_characters)) saveConfig("avn_unlocked_characters", []);
+			if (!isArray(lib.config.avn_confirmed_unlocked_characters)) saveConfig("avn_confirmed_unlocked_characters", []);
 			game.lockTheSecondComingTheChosenOneReturn = () => {
-				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters");
+				const unlockedCharacters = lib.config.avn_unlocked_characters;
 				if (unlockedCharacters) {
 					unlockedCharacters.remove("avn_the_second_coming_the_chosen_one_return");
-					saveExtensionConfigValue("桌面大战", "unlocked_characters");
+					saveConfigValue("avn_unlocked_characters");
 				}
-				const confirmedUnlockedCharacters = getExtensionConfig("桌面大战", "confirmed_unlocked_characters");
+				const confirmedUnlockedCharacters = lib.config.avn_confirmed_unlocked_characters;
 				if (!confirmedUnlockedCharacters) return;
 				confirmedUnlockedCharacters.remove("avn_the_second_coming_the_chosen_one_return");
-				saveExtensionConfigValue("桌面大战", "confirmed_unlocked_characters");
+				saveConfigValue("avn_confirmed_unlocked_characters");
 			};
 			game.unlockAllAnimationVsNonameCharacters = () => {
-				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters"), unlockableCharacters = Object.entries(lib.characterPack.animation_vs_noname).reduce((constructingUnlockableCharacters, [key, heroData]) => {
-					if (heroData[4].includes("unseen")) constructingUnlockableCharacters.push(key);
-					return constructingUnlockableCharacters;
-				}, []);
-				if (unlockedCharacters) unlockedCharacters.addArray(unlockableCharacters);
-				else lib.config.extension_桌面大战_unlocked_characters = unlockableCharacters;
-				saveExtensionConfigValue("桌面大战", "unlocked_characters");
+				let unlocked = false;
+				const unlockedCharacters = lib.config.avn_unlocked_characters ??= [];
+				Object.entries(lib.characterPack.animation_vs_noname).forEach(([key, heroData]) => {
+					if (!heroData[4].includes("unseen")) return;
+					if (!unlocked) unlocked = true;
+					unlockedCharacters.add(key);
+				});
+				if (unlocked) saveConfigValue("avn_unlocked_characters");
 			};
 			game.unlockAllAnimationVsNonameCharactersExceptHidden = () => {
-				const unlockedCharacters = getExtensionConfig("桌面大战", "unlocked_characters"), hiddenCharacters = lib.avnHiddenCharacters, unlockableCharacters = Object.entries(lib.characterPack.animation_vs_noname).reduce((constructingUnlockableCharacters, [key, heroData]) => {
-					if (!hiddenCharacters.has(key) && heroData[4].includes("unseen")) constructingUnlockableCharacters.push(key);
-					return constructingUnlockableCharacters;
-				}, []);
-				if (unlockedCharacters) unlockedCharacters.addArray(unlockableCharacters);
-				else lib.config.extension_桌面大战_unlocked_characters = unlockableCharacters;
-				saveExtensionConfigValue("桌面大战", "unlocked_characters");
+				const hiddenCharacters = lib.avnHiddenCharacters, unlockedCharacters = lib.config.avn_unlocked_characters ??= [];
+				let unlocked = false;
+				Object.entries(lib.characterPack.animation_vs_noname).forEach(([key, heroData]) => {
+					if (hiddenCharacters.has(key) || !heroData[4].includes("unseen")) return;
+					if (!unlocked) unlocked = true;
+					unlockedCharacters.add(key);
+				});
+				if (unlocked) saveConfigValue("avn_unlocked_characters");
 			};
 			const {
 				config: {
@@ -555,7 +557,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					"延伸",
 					"当你使用基本牌或普通锦囊牌选择目标后，若你的装备区内有带有「延伸」标签的牌，你可以增加至多最大「延伸」值名与任意目标的座次相邻的角色为目标。",
 					"一次",
-					"每回合限一次，当你使用有距离限制的牌指定目标后，若你的装备区内有带有「一次」标签的牌，且你与其距离大于1，你可以弃置其区域内的一张牌。",
+					"每回合限一次，当你使用牌指定距离大于1的角色为目标后，若你的装备区内有带有「一次」标签的牌，你可以弃置其区域内的一张牌。",
 					"可抛",
 					"出牌阶段，你可以弃置装备区内的一张带有「可抛」标签的牌，对一名与你的座次不相邻的其他角色造成1点伤害。",
 					"劈开",
@@ -587,8 +589,13 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				intro: "删除《桌面大战》的所有相关配置（还原到初始状态）。初始状态重启游戏后生效。",
 				onclick: () => {
 					if (!confirm("是否重置此扩展？\n《桌面大战》的所有相关配置都会被删除！\n不会影响游戏正常运行。\n初始状态重启游戏后生效。")) return;
-					Object.keys(lib.config).forEach(value => {
-						if (value != "extension_桌面大战_enable" && value.indexOf("extension_桌面大战_") == 0) game.saveConfig(value);
+					const {
+						saveConfig,
+						saveExtensionConfig
+					} = game;
+					saveExtensionConfig("桌面大战", "imported");
+					Object.keys(lib.config).forEach(key => {
+						if (key.startsWith("avn_")) saveConfig(key);
 					});
 					alert("已重置此扩展！\n初始状态重启游戏后生效。");
 				}
@@ -606,7 +613,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				h2.append(image);
 				const animationVsNonameRuby = document.createElement("ruby");
 				h2.append(animationVsNonameRuby);
-				const unlockedTheSecondComingTheChosenOneReturn = (game.getExtensionConfig("桌面大战", "unlocked_characters") || []).includes("avn_the_second_coming_the_chosen_one_return");
+				const unlockedTheSecondComingTheChosenOneReturn = lib.config.avn_unlocked_characters?.includes("avn_the_second_coming_the_chosen_one_return");
 				if (unlockedTheSecondComingTheChosenOneReturn) {
 					const redSpan = document.createElement("span");
 					animationVsNonameRuby.append(redSpan);
@@ -640,7 +647,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				animationVsNonameRuby.append(rightParenthesisRP);
 				rightParenthesisRP.textContent = "）";
 				const characterUnlockingHint = (() => {
-					const unlockedCharacters = new Set(game.getExtensionConfig("桌面大战", "unlocked_characters"));
+					const unlockedCharacters = new Set(lib.config.avn_unlocked_characters);
 					for (const key of lib.avnCharacterUnlockingMap.keys()) {
 						if (key.every(unlockedCharacters.has, unlockedCharacters)) continue;
 						const cite = document.createElement("cite"), characterTitle = lib.avnCharacterTitle;
@@ -661,8 +668,8 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				return `${h2.outerHTML}${hr.outerHTML}${characterUnlockingHint}${cite.outerHTML}${hr.outerHTML}一个基于《${animatorVsAnimationRuby.outerHTML}》系列的同人《无名杀》扩展，不隶属于Alan Becker等相关创作者。${hr.outerHTML}`;
 			},
 			author: "Show-K",
-			diskURL: "https://github.com/Show-K/animation-vs-noname",
-			forumURL: "https://github.com/Show-K/animation-vs-noname/issues",
+			diskURL: "https://github.com/Tipx-L/animation-vs-noname",
+			forumURL: "https://github.com/Tipx-L/animation-vs-noname/issues",
 			version: "2",
 			get changeLog() {
 				return [

@@ -10,6 +10,10 @@ declare interface Lib {
 	avnCharacterUnlockingMap: Map<string[], string[]>;
 	avnHiddenCharacters: Set<string>;
 }
+declare interface LibConfigData {
+	avn_confirmed_unlocked_characters?: string[];
+	avn_unlocked_characters?: string[];
+}
 declare interface PlayerStorage {
 	avn_ascending: boolean;
 	avn_resistant: boolean;
